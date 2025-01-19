@@ -3,4 +3,6 @@
 
 int ramfs_init();
 
+struct FileNode* create_root_directory();
+
 #endif //RAMFS_H

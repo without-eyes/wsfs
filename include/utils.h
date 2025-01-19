@@ -3,6 +3,6 @@
 
 #include "../include/file_structs.h"
 
-struct Timestamp getCurrentTime();
+struct Timestamp get_current_time();
 
 #endif //UTILS_H
