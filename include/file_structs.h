@@ -4,13 +4,14 @@
 #include <stdint.h>
 #define MAX_FILE_NAME 32
 
+struct FileNode;
+
 struct Timestamp {
     uint8_t hour;
     uint8_t minute;
 };
 
 struct FileAttributes {
-    uint64_t size;
     char name[MAX_FILE_NAME];
     union {
         struct FileNode* directoryContent;
