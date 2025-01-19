@@ -4,6 +4,11 @@
 #include <stdint.h>
 #define MAX_FILE_NAME 32
 
+struct Timestamp {
+    uint8_t hour;
+    uint8_t minute;
+};
+
 struct FileAttributes {
     uint64_t size;
     char name[MAX_FILE_NAME];
@@ -11,8 +16,7 @@ struct FileAttributes {
         struct FileNode* directoryContent;
         char* fileContent;
     };
-    uint8_t hourCreatedAt;
-    uint8_t minuteCreatedAt;
+    struct Timestamp createdAt;
     char type;
 };
 
