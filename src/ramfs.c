@@ -5,7 +5,7 @@
 #include "../include/file_structs.h"
 #include "../include/utils.h"
 
-int ramfs_init() {
+int ramfs_init(void) {
     // create tree with root in /
     struct FileNode* rootDir = create_root_directory();
 
@@ -17,7 +17,7 @@ int ramfs_init() {
     return EXIT_SUCCESS;
 }
 
-struct FileNode* create_root_dir() {
+struct FileNode* create_root_dir(void) {
     struct FileNode* rootDir = malloc(sizeof(struct FileNode));
     strncpy(rootDir->attributes.name, "/", 1);
     rootDir->attributes.type = 'd';
