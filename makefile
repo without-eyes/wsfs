@@ -6,16 +6,12 @@ CFLAGS = -Wall -I$(IDIR) -g
 IDIR = ./include/
 SRCDIR = ./src/
 
-PROJECT_NAME = ramfs
+PROJECT_NAME = wsfs
 
 SOURCES = $(wildcard ${SRCDIR}*.c)
 
-# Targets
-.PHONY: all memory fullmemory test coverage allclean clean cleantest cleancoverage
-.SILENT: all memory fullmemory test coverage allclean
-
 # Main targets
-all: $(PROJECT_NAME) run
+all: clean $(PROJECT_NAME) run
 
 # Rules
 $(PROJECT_NAME):
