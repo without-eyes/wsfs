@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -lmenu -lncurses -I$(IDIR) -g
+CFLAGS = -Wall -I$(IDIR) -g
 
 # Directories
 IDIR = ./include/

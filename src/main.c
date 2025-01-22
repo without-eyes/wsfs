@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
-#include "../include/ramfs.h"
+#include "../include/wsfs.h"
 
 int main(void) {
-    if (ramfs_init() == EXIT_SUCCESS) return EXIT_SUCCESS;
+    if (wsfs_init() == EXIT_SUCCESS) return EXIT_SUCCESS;
     return EXIT_FAILURE;
 }
