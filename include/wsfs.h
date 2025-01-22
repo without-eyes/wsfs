@@ -3,6 +3,8 @@
 
 int wsfs_init();
 
-struct FileNode* create_root_directory();
+struct FileNode* create_root_dir();
+
+void print_file_info(struct FileNode* file);
 
 #endif //WSFS_H
