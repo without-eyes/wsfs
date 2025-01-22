@@ -1,11 +1,11 @@
-#include "../include/ramfs.h"
+#include "../include/wsfs.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include "../include/file_structs.h"
 #include "../include/utils.h"
 
-int ramfs_init(void) {
+int wsfs_init(void) {
     // create tree with root in /
     struct FileNode* rootDir = create_root_directory();
 
