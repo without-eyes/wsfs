@@ -24,6 +24,7 @@ struct FileAttributes {
 struct FileNode {
     struct FileAttributes attributes;
     struct FileNode* parent;
+    struct FileNode* next;
 };
 
 #endif //FILE_H

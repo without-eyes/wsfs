@@ -11,9 +11,21 @@ int wsfs_init(void) {
     struct FileNode* rootDir = create_root_dir();
 
     // show UI
-    while (1) {
+    struct FileNode* currentDir = rootDir;
+    int isRunning = 1;
+    while (isRunning) {
+        const char input = getchar();
+
+        switch (input) {
+        case 'q':
+            isRunning = 0;
+            break;
+
+        default:
+            break;
+        }
+
         print_file_info(rootDir);
-        getchar();
     }
 
     // free fs
@@ -27,6 +39,8 @@ struct FileNode* create_root_dir(void) {
     strncpy(rootDir->attributes.name, "/", 1);
     rootDir->attributes.type = 'd';
     rootDir->attributes.createdAt = get_current_time();
+    rootDir->parent = NULL;
+    rootDir->next = NULL;
     return rootDir;
 }
 
