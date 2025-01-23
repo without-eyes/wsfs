@@ -21,6 +21,10 @@ int wsfs_init(void) {
             isRunning = 0;
             break;
 
+        case 'c':
+            struct FileNode* file = create_file(currentDir);
+            add_file_to_dir(currentDir, file);
+
         default:
             break;
         }
@@ -42,6 +46,28 @@ struct FileNode* create_root_dir(void) {
     rootDir->parent = NULL;
     rootDir->next = NULL;
     return rootDir;
+}
+
+struct FileNode* create_file(struct FileNode* parent) {
+    printf("Enter file name: ");
+    char fileName[MAX_FILE_NAME];
+    fgets(fileName, MAX_FILE_NAME, stdin);
+
+    struct FileNode* file = malloc(sizeof(struct FileNode));
+    strncpy(file->attributes.name, fileName, MAX_FILE_NAME);
+    file->attributes.type = 'd';
+    file->attributes.createdAt = get_current_time();
+    file->parent = parent;
+    file->next = NULL;
+    return file;
+}
+
+void add_file_to_dir(const struct FileNode* parent, struct FileNode* child) {
+    struct FileNode* emptySlot = parent->attributes.directoryContent;
+    while (emptySlot->next != NULL) {
+        emptySlot = emptySlot->next;
+    }
+    emptySlot->next = child;
 }
 
 void print_file_info(struct FileNode* file) {
