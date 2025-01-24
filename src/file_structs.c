@@ -49,3 +49,16 @@ struct FileNode* create_dir(struct FileNode* parent) {
     dir->next = NULL;
     return dir;
 }
+
+void add_to_dir(struct FileNode* parent, struct FileNode* child) {
+    if (parent->attributes.directoryContent == NULL) {
+        parent->attributes.directoryContent = child;
+        return;
+    }
+
+    struct FileNode* current = parent->attributes.directoryContent;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = child;
+}

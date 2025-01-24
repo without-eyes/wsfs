@@ -26,7 +26,7 @@ int wsfs_init(void) {
 
         case 'c':
             struct FileNode* file = create_file(currentDir);
-            add_file_to_dir(currentDir, file);
+            add_to_dir(currentDir, file);
 
         default:
             printf("Invalid input.\n");
@@ -46,19 +46,6 @@ int wsfs_init(void) {
     free(rootDir);
 
     return EXIT_SUCCESS;
-}
-
-void add_file_to_dir(struct FileNode* parent, struct FileNode* child) {
-    if (parent->attributes.directoryContent == NULL) {
-        parent->attributes.directoryContent = child;
-        return;
-    }
-
-    struct FileNode* current = parent->attributes.directoryContent;
-    while (current->next != NULL) {
-        current = current->next;
-    }
-    current->next = child;
 }
 
 void print_file_info(const struct FileNode* file) {

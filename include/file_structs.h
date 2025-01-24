@@ -33,4 +33,6 @@ struct FileNode* create_file(struct FileNode* parent);
 
 struct FileNode* create_dir(struct FileNode* parent);
 
+void add_to_dir(struct FileNode* parent, struct FileNode* child);
+
 #endif //FILE_H
