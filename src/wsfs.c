@@ -14,8 +14,12 @@ int wsfs_init(void) {
     struct FileNode* currentDir = rootDir;
     int isRunning = 1;
     while (isRunning) {
-        const char input = getchar();
+        puts("");
+        print_dir_content(rootDir);
 
+        printf("Options: (q)uit, (c)reate file: ");
+        const char input = getchar();
+        while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
         case 'q':
             isRunning = 0;
@@ -26,13 +30,20 @@ int wsfs_init(void) {
             add_file_to_dir(currentDir, file);
 
         default:
+            printf("Invalid input.\n");
             break;
         }
-
-        print_file_info(rootDir);
     }
 
     // free fs
+    struct FileNode* currentFile = rootDir->attributes.directoryContent;
+    while (currentFile != NULL) {
+        struct FileNode* nextFile = currentFile->next;
+        free(currentFile->attributes.name);
+        free(currentFile);
+        currentFile = nextFile;
+    }
+    free(rootDir->attributes.name);
     free(rootDir);
 
     return EXIT_SUCCESS;
@@ -40,9 +51,11 @@ int wsfs_init(void) {
 
 struct FileNode* create_root_dir(void) {
     struct FileNode* rootDir = malloc(sizeof(struct FileNode));
-    strncpy(rootDir->attributes.name, "/", 1);
+    rootDir->attributes.name = malloc(2);
+    strcpy(rootDir->attributes.name, "/");
     rootDir->attributes.type = 'd';
     rootDir->attributes.createdAt = get_current_time();
+    rootDir->attributes.directoryContent = NULL;
     rootDir->parent = NULL;
     rootDir->next = NULL;
     return rootDir;
@@ -52,24 +65,40 @@ struct FileNode* create_file(struct FileNode* parent) {
     printf("Enter file name: ");
     char fileName[MAX_FILE_NAME];
     fgets(fileName, MAX_FILE_NAME, stdin);
+    fileName[strcspn(fileName, "\n")] = 0;
 
     struct FileNode* file = malloc(sizeof(struct FileNode));
-    strncpy(file->attributes.name, fileName, MAX_FILE_NAME);
-    file->attributes.type = 'd';
+    file->attributes.name = malloc(strlen(fileName) + 1);
+    strcpy(file->attributes.name, fileName);
+    file->attributes.type = 'f';
     file->attributes.createdAt = get_current_time();
     file->parent = parent;
     file->next = NULL;
     return file;
 }
 
-void add_file_to_dir(const struct FileNode* parent, struct FileNode* child) {
-    struct FileNode* emptySlot = parent->attributes.directoryContent;
-    while (emptySlot->next != NULL) {
-        emptySlot = emptySlot->next;
+void add_file_to_dir(struct FileNode* parent, struct FileNode* child) {
+    if (parent->attributes.directoryContent == NULL) {
+        parent->attributes.directoryContent = child;
+        return;
     }
-    emptySlot->next = child;
+
+    struct FileNode* current = parent->attributes.directoryContent;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = child;
 }
 
-void print_file_info(struct FileNode* file) {
-    printf("%c %2u:%2u %s\n", file->attributes.type, file->attributes.createdAt.hour, file->attributes.createdAt.minute, file->attributes.name);
+void print_file_info(const struct FileNode* file) {
+    printf("%c %2u:%02u %s\n", file->attributes.type, file->attributes.createdAt.hour, file->attributes.createdAt.minute, file->attributes.name);
+}
+
+void print_dir_content(const struct FileNode* directory) {
+    print_file_info(directory);
+    const struct FileNode* currentFile = directory->attributes.directoryContent;
+    while (currentFile != NULL) {
+        print_file_info(currentFile);
+        currentFile = currentFile->next;
+    }
 }

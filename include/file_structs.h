@@ -12,7 +12,7 @@ struct Timestamp {
 };
 
 struct FileAttributes {
-    char name[MAX_FILE_NAME];
+    char* name;
     union {
         struct FileNode* directoryContent;
         char* fileContent;
