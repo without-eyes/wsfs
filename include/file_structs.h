@@ -2,7 +2,7 @@
 #define FILE_H
 
 #include <stdint.h>
-#define MAX_FILE_NAME 32
+#define MAX_NAME_SIZE 32
 
 struct FileNode;
 
@@ -30,5 +30,7 @@ struct FileNode {
 struct FileNode* create_root_dir();
 
 struct FileNode* create_file(struct FileNode* parent);
+
+struct FileNode* create_dir(struct FileNode* parent);
 
 #endif //FILE_H
