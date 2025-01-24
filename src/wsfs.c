@@ -16,7 +16,7 @@ int wsfs_init(void) {
         puts("");
         print_dir_content(rootDir);
 
-        printf("Options: (q)uit, (c)reate file: ");
+        printf("Options: (q)uit, create (f)ile or (d)irectory: ");
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
@@ -24,9 +24,15 @@ int wsfs_init(void) {
             isRunning = 0;
             break;
 
-        case 'c':
+        case 'f':
             struct FileNode* file = create_file(currentDir);
             add_to_dir(currentDir, file);
+            break;
+
+        case 'd':
+            struct FileNode* dir = create_dir(currentDir);
+            add_to_dir(currentDir, dir);
+            break;
 
         default:
             printf("Invalid input.\n");
