@@ -27,4 +27,8 @@ struct FileNode {
     struct FileNode* next;
 };
 
+struct FileNode* create_root_dir();
+
+struct FileNode* create_file(struct FileNode* parent);
+
 #endif //FILE_H
