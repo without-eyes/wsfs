@@ -22,3 +22,6 @@ run:
 
 clean:
 	rm -f $(PROJECT_NAME)
+
+doxygen:
+	doxygen Doxyfile
