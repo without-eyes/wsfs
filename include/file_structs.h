@@ -1,3 +1,11 @@
+/**
+    * @file: file_structs.h
+    * @author: without eyes
+    *
+    * This file contains structs and functions related to files
+    * and file nodes.
+*/
+
 #ifndef FILE_H
 #define FILE_H
 
@@ -27,12 +35,48 @@ struct FileNode {
     struct FileNode* next;
 };
 
-struct FileNode* create_root_dir();
+/**
+    * Create root directory "/". The caller is responsible for freeing
+    * the memory allocated for the directory by calling free().
+    *
+    * @return Returns root directory as pointer to struct FileNode.
+*/
+struct FileNode* create_root_dir(void);
 
+/**
+    * Create file in "parent" directory. The caller must input name
+    * of the file in console. The caller is responsible for freeing
+    * the memory allocated for the file by calling free().
+    *
+    * @param[in] parent The directory where file will be located.
+    * @return Returns file as pointer to struct FileNode.
+    *
+    * @pre parent != NULL
+*/
 struct FileNode* create_file(struct FileNode* parent);
 
+/**
+    * Create directory in "parent" directory. The caller must input
+    * name of the directory in console. The caller is responsible for
+    * freeing the memory allocated for the directory by calling free().
+    *
+    * @param[in] parent The directory where file will be located.
+    * @return Returns directory as pointer to struct FileNode.
+    *
+    * @pre parent != NULL
+*/
 struct FileNode* create_dir(struct FileNode* parent);
 
+/**
+    * Add "child" file/directory to "parent" directory's linked list.
+    *
+    * @param[in,out] parent The directory where file/directory will be
+    * located.
+    * @param[in] child The file/directory that will be added to "parent"
+    * directory.
+    *
+    * @pre parent != NULL && child != NULL
+*/
 void add_to_dir(struct FileNode* parent, struct FileNode* child);
 
 #endif //FILE_H

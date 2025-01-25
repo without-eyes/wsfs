@@ -1,3 +1,11 @@
+/**
+    * @file: file_structs.c
+    * @author: without eyes
+    *
+    * This file contains implementation of functions related
+    * to files and file nodes.
+*/
+
 #include "../include/file_structs.h"
 
 #include <stdio.h>

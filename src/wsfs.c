@@ -1,3 +1,11 @@
+/**
+    * @file: wsfs.c
+    * @author: without eyes
+    *
+    * This file contains implementation of functions related
+    * to Without eyeS's File System(WSFS).
+*/
+
 #include "../include/wsfs.h"
 
 #include <stdio.h>
@@ -20,21 +28,21 @@ int wsfs_init(void) {
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
-        case 'q':
+        case 'q': // quit
             isRunning = 0;
             break;
 
-        case 'f':
+        case 'f': // create file
             struct FileNode* file = create_file(currentDir);
             add_to_dir(currentDir, file);
             break;
 
-        case 'd':
+        case 'd': // create directory
             struct FileNode* dir = create_dir(currentDir);
             add_to_dir(currentDir, dir);
             break;
 
-        default:
+        default: // other
             printf("Invalid input.\n");
             break;
         }

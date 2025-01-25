@@ -1,3 +1,10 @@
+/**
+    * @file: main.c
+    * @author: without eyes
+    *
+    * This file contains main function which starts WSFS.
+*/
+
 #include <stdlib.h>
 
 #include "../include/wsfs.h"

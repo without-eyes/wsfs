@@ -1,3 +1,11 @@
+/**
+    * @file: utils.c
+    * @author: without eyes
+    *
+    * This file contains implementation of functions that
+    * is not related to other files.
+*/
+
 #include "../include/utils.h"
 
 #include <stdio.h>
