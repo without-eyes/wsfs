@@ -12,6 +12,12 @@
 #include <stdint.h>
 #define MAX_NAME_SIZE 32
 
+enum FileType {
+    FILE_TYPE_UNKNOWN = 0,
+    FILE_TYPE_FILE = 1,
+    FILE_TYPE_DIR = 2
+};
+
 struct FileNode;
 
 struct Timestamp {
@@ -26,7 +32,7 @@ struct FileAttributes {
         char* fileContent;
     };
     struct Timestamp createdAt;
-    char type;
+    enum FileType type;
 };
 
 struct FileNode {
@@ -78,5 +84,13 @@ struct FileNode* create_dir(struct FileNode* parent);
     * @pre parent != NULL && child != NULL
 */
 void add_to_dir(struct FileNode* parent, struct FileNode* child);
+
+/**
+    * Get file type first letter(e.g. 'd' or 'f').
+    *
+    * @param[in] type The value from enum FileType.
+    * @return Returns first letter of type as char.
+*/
+char get_file_type_letter(enum FileType type);
 
 #endif //FILE_H

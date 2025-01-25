@@ -63,7 +63,7 @@ int wsfs_init(void) {
 }
 
 void print_file_info(const struct FileNode* file) {
-    printf("%c %2u:%02u %s\n", file->attributes.type, file->attributes.createdAt.hour, file->attributes.createdAt.minute, file->attributes.name);
+    printf("%c %2u:%02u %s\n", get_file_type_letter(file->attributes.type), file->attributes.createdAt.hour, file->attributes.createdAt.minute, file->attributes.name);
 }
 
 void print_dir_content(const struct FileNode* directory) {

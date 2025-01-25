@@ -17,7 +17,7 @@ struct FileNode* create_root_dir(void) {
     struct FileNode* rootDir = malloc(sizeof(struct FileNode));
     rootDir->attributes.name = malloc(2);
     strcpy(rootDir->attributes.name, "/");
-    rootDir->attributes.type = 'd';
+    rootDir->attributes.type = FILE_TYPE_DIR;
     rootDir->attributes.createdAt = get_current_time();
     rootDir->attributes.directoryContent = NULL;
     rootDir->parent = NULL;
@@ -34,7 +34,7 @@ struct FileNode* create_file(struct FileNode* parent) {
     struct FileNode* file = malloc(sizeof(struct FileNode));
     file->attributes.name = malloc(strlen(fileName) + 1);
     strcpy(file->attributes.name, fileName);
-    file->attributes.type = 'f';
+    file->attributes.type = FILE_TYPE_FILE;
     file->attributes.createdAt = get_current_time();
     file->parent = parent;
     file->next = NULL;
@@ -50,7 +50,7 @@ struct FileNode* create_dir(struct FileNode* parent) {
     struct FileNode* dir = malloc(sizeof(struct FileNode));
     dir->attributes.name = malloc(strlen(directoryName) + 1);
     strcpy(dir->attributes.name, directoryName);
-    dir->attributes.type = 'd';
+    dir->attributes.type = FILE_TYPE_DIR;
     dir->attributes.createdAt = get_current_time();
     dir->attributes.directoryContent = NULL;
     dir->parent = parent;
@@ -69,4 +69,20 @@ void add_to_dir(struct FileNode* parent, struct FileNode* child) {
         current = current->next;
     }
     current->next = child;
+}
+
+char get_file_type_letter(const enum FileType type) {
+    switch (type) {
+        case FILE_TYPE_DIR:
+            return 'd';
+
+        case FILE_TYPE_FILE:
+            return 'f';
+
+        case FILE_TYPE_UNKNOWN:
+            return '-';
+
+        default:
+            return '?';
+    }
 }
