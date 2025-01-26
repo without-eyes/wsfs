@@ -19,6 +19,15 @@
 int wsfs_init(void);
 
 /**
+    * Close UI, free memory and end program.
+    *
+    * @param[in] rootDir The root directory.
+    *
+    * @pre rootDir != NULL
+*/
+void wsfs_end(struct FileNode* rootDir);
+
+/**
     * Print file information in Linux's "ls -l"-like format.
     *
     * @param[in] file The file which information will be

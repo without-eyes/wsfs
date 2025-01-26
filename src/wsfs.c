@@ -61,6 +61,12 @@ int wsfs_init(void) {
     }
 
     // free fs
+    wsfs_end(rootDir);
+
+    return EXIT_SUCCESS;
+}
+
+void wsfs_end(struct FileNode* rootDir) {
     struct FileNode* currentFile = rootDir->attributes.directoryContent;
     while (currentFile != NULL) {
         struct FileNode* nextFile = currentFile->next;
@@ -70,8 +76,6 @@ int wsfs_init(void) {
     }
     free(rootDir->attributes.name);
     free(rootDir);
-
-    return EXIT_SUCCESS;
 }
 
 void print_file_info(const struct FileNode* file) {
