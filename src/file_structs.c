@@ -20,7 +20,7 @@ struct FileNode* create_root_dir(void) {
     rootDir->attributes.type = FILE_TYPE_DIR;
     rootDir->attributes.createdAt = get_current_time();
     rootDir->attributes.directoryContent = NULL;
-    rootDir->parent = NULL;
+    rootDir->parent = rootDir;
     rootDir->next = NULL;
     return rootDir;
 }

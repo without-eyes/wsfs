@@ -40,6 +40,10 @@ int wsfs_init(void) {
             change_current_dir(&currentDir, dirName);
             break;
 
+        case 'b' : // go back
+            currentDir = currentDir->parent;
+            break;
+
         case 'f': // create file
             struct FileNode* file = create_file(currentDir);
             add_to_dir(currentDir, file);
