@@ -85,8 +85,15 @@ void print_dir_content(const struct FileNode* directory) {
 
 void change_current_dir(struct FileNode** currentDir, const char* dirName) {
     struct FileNode* currentFile = (*currentDir)->attributes.directoryContent;
-    while (strcmp(currentFile->attributes.name, dirName) != 0) {
+    while (currentFile != NULL &&
+        (currentFile->attributes.type != FILE_TYPE_DIR ||
+        strcmp(currentFile->attributes.name, dirName) != 0)) {
         currentFile = currentFile->next;
     }
-    *currentDir = currentFile;
+
+    if (currentFile != NULL) {
+        *currentDir = currentFile;
+    } else {
+        printf("Can't open file as directory!");
+    }
 }
