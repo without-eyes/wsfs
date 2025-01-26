@@ -38,4 +38,16 @@ void print_file_info(const struct FileNode* file);
 */
 void print_dir_content(const struct FileNode* directory);
 
+/**
+    * Change current directory.
+    *
+    * @param[in,out] currentDir The directory where user is currently
+    * located.
+    * @param[in] dirName The name of the child directory where user
+    * wants to go.
+    *
+    * @pre currentDir != NULL && dirName != NULL
+*/
+void change_current_dir(struct FileNode** currentDir, const char* dirName);
+
 #endif //WSFS_H

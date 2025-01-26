@@ -22,7 +22,7 @@ int wsfs_init(void) {
     int isRunning = 1;
     while (isRunning) {
         puts("");
-        print_dir_content(rootDir);
+        print_dir_content(currentDir);
 
         printf("Options: (q)uit, create (f)ile or (d)irectory: ");
         const char input = getchar();
@@ -30,6 +30,14 @@ int wsfs_init(void) {
         switch (input) {
         case 'q': // quit
             isRunning = 0;
+            break;
+
+        case 'g': // go into directory
+            printf("Enter directory name: ");
+            char dirName[MAX_NAME_SIZE];
+            fgets(dirName, MAX_NAME_SIZE, stdin);
+            dirName[strcspn(dirName, "\n")] = 0;
+            change_current_dir(&currentDir, dirName);
             break;
 
         case 'f': // create file
@@ -73,4 +81,12 @@ void print_dir_content(const struct FileNode* directory) {
         print_file_info(currentFile);
         currentFile = currentFile->next;
     }
+}
+
+void change_current_dir(struct FileNode** currentDir, const char* dirName) {
+    struct FileNode* currentFile = (*currentDir)->attributes.directoryContent;
+    while (strcmp(currentFile->attributes.name, dirName) != 0) {
+        currentFile = currentFile->next;
+    }
+    *currentDir = currentFile;
 }
