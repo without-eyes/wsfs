@@ -11,8 +11,8 @@
 #include "../include/ui.h"
 
 int main(void) {
-    struct FileNode* currentDir = wsfs_init();
-    run_ui(currentDir);
-    wsfs_deinit(currentDir);
+    struct FileNode* rootDir = wsfs_init();
+    run_ui(rootDir);
+    wsfs_deinit(rootDir);
     return EXIT_SUCCESS;
 }
