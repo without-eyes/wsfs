@@ -61,12 +61,12 @@ int wsfs_init(void) {
     }
 
     // free fs
-    wsfs_end(rootDir);
+    wsfs_deinit(rootDir);
 
     return EXIT_SUCCESS;
 }
 
-void wsfs_end(struct FileNode* rootDir) {
+void wsfs_deinit(struct FileNode* rootDir) {
     struct FileNode* currentFile = rootDir->attributes.directoryContent;
     while (currentFile != NULL) {
         struct FileNode* nextFile = currentFile->next;

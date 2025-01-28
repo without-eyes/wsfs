@@ -25,7 +25,7 @@ int wsfs_init(void);
     *
     * @pre rootDir != NULL
 */
-void wsfs_end(struct FileNode* rootDir);
+void wsfs_deinit(struct FileNode* rootDir);
 
 /**
     * Print file information in Linux's "ls -l"-like format.
