@@ -14,9 +14,10 @@
 /**
     * Start, run in loop and free file system.
     *
-    * @return Returns EXIT_SUCCESS is everything worked well.
+    * @return Returns root directory as pointer
+    * to struct FileNode.
 */
-int wsfs_init(void);
+struct FileNode* wsfs_init(void);
 
 /**
     * Close UI, free memory and end program.

@@ -12,20 +12,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/file_structs.h"
-#include "../include/ui.h"
 
-int wsfs_init(void) {
-    // create tree with root in /
+struct FileNode* wsfs_init(void) {
     struct FileNode* rootDir = create_root_dir();
-
-    // show UI
-    struct FileNode* currentDir = rootDir;
-    run_ui(currentDir);
-
-    // free fs
-    wsfs_deinit(rootDir);
-
-    return EXIT_SUCCESS;
+    return rootDir;
 }
 
 void wsfs_deinit(struct FileNode* rootDir) {
