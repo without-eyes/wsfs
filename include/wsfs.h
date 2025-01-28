@@ -28,26 +28,6 @@ int wsfs_init(void);
 void wsfs_deinit(struct FileNode* rootDir);
 
 /**
-    * Print file information in Linux's "ls -l"-like format.
-    *
-    * @param[in] file The file which information will be
-    * printed.
-    *
-    * @pre file != NULL
-*/
-void print_file_info(const struct FileNode* file);
-
-/**
-    * Print directory information and it's content information.
-    *
-    * @param[in] directory The directory which content information
-    * will be printed.
-    *
-    * @pre directory != NULL
-*/
-void print_dir_content(const struct FileNode* directory);
-
-/**
     * Change current directory.
     *
     * @param[in,out] currentDir The directory where user is currently
