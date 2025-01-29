@@ -25,12 +25,7 @@ struct FileNode* create_root_dir(void) {
     return rootDir;
 }
 
-struct FileNode* create_file(struct FileNode* parent) {
-    printf("Enter file name: ");
-    char fileName[MAX_NAME_SIZE];
-    fgets(fileName, MAX_NAME_SIZE, stdin);
-    fileName[strcspn(fileName, "\n")] = 0;
-
+struct FileNode* create_file(struct FileNode* parent, const char* fileName) {
     struct FileNode* file = malloc(sizeof(struct FileNode));
     file->attributes.name = malloc(strlen(fileName) + 1);
     strcpy(file->attributes.name, fileName);
@@ -41,15 +36,10 @@ struct FileNode* create_file(struct FileNode* parent) {
     return file;
 }
 
-struct FileNode* create_dir(struct FileNode* parent) {
-    printf("Enter directory name: ");
-    char directoryName[MAX_NAME_SIZE];
-    fgets(directoryName, MAX_NAME_SIZE, stdin);
-    directoryName[strcspn(directoryName, "\n")] = 0;
-
+struct FileNode* create_dir(struct FileNode* parent, const char* dirName) {
     struct FileNode* dir = malloc(sizeof(struct FileNode));
-    dir->attributes.name = malloc(strlen(directoryName) + 1);
-    strcpy(dir->attributes.name, directoryName);
+    dir->attributes.name = malloc(strlen(dirName) + 1);
+    strcpy(dir->attributes.name, dirName);
     dir->attributes.type = FILE_TYPE_DIR;
     dir->attributes.createdAt = get_current_time();
     dir->attributes.directoryContent = NULL;

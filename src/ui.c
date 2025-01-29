@@ -17,7 +17,7 @@ void run_ui(struct FileNode* currentDir) {
         puts("");
         print_dir_content(currentDir);
 
-        printf("Options: (q)uit, create (f)ile or (d)irectory: ");
+        printf("Options: (q)uit, create (f)ile or (d)irectory, (g)o into directory, go (b)ack: ");
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
@@ -38,12 +38,20 @@ void run_ui(struct FileNode* currentDir) {
             break;
 
         case 'f': // create file
-            struct FileNode* file = create_file(currentDir);
+            printf("Enter file name: ");
+            char fileName[MAX_NAME_SIZE];
+            fgets(fileName, MAX_NAME_SIZE, stdin);
+            fileName[strcspn(fileName, "\n")] = 0;
+            struct FileNode* file = create_file(currentDir, fileName);
             add_to_dir(currentDir, file);
             break;
 
         case 'd': // create directory
-            struct FileNode* dir = create_dir(currentDir);
+            printf("Enter directory name: ");
+            char directoryName[MAX_NAME_SIZE];
+            fgets(directoryName, MAX_NAME_SIZE, stdin);
+            directoryName[strcspn(directoryName, "\n")] = 0;
+            struct FileNode* dir = create_dir(currentDir, directoryName);
             add_to_dir(currentDir, dir);
             break;
 

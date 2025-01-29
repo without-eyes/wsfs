@@ -55,11 +55,12 @@ struct FileNode* create_root_dir(void);
     * the memory allocated for the file by calling free().
     *
     * @param[in] parent The directory where file will be located.
+    * @param[in] fileName The name of new file.
     * @return Returns file as pointer to struct FileNode.
     *
     * @pre parent != NULL
 */
-struct FileNode* create_file(struct FileNode* parent);
+struct FileNode* create_file(struct FileNode* parent, const char* fileName);
 
 /**
     * Create directory in "parent" directory. The caller must input
@@ -67,11 +68,12 @@ struct FileNode* create_file(struct FileNode* parent);
     * freeing the memory allocated for the directory by calling free().
     *
     * @param[in] parent The directory where file will be located.
+    * @param[in] dirName The name of new directory.
     * @return Returns directory as pointer to struct FileNode.
     *
     * @pre parent != NULL
 */
-struct FileNode* create_dir(struct FileNode* parent);
+struct FileNode* create_dir(struct FileNode* parent, const char* dirName);
 
 /**
     * Add "child" file/directory to "parent" directory's linked list.
