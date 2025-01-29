@@ -21,20 +21,12 @@ void run_ui(struct FileNode* currentDir) {
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
-        case 'q': // quit
-            isRunning = 0;
-            break;
-
         case 'g': // go into directory
             printf("Enter directory name: ");
             char dirName[MAX_NAME_SIZE];
             fgets(dirName, MAX_NAME_SIZE, stdin);
             dirName[strcspn(dirName, "\n")] = 0;
             change_current_dir(&currentDir, dirName);
-            break;
-
-        case 'b' : // go back
-            currentDir = currentDir->parent;
             break;
 
         case 'f': // create file
@@ -53,6 +45,14 @@ void run_ui(struct FileNode* currentDir) {
             directoryName[strcspn(directoryName, "\n")] = 0;
             struct FileNode* dir = create_file_node(currentDir, directoryName, FILE_TYPE_DIR);
             add_to_dir(currentDir, dir);
+            break;
+
+        case 'b' : // go back
+            currentDir = currentDir->parent;
+            break;
+
+        case 'q': // quit
+            isRunning = 0;
             break;
 
         default: // other

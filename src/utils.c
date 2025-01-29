@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <time.h>
 
-struct Timestamp get_current_time() {
+struct Timestamp get_current_time(void) {
     time_t rawtime;
     time(&rawtime);
     struct tm* timeinfo = localtime(&rawtime);

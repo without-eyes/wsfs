@@ -17,6 +17,6 @@
     * @return Returns a struct Timestamp containing the current
     * hour and minute.
 */
-struct Timestamp get_current_time();
+struct Timestamp get_current_time(void);
 
 #endif //UTILS_H
