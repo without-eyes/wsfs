@@ -42,38 +42,19 @@ struct FileNode {
 };
 
 /**
-    * Create root directory "/". The caller is responsible for freeing
-    * the memory allocated for the directory by calling free().
-    *
-    * @return Returns root directory as pointer to struct FileNode.
-*/
-struct FileNode* create_root_dir(void);
-
-/**
-    * Create file in "parent" directory. The caller must input name
-    * of the file in console. The caller is responsible for freeing
-    * the memory allocated for the file by calling free().
+    * Create file node in "parent" directory. The caller is
+    * responsible for freeing the memory allocated for the
+    * file node by calling free(). If name of the directory is
+    * "\" , it will be it's own parent.
     *
     * @param[in] parent The directory where file will be located.
-    * @param[in] fileName The name of new file.
+    * @param[in] fileNodeName The name of new file node.
+    * @param[in] fileType The type of new file node.
     * @return Returns file as pointer to struct FileNode.
     *
     * @pre parent != NULL
 */
-struct FileNode* create_file(struct FileNode* parent, const char* fileName);
-
-/**
-    * Create directory in "parent" directory. The caller must input
-    * name of the directory in console. The caller is responsible for
-    * freeing the memory allocated for the directory by calling free().
-    *
-    * @param[in] parent The directory where file will be located.
-    * @param[in] dirName The name of new directory.
-    * @return Returns directory as pointer to struct FileNode.
-    *
-    * @pre parent != NULL
-*/
-struct FileNode* create_dir(struct FileNode* parent, const char* dirName);
+struct FileNode* create_file_node(struct FileNode* parent, const char* fileNodeName, enum FileType fileType);
 
 /**
     * Add "child" file/directory to "parent" directory's linked list.

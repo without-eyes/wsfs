@@ -42,7 +42,7 @@ void run_ui(struct FileNode* currentDir) {
             char fileName[MAX_NAME_SIZE];
             fgets(fileName, MAX_NAME_SIZE, stdin);
             fileName[strcspn(fileName, "\n")] = 0;
-            struct FileNode* file = create_file(currentDir, fileName);
+            struct FileNode* file = create_file_node(currentDir, fileName, FILE_TYPE_FILE);
             add_to_dir(currentDir, file);
             break;
 
@@ -51,7 +51,7 @@ void run_ui(struct FileNode* currentDir) {
             char directoryName[MAX_NAME_SIZE];
             fgets(directoryName, MAX_NAME_SIZE, stdin);
             directoryName[strcspn(directoryName, "\n")] = 0;
-            struct FileNode* dir = create_dir(currentDir, directoryName);
+            struct FileNode* dir = create_file_node(currentDir, directoryName, FILE_TYPE_DIR);
             add_to_dir(currentDir, dir);
             break;
 

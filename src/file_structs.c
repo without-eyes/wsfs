@@ -13,39 +13,28 @@
 #include <string.h>
 #include "../include/utils.h"
 
-struct FileNode* create_root_dir(void) {
-    struct FileNode* rootDir = malloc(sizeof(struct FileNode));
-    rootDir->attributes.name = malloc(2);
-    strcpy(rootDir->attributes.name, "/");
-    rootDir->attributes.type = FILE_TYPE_DIR;
-    rootDir->attributes.createdAt = get_current_time();
-    rootDir->attributes.directoryContent = NULL;
-    rootDir->parent = rootDir;
-    rootDir->next = NULL;
-    return rootDir;
-}
+struct FileNode* create_file_node(struct FileNode* parent, const char* fileNodeName, const enum FileType fileType) {
+    struct FileNode* fileNode = malloc(sizeof(struct FileNode));
+    fileNode->attributes.name = malloc(strlen(fileNodeName) + 1);
+    strcpy(fileNode->attributes.name, fileNodeName);
+    fileNode->attributes.createdAt = get_current_time();
+    fileNode->next = NULL;
 
-struct FileNode* create_file(struct FileNode* parent, const char* fileName) {
-    struct FileNode* file = malloc(sizeof(struct FileNode));
-    file->attributes.name = malloc(strlen(fileName) + 1);
-    strcpy(file->attributes.name, fileName);
-    file->attributes.type = FILE_TYPE_FILE;
-    file->attributes.createdAt = get_current_time();
-    file->parent = parent;
-    file->next = NULL;
-    return file;
-}
+    if (fileType == FILE_TYPE_DIR) {
+        fileNode->attributes.type = FILE_TYPE_DIR;
+        fileNode->attributes.directoryContent = NULL;
+    } else if (fileType == FILE_TYPE_FILE) {
+        fileNode->attributes.type = FILE_TYPE_FILE;
+        fileNode->attributes.fileContent = NULL;
+    }
 
-struct FileNode* create_dir(struct FileNode* parent, const char* dirName) {
-    struct FileNode* dir = malloc(sizeof(struct FileNode));
-    dir->attributes.name = malloc(strlen(dirName) + 1);
-    strcpy(dir->attributes.name, dirName);
-    dir->attributes.type = FILE_TYPE_DIR;
-    dir->attributes.createdAt = get_current_time();
-    dir->attributes.directoryContent = NULL;
-    dir->parent = parent;
-    dir->next = NULL;
-    return dir;
+    if (strcmp(fileNodeName, "\\") == 0 ) {
+        fileNode->parent = fileNode;
+    } else {
+        fileNode->parent = parent;
+    }
+
+    return fileNode;
 }
 
 void add_to_dir(struct FileNode* parent, struct FileNode* child) {
