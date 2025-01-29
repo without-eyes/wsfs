@@ -20,13 +20,13 @@
 struct FileNode* wsfs_init(void);
 
 /**
-    * Close UI, free memory and end program.
+    * Free memory after program ends. In almost most cases
+    * you should pass root directory as parameter.
     *
-    * @param[in] rootDir The root directory.
-    *
-    * @pre rootDir != NULL
+    * @param[in] fileNode The file node that needs
+    * to be free.
 */
-void wsfs_deinit(struct FileNode* rootDir);
+void wsfs_deinit(struct FileNode* fileNode);
 
 /**
     * Change current directory.

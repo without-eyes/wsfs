@@ -18,17 +18,22 @@ struct FileNode* wsfs_init(void) {
     return rootDir;
 }
 
-void wsfs_deinit(struct FileNode* rootDir) {
-    struct FileNode* currentFile = rootDir->attributes.directoryContent;
-    while (currentFile != NULL) {
-        struct FileNode* nextFile = currentFile->next;
-        free(currentFile->attributes.name);
-        free(currentFile);
-        currentFile = nextFile;
+void wsfs_deinit(struct FileNode* fileNode) {
+    if (fileNode == NULL) return;
+
+    if (fileNode->attributes.type == FILE_TYPE_DIR) {
+        struct FileNode* current = fileNode->attributes.directoryContent;
+        while (current != NULL) {
+            struct FileNode* next = current->next;
+            wsfs_deinit(current);
+            current = next;
+        }
     }
-    free(rootDir->attributes.name);
-    free(rootDir);
+
+    free(fileNode->attributes.name);
+    free(fileNode);
 }
+
 
 void change_current_dir(struct FileNode** currentDir, const char* dirName) {
     struct FileNode* currentFile = (*currentDir)->attributes.directoryContent;
