@@ -19,10 +19,14 @@ void run_ui(struct FileNode* currentDir) {
         puts("");
         print_dir_content(currentDir);
 
-        printf("Options: (q)uit, create (f)ile or (d)irectory, (w)rite text to file, (r)ead content from file, (g)o into directory, go (b)ack: ");
+        printf("Input command('h' for help): ");
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
+        case 'h':
+            puts("Options:\n(q)uit\ncreate (f)ile\ncreate (d)irectory\n(w)rite text to file\n(r)ead content from file,\n(g)o into directory,\ngo (b)ack");
+            break;
+
         case 'g': // go into directory
             printf("Enter directory name: ");
             char dirName[MAX_NAME_SIZE];
@@ -66,6 +70,7 @@ void run_ui(struct FileNode* currentDir) {
             wantedFileNameToRead[strcspn(wantedFileNameToRead, "\n")] = 0;
             struct FileNode* wantedFileToRead = find_file_node(currentDir, wantedFileNameToRead);
             print_file_content(wantedFileToRead);
+            break;
 
         case 'b' : // go back
             currentDir = currentDir->parent;
