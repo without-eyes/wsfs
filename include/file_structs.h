@@ -76,4 +76,24 @@ void add_to_dir(struct FileNode* parent, struct FileNode* child);
 */
 char get_file_type_letter(enum FileType type);
 
+/**
+    * Write text into file.
+    *
+    * @param[in] file The file in which text will be written.
+    * @param[in] text The text which will be written into file.
+*/
+void write_to_file(struct FileNode* file, char* text);
+
+/**
+    * Find file node by name.
+    *
+    * @param[in,out] currentDir The directory where user is currently
+    * located.
+    * @param[in] fileNodeName The name of the file node which user
+    * wants to find.
+    *
+    * @pre currentDir != NULL && fileNodeName != NULL
+*/
+struct FileNode* find_file_node(const struct FileNode* currentDir, const char* fileNodeName);
+
 #endif //FILE_H

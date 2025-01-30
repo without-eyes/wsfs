@@ -19,4 +19,11 @@
 */
 struct Timestamp get_current_time(void);
 
+/**
+    * Read user input until he input "EOF".
+    *
+    * @return Returns inputted text.
+*/
+char* read_user_input(void);
+
 #endif //UTILS_H

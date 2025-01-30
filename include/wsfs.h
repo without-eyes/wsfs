@@ -28,16 +28,4 @@ struct FileNode* wsfs_init(void);
 */
 void wsfs_deinit(struct FileNode* fileNode);
 
-/**
-    * Change current directory.
-    *
-    * @param[in,out] currentDir The directory where user is currently
-    * located.
-    * @param[in] dirName The name of the child directory where user
-    * wants to go.
-    *
-    * @pre currentDir != NULL && dirName != NULL
-*/
-void change_current_dir(struct FileNode** currentDir, const char* dirName);
-
 #endif //WSFS_H

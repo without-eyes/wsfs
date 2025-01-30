@@ -10,6 +10,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "../include/utils.h"
+#include "../include/file_structs.h"
 
 void run_ui(struct FileNode* currentDir) {
     int isRunning = 1;
@@ -17,7 +19,7 @@ void run_ui(struct FileNode* currentDir) {
         puts("");
         print_dir_content(currentDir);
 
-        printf("Options: (q)uit, create (f)ile or (d)irectory, (g)o into directory, go (b)ack: ");
+        printf("Options: (q)uit, create (f)ile or (d)irectory, (w)rite text to file, (g)o into directory, go (b)ack: ");
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
@@ -26,16 +28,16 @@ void run_ui(struct FileNode* currentDir) {
             char dirName[MAX_NAME_SIZE];
             fgets(dirName, MAX_NAME_SIZE, stdin);
             dirName[strcspn(dirName, "\n")] = 0;
-            change_current_dir(&currentDir, dirName);
+            currentDir = find_file_node(currentDir, dirName);
             break;
 
         case 'f': // create file
             printf("Enter file name: ");
-            char fileName[MAX_NAME_SIZE];
-            fgets(fileName, MAX_NAME_SIZE, stdin);
-            fileName[strcspn(fileName, "\n")] = 0;
-            struct FileNode* file = create_file_node(currentDir, fileName, FILE_TYPE_FILE);
-            add_to_dir(currentDir, file);
+            char newfileName[MAX_NAME_SIZE];
+            fgets(newfileName, MAX_NAME_SIZE, stdin);
+            newfileName[strcspn(newfileName, "\n")] = 0;
+            struct FileNode* createdFile = create_file_node(currentDir, newfileName, FILE_TYPE_FILE);
+            add_to_dir(currentDir, createdFile);
             break;
 
         case 'd': // create directory
@@ -45,6 +47,16 @@ void run_ui(struct FileNode* currentDir) {
             directoryName[strcspn(directoryName, "\n")] = 0;
             struct FileNode* dir = create_file_node(currentDir, directoryName, FILE_TYPE_DIR);
             add_to_dir(currentDir, dir);
+            break;
+
+        case 'w': // write into file
+            printf("Enter directory name: ");
+            char wantedFileName[MAX_NAME_SIZE];
+            fgets(wantedFileName, MAX_NAME_SIZE, stdin);
+            wantedFileName[strcspn(wantedFileName, "\n")] = 0;
+            struct FileNode* wantedFile = find_file_node(currentDir, wantedFileName);
+            char* text = read_user_input();
+            write_to_file(wantedFile, text);
             break;
 
         case 'b' : // go back

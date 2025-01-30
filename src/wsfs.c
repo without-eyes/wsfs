@@ -33,19 +33,3 @@ void wsfs_deinit(struct FileNode* fileNode) {
     free(fileNode->attributes.name);
     free(fileNode);
 }
-
-
-void change_current_dir(struct FileNode** currentDir, const char* dirName) {
-    struct FileNode* currentFile = (*currentDir)->attributes.directoryContent;
-    while (currentFile != NULL &&
-        (currentFile->attributes.type != FILE_TYPE_DIR ||
-        strcmp(currentFile->attributes.name, dirName) != 0)) {
-        currentFile = currentFile->next;
-    }
-
-    if (currentFile != NULL) {
-        *currentDir = currentFile;
-    } else {
-        printf("Can't open file as directory!");
-    }
-}

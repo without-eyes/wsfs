@@ -65,3 +65,15 @@ char get_file_type_letter(const enum FileType type) {
             return '?';
     }
 }
+
+void write_to_file(struct FileNode* file, char* text) {
+    file->attributes.fileContent = text;
+}
+
+struct FileNode* find_file_node(const struct FileNode* currentDir, const char* fileNodeName) {
+    struct FileNode* currentFile = currentDir->attributes.directoryContent;
+    while (currentFile != NULL && strcmp(currentFile->attributes.name, fileNodeName) != 0) {
+        currentFile = currentFile->next;
+    }
+    return currentFile;
+}
