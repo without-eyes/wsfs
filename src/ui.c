@@ -19,7 +19,7 @@ void run_ui(struct FileNode* currentDir) {
         puts("");
         print_dir_content(currentDir);
 
-        printf("Options: (q)uit, create (f)ile or (d)irectory, (w)rite text to file, (g)o into directory, go (b)ack: ");
+        printf("Options: (q)uit, create (f)ile or (d)irectory, (w)rite text to file, (r)ead content from file, (g)o into directory, go (b)ack: ");
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
@@ -50,14 +50,22 @@ void run_ui(struct FileNode* currentDir) {
             break;
 
         case 'w': // write into file
-            printf("Enter directory name: ");
-            char wantedFileName[MAX_NAME_SIZE];
-            fgets(wantedFileName, MAX_NAME_SIZE, stdin);
-            wantedFileName[strcspn(wantedFileName, "\n")] = 0;
-            struct FileNode* wantedFile = find_file_node(currentDir, wantedFileName);
+            printf("Enter file name: ");
+            char wantedFileNameToWrite[MAX_NAME_SIZE];
+            fgets(wantedFileNameToWrite, MAX_NAME_SIZE, stdin);
+            wantedFileNameToWrite[strcspn(wantedFileNameToWrite, "\n")] = 0;
+            struct FileNode* wantedFileToWrite = find_file_node(currentDir, wantedFileNameToWrite);
             char* text = read_user_input();
-            write_to_file(wantedFile, text);
+            write_to_file(wantedFileToWrite, text);
             break;
+
+        case 'r': // read from file
+            printf("Enter file name: ");
+            char wantedFileNameToRead[MAX_NAME_SIZE];
+            fgets(wantedFileNameToRead, MAX_NAME_SIZE, stdin);
+            wantedFileNameToRead[strcspn(wantedFileNameToRead, "\n")] = 0;
+            struct FileNode* wantedFileToRead = find_file_node(currentDir, wantedFileNameToRead);
+            print_file_content(wantedFileToRead);
 
         case 'b' : // go back
             currentDir = currentDir->parent;

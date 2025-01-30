@@ -70,6 +70,10 @@ void write_to_file(struct FileNode* file, char* text) {
     file->attributes.fileContent = text;
 }
 
+void print_file_content(const struct FileNode* file) {
+    printf("%s\n", file->attributes.fileContent);
+}
+
 struct FileNode* find_file_node(const struct FileNode* currentDir, const char* fileNodeName) {
     struct FileNode* currentFile = currentDir->attributes.directoryContent;
     while (currentFile != NULL && strcmp(currentFile->attributes.name, fileNodeName) != 0) {

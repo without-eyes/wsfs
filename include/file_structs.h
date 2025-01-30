@@ -85,6 +85,13 @@ char get_file_type_letter(enum FileType type);
 void write_to_file(struct FileNode* file, char* text);
 
 /**
+    * Reads content from file.
+    *
+    * @param[in] file The file from which content will be read.
+*/
+void print_file_content(const struct FileNode* file);
+
+/**
     * Find file node by name.
     *
     * @param[in,out] currentDir The directory where user is currently
