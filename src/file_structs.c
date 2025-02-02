@@ -74,10 +74,58 @@ void print_file_content(const struct FileNode* file) {
     printf("%s\n", file->attributes.fileContent);
 }
 
-struct FileNode* find_file_node(const struct FileNode* currentDir, const char* fileNodeName) {
+struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* fileNodeName) {
     struct FileNode* currentFile = currentDir->attributes.directoryContent;
     while (currentFile != NULL && strcmp(currentFile->attributes.name, fileNodeName) != 0) {
         currentFile = currentFile->next;
     }
     return currentFile;
+}
+
+struct FileNode* find_file_node_in_fs(const struct FileNode* rootDir, const char* fileNodeName) {
+    if (!rootDir || !fileNodeName) return NULL;
+
+    if (strcmp(rootDir->attributes.name, fileNodeName) == 0) {
+        return (struct FileNode*)rootDir;
+    }
+
+    struct FileNode* currFileNode = rootDir->attributes.directoryContent;
+    while (currFileNode) {
+        struct FileNode* result = find_file_node_in_fs(currFileNode, fileNodeName);
+        if (result) return result;
+        currFileNode = currFileNode->next;
+    }
+
+    return NULL;
+}
+
+char* get_file_node_path(struct FileNode* currentDir, const char* fileNodeName) {
+    while (strcmp(currentDir->attributes.name, "\\") != 0) {
+        currentDir = currentDir->parent;
+    }
+
+    struct FileNode* fileNode = find_file_node_in_fs(currentDir, fileNodeName);
+
+    struct FileNode* tempFileNode = fileNode;
+    size_t pathLength = 1;
+    while (strcmp(tempFileNode->attributes.name, "\\") != 0) {
+        pathLength += strlen(tempFileNode->attributes.name) + 1;
+        tempFileNode = tempFileNode->parent;
+    }
+
+    char* path = malloc(pathLength);
+    path[pathLength - 1] = '\0';
+    size_t pos = pathLength - 1;
+    struct FileNode* currFileNode = fileNode;
+    while (strcmp(currFileNode->attributes.name, "\\") != 0) {
+        const size_t nameLen = strlen(currFileNode->attributes.name);
+        pos -= nameLen;
+        memcpy(&path[pos], currFileNode->attributes.name, nameLen);
+        if (pos > 0) {
+            path[--pos] = '\\';
+        }
+        currFileNode = currFileNode->parent;
+    }
+
+    return path;
 }

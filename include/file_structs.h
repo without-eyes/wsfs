@@ -92,7 +92,7 @@ void write_to_file(struct FileNode* file, char* text);
 void print_file_content(const struct FileNode* file);
 
 /**
-    * Find file node by name.
+    * Find file node by name in current directory.
     *
     * @param[in,out] currentDir The directory where user is currently
     * located.
@@ -101,6 +101,30 @@ void print_file_content(const struct FileNode* file);
     *
     * @pre currentDir != NULL && fileNodeName != NULL
 */
-struct FileNode* find_file_node(const struct FileNode* currentDir, const char* fileNodeName);
+struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* fileNodeName);
+
+/**
+    * Find file node by name in entire file system.
+    *
+    * @param[in,out] rootDir The root directory.
+    * @param[in] fileNodeName The name of the file node which user
+    * wants to find.
+    *
+    * @pre rootDir != NULL && fileNodeName != NULL
+*/
+struct FileNode* find_file_node_in_fs(const struct FileNode* rootDir, const char* fileNodeName);
+
+/**
+    * Get file node path.The caller is responsible for freeing
+    * the memory allocated for the file node by calling free().
+    *
+    * @param[in,out] currentDir The directory where user is currently
+    * located.
+    * @param[in] fileNodeName The name of the file node which path
+    * user wants to ger.
+    *
+    * @pre currentDir != NULL && fileNodeName != NULL
+*/
+char* get_file_node_path(struct FileNode* currentDir, const char* fileNodeName);
 
 #endif //FILE_H
