@@ -24,12 +24,12 @@ void run_ui(struct FileNode* currentDir);
 /**
     * Print file information in Linux's "ls -l"-like format.
     *
-    * @param[in] file The file which information will be
+    * @param[in] fileNode The file which information will be
     * printed.
     *
-    * @pre file != NULL
+    * @pre fileNode != NULL
 */
-void print_file_info(const struct FileNode* file);
+void print_file_info(const struct FileNode* fileNode);
 
 /**
     * Print directory information and it's content information.

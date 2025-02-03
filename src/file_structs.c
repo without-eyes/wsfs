@@ -70,12 +70,20 @@ char get_file_type_letter(const enum FileType type) {
     }
 }
 
-void write_to_file(struct FileNode* file, char* text) {
-    file->attributes.fileContent = text;
+void write_to_file(struct FileNode* fileNode, char* text) {
+    if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
+        fileNode->attributes.symlinkTarget->attributes.fileContent = text;
+    } else if (fileNode->attributes.type == FILE_TYPE_FILE) {
+        fileNode->attributes.fileContent = text;
+    }
 }
 
-void print_file_content(const struct FileNode* file) {
-    printf("%s\n", file->attributes.fileContent);
+void print_file_content(const struct FileNode* fileNode) {
+    if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
+        printf("%s\n", fileNode->attributes.symlinkTarget->attributes.fileContent);
+    } else if (fileNode->attributes.type == FILE_TYPE_FILE) {
+        printf("%s\n", fileNode->attributes.fileContent);
+    }
 }
 
 struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* fileNodeName) {

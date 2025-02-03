@@ -81,10 +81,10 @@ char get_file_type_letter(enum FileType type);
 /**
     * Write text into file.
     *
-    * @param[in] file The file in which text will be written.
+    * @param[in] fileNode The file in which text will be written.
     * @param[in] text The text which will be written into file.
 */
-void write_to_file(struct FileNode* file, char* text);
+void write_to_file(struct FileNode* fileNode, char* text);
 
 /**
     * Reads content from file.

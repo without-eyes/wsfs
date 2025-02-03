@@ -43,7 +43,12 @@ void run_ui(struct FileNode* currentDir) {
             char dirName[MAX_NAME_SIZE];
             fgets(dirName, MAX_NAME_SIZE, stdin);
             dirName[strcspn(dirName, "\n")] = 0;
-            currentDir = find_file_node_in_curr_dir(currentDir, dirName);
+            struct FileNode* fileNode = find_file_node_in_curr_dir(currentDir, dirName);
+            if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
+                currentDir = fileNode->attributes.symlinkTarget;
+            } else if (fileNode->attributes.type == FILE_TYPE_DIR) {
+                currentDir = fileNode;
+            }
             break;
 
         case 'f': // create file
@@ -137,8 +142,22 @@ void run_ui(struct FileNode* currentDir) {
     }
 }
 
-void print_file_info(const struct FileNode* file) {
-    printf("%c %2u:%02u %s\n", get_file_type_letter(file->attributes.type), file->attributes.createdAt.hour, file->attributes.createdAt.minute, file->attributes.name);
+void print_file_info(const struct FileNode* fileNode) {
+    if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
+        printf("%c %2u:%02u %s -> %c %2u:%02u %s\n", get_file_type_letter(fileNode->attributes.type),
+                                        fileNode->attributes.createdAt.hour,
+                                        fileNode->attributes.createdAt.minute,
+                                        fileNode->attributes.name,
+                                        get_file_type_letter(fileNode->attributes.symlinkTarget->attributes.type),
+                                        fileNode->attributes.symlinkTarget->attributes.createdAt.hour,
+                                        fileNode->attributes.symlinkTarget->attributes.createdAt.minute,
+                                        fileNode->attributes.symlinkTarget->attributes.name);
+    } else {
+        printf("%c %2u:%02u %s\n", get_file_type_letter(fileNode->attributes.type),
+                                        fileNode->attributes.createdAt.hour,
+                                        fileNode->attributes.createdAt.minute,
+                                        fileNode->attributes.name);
+    }
 }
 
 void print_dir_content(const struct FileNode* directory) {
