@@ -20,12 +20,13 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* fileNodeN
     fileNode->attributes.createdAt = get_current_time();
     fileNode->next = NULL;
 
+    fileNode->attributes.type = fileType;
     if (fileType == FILE_TYPE_DIR) {
-        fileNode->attributes.type = FILE_TYPE_DIR;
         fileNode->attributes.directoryContent = NULL;
     } else if (fileType == FILE_TYPE_FILE) {
-        fileNode->attributes.type = FILE_TYPE_FILE;
         fileNode->attributes.fileContent = NULL;
+    } else if (fileType == FILE_TYPE_SYMLINK) {
+        fileNode->attributes.symlinkTarget = NULL;
     }
 
     if (strcmp(fileNodeName, "\\") == 0 ) {
@@ -57,6 +58,9 @@ char get_file_type_letter(const enum FileType type) {
 
         case FILE_TYPE_FILE:
             return 'f';
+
+        case FILE_TYPE_SYMLINK:
+            return 's';
 
         case FILE_TYPE_UNKNOWN:
             return '-';

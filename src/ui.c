@@ -29,6 +29,7 @@ void run_ui(struct FileNode* currentDir) {
                  "(q)uit\n"
                  "create (f)ile\n"
                  "create (d)irectory\n"
+                 "create (s)ymbolic link\n"
                  "(e)rase file node,\n"
                  "(w)rite text to file\n"
                  "(r)ead content from file,\n"
@@ -63,7 +64,28 @@ void run_ui(struct FileNode* currentDir) {
             add_to_dir(currentDir, dir);
             break;
 
-        case 'e':
+        case 's': // create symlink
+            printf("Enter symlink name: ");
+            char symlinkName[MAX_NAME_SIZE];
+            fgets(symlinkName, MAX_NAME_SIZE, stdin);
+            symlinkName[strcspn(symlinkName, "\n")] = 0;
+            struct FileNode* symlink = create_file_node(currentDir, symlinkName, FILE_TYPE_SYMLINK);
+
+            printf("Enter symlink target's name: ");
+            char symlinkTargetName[MAX_NAME_SIZE];
+            fgets(symlinkTargetName, MAX_NAME_SIZE, stdin);
+            symlinkTargetName[strcspn(symlinkTargetName, "\n")] = 0;
+
+            struct FileNode* rootDir = currentDir;
+            while (strcmp(rootDir->attributes.name, "\\") != 0) {
+                rootDir = rootDir->parent;
+            }
+            symlink->attributes.symlinkTarget = find_file_node_in_fs(rootDir, symlinkTargetName);
+
+            add_to_dir(currentDir, symlink);
+            break;
+
+        case 'e': // erase file node
             printf("Enter file name: ");
             char wantedFileNameToDelete[MAX_NAME_SIZE];
             fgets(wantedFileNameToDelete, MAX_NAME_SIZE, stdin);

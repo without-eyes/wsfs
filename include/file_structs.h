@@ -15,7 +15,8 @@
 enum FileType {
     FILE_TYPE_UNKNOWN = 0,
     FILE_TYPE_FILE = 1,
-    FILE_TYPE_DIR = 2
+    FILE_TYPE_DIR = 2,
+    FILE_TYPE_SYMLINK = 3
 };
 
 struct FileNode;
@@ -29,6 +30,7 @@ struct FileAttributes {
     char* name;
     union {
         struct FileNode* directoryContent;
+        struct FileNode* symlinkTarget;
         char* fileContent;
     };
     struct Timestamp createdAt;
