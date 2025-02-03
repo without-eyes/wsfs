@@ -129,3 +129,24 @@ char* get_file_node_path(struct FileNode* currentDir, const char* fileNodeName) 
 
     return path;
 }
+
+void delete_file_node(struct FileNode* currentDir, const char* fileNodeName) {
+    struct FileNode* fileNodeToDelete = find_file_node_in_curr_dir(currentDir, fileNodeName);
+    if (fileNodeToDelete->attributes.type == FILE_TYPE_DIR || fileNodeToDelete->attributes.directoryContent != NULL) {
+        return;
+    }
+
+    struct FileNode* currentFileNode = currentDir->attributes.directoryContent;
+    if (currentFileNode == fileNodeToDelete) {
+        currentDir->attributes.directoryContent = currentDir->attributes.directoryContent->next;
+        free(fileNodeToDelete);
+        return;
+    }
+
+    while (currentFileNode->next != fileNodeToDelete) {
+        currentFileNode = currentFileNode->next;
+    }
+
+    currentFileNode->next = currentFileNode->next->next;
+    free(fileNodeToDelete);
+}

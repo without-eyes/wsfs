@@ -121,10 +121,23 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* rootDir, const char
     * @param[in,out] currentDir The directory where user is currently
     * located.
     * @param[in] fileNodeName The name of the file node which path
-    * user wants to ger.
+    * user wants to get.
     *
     * @pre currentDir != NULL && fileNodeName != NULL
 */
 char* get_file_node_path(struct FileNode* currentDir, const char* fileNodeName);
+
+/**
+    * Delete file node in current directory. CAN'T DELETE NOT EMPTY
+    * FOLDERS!
+    *
+    * @param[in,out] currentDir The directory where user is currently
+    * located.
+    * @param[in] fileNodeName The name of the file node which path
+    * user wants to delete.
+    *
+    * @pre currentDir != NULL && fileNodeName != NULL
+*/
+void delete_file_node(struct FileNode* currentDir, const char* fileNodeName);
 
 #endif //FILE_H

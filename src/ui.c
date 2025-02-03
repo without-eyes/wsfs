@@ -29,9 +29,11 @@ void run_ui(struct FileNode* currentDir) {
                  "(q)uit\n"
                  "create (f)ile\n"
                  "create (d)irectory\n"
+                 "(e)rase file node,\n"
                  "(w)rite text to file\n"
                  "(r)ead content from file,\n"
                  "(g)o into directory,\n"
+                 "get file node (p)ath,\n"
                  "go (b)ack");
             break;
 
@@ -59,6 +61,14 @@ void run_ui(struct FileNode* currentDir) {
             directoryName[strcspn(directoryName, "\n")] = 0;
             struct FileNode* dir = create_file_node(currentDir, directoryName, FILE_TYPE_DIR);
             add_to_dir(currentDir, dir);
+            break;
+
+        case 'e':
+            printf("Enter file name: ");
+            char wantedFileNameToDelete[MAX_NAME_SIZE];
+            fgets(wantedFileNameToDelete, MAX_NAME_SIZE, stdin);
+            wantedFileNameToDelete[strcspn(wantedFileNameToDelete, "\n")] = 0;
+            delete_file_node(currentDir, wantedFileNameToDelete);
             break;
 
         case 'w': // write into file
