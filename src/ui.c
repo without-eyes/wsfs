@@ -24,7 +24,7 @@ void run_ui(struct FileNode* currentDir) {
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
         switch (input) {
-        case 'h':
+        case 'h': // show help
             puts("Options:\n"
                  "(q)uit\n"
                  "create (f)ile\n"
@@ -143,6 +143,8 @@ void run_ui(struct FileNode* currentDir) {
 }
 
 void print_file_info(const struct FileNode* fileNode) {
+    if (fileNode == NULL) return;
+
     if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
         printf("%c %2u:%02u %s -> %c %2u:%02u %s\n", get_file_type_letter(fileNode->attributes.type),
                                         fileNode->attributes.createdAt.hour,
@@ -161,6 +163,8 @@ void print_file_info(const struct FileNode* fileNode) {
 }
 
 void print_dir_content(const struct FileNode* directory) {
+    if (directory == NULL) return;
+
     print_file_info(directory);
     const struct FileNode* currentFile = directory->attributes.directoryContent;
     while (currentFile != NULL) {

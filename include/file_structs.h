@@ -127,7 +127,7 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* rootDir, const char
     *
     * @pre currentDir != NULL && fileNodeName != NULL
 */
-char* get_file_node_path(struct FileNode* currentDir, const char* fileNodeName);
+char* get_file_node_path(const struct FileNode* currentDir, const char* fileNodeName);
 
 /**
     * Delete file node in current directory. CAN'T DELETE NOT EMPTY

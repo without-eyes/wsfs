@@ -14,8 +14,7 @@
 #include "../include/file_structs.h"
 
 struct FileNode* wsfs_init(void) {
-    struct FileNode* rootDir = create_file_node(NULL, "\\", FILE_TYPE_DIR);
-    return rootDir;
+    return create_file_node(NULL, "\\", FILE_TYPE_DIR);
 }
 
 void wsfs_deinit(struct FileNode* fileNode) {
