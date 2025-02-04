@@ -89,9 +89,9 @@ void write_to_file(struct FileNode* fileNode, char* text);
 /**
     * Reads content from file.
     *
-    * @param[in] file The file from which content will be read.
+    * @param[in] fileNode The file from which content will be read.
 */
-void print_file_content(const struct FileNode* file);
+void print_file_content(const struct FileNode* fileNode);
 
 /**
     * Find file node by name in current directory.

@@ -18,23 +18,12 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* fileNodeN
     fileNode->attributes.name = malloc(strlen(fileNodeName) + 1);
     strcpy(fileNode->attributes.name, fileNodeName);
     fileNode->attributes.createdAt = get_current_time();
-    fileNode->next = NULL;
-
     fileNode->attributes.type = fileType;
-    if (fileType == FILE_TYPE_DIR) {
-        fileNode->attributes.directoryContent = NULL;
-    } else if (fileType == FILE_TYPE_FILE) {
-        fileNode->attributes.fileContent = NULL;
-    } else if (fileType == FILE_TYPE_SYMLINK) {
-        fileNode->attributes.symlinkTarget = NULL;
-    }
-
-    if (strcmp(fileNodeName, "\\") == 0 ) {
-        fileNode->parent = fileNode;
-    } else {
-        fileNode->parent = parent;
-    }
-
+    fileNode->attributes.directoryContent = NULL;
+    fileNode->attributes.fileContent = NULL;
+    fileNode->attributes.symlinkTarget = NULL;
+    fileNode->next = NULL;
+    fileNode->parent = strcmp(fileNodeName, "\\") == 0 ? fileNode : parent;
     return fileNode;
 }
 
