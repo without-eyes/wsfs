@@ -142,4 +142,16 @@ char* get_file_node_path(const struct FileNode* currentDir, const char* fileNode
 */
 void delete_file_node(struct FileNode* currentDir, const char* fileNodeName);
 
+/**
+    * Change currentDir to directory with name dirToGoName.
+    *
+    * @param[in,out] currentDir The directory where user is currently
+    * located.
+    * @param[in] dirToGoName The name of the directory where user
+    * wants to go.
+    *
+    * @pre currentDir != NULL && dirToGoName != NULL
+*/
+void change_current_dir(struct FileNode** currentDir, const char* dirToGoName);
+
 #endif //FILE_H

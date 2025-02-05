@@ -64,21 +64,23 @@ char get_file_type_letter(const enum FileType type) {
 void write_to_file(struct FileNode* fileNode, char* text) {
     if (fileNode == NULL || text == NULL) return;
 
-    if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
-        fileNode->attributes.symlinkTarget->attributes.fileContent = text;
-    } else if (fileNode->attributes.type == FILE_TYPE_FILE) {
-        fileNode->attributes.fileContent = text;
+    struct FileNode* current = fileNode;
+    while (current->attributes.type == FILE_TYPE_SYMLINK) {
+        current = current->attributes.symlinkTarget;
     }
+
+    current->attributes.fileContent = text;
 }
 
 void print_file_content(const struct FileNode* fileNode) {
     if (fileNode == NULL) return;
 
-    if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
-        printf("%s\n", fileNode->attributes.symlinkTarget->attributes.fileContent);
-    } else if (fileNode->attributes.type == FILE_TYPE_FILE) {
-        printf("%s\n", fileNode->attributes.fileContent);
+    const struct FileNode* current = fileNode;
+    while (current->attributes.type == FILE_TYPE_SYMLINK) {
+        current = current->attributes.symlinkTarget;
     }
+
+    printf("%s\n", current->attributes.fileContent);
 }
 
 struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* fileNodeName) {
@@ -164,4 +166,13 @@ void delete_file_node(struct FileNode* currentDir, const char* fileNodeName) {
     currentFileNode->next = currentFileNode->next->next;
     free(fileNodeToDelete->attributes.name);
     free(fileNodeToDelete);
+}
+
+void change_current_dir(struct FileNode** currentDir, const char* dirToGoName) {
+    struct FileNode* current = find_file_node_in_curr_dir(*currentDir, dirToGoName);
+    while (current->attributes.type == FILE_TYPE_SYMLINK) {
+        current = current->attributes.symlinkTarget;
+    }
+
+    *currentDir = current;
 }

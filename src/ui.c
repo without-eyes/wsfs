@@ -43,12 +43,7 @@ void run_ui(struct FileNode* currentDir) {
             char dirName[MAX_NAME_SIZE];
             fgets(dirName, MAX_NAME_SIZE, stdin);
             dirName[strcspn(dirName, "\n")] = 0;
-            struct FileNode* fileNode = find_file_node_in_curr_dir(currentDir, dirName);
-            if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
-                currentDir = fileNode->attributes.symlinkTarget;
-            } else if (fileNode->attributes.type == FILE_TYPE_DIR) {
-                currentDir = fileNode;
-            }
+            change_current_dir(&currentDir, dirName);
             break;
 
         case 'f': // create file
