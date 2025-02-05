@@ -15,6 +15,7 @@ git clone https://github.com/without-eyes/wsfs.git
 cd wsfs
 
 # Generate documentation(located in ./docs/)
+sudo apt-get install doxygen doxygen-gui graphviz
 make doxygen
 
 # Build the project
