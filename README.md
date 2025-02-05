@@ -57,7 +57,7 @@ wsfs/
 │── docs/                   # Documentation location
 |
 │── makefile                # Build system
-│── README.md               # Project documentation
+│── README.md               # Project overview
 ```
 
 ## Example
