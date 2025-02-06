@@ -9,7 +9,7 @@ WSFS is a RAM-based file system written in C. It has writing/reading files, dire
 - Recursive file search.
 
 ## Example diagram
-![Schematic diagram](diagram.png)
+![Schematic diagram](diagram.png?)
 
 ## Installation
 ```sh
