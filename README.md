@@ -15,6 +15,7 @@ git clone https://github.com/without-eyes/wsfs.git
 cd wsfs
 
 # Generate documentation(located in ./docs/)
+sudo apt-get install doxygen doxygen-gui graphviz
 make doxygen
 
 # Build the project
@@ -57,7 +58,7 @@ wsfs/
 │── docs/                   # Documentation location
 |
 │── makefile                # Build system
-│── README.md               # Project documentation
+│── README.md               # Project overview
 ```
 
 ## Example
