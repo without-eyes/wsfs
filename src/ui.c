@@ -129,7 +129,14 @@ void print_help() {
 
 void handle_create(struct FileNode* currentDir, const enum FileType type) {
     char name[MAX_NAME_SIZE];
-    printf("Enter %s name: ", (type == FILE_TYPE_FILE) ? "file" : "directory");
+    char* fileType;
+    switch (type) {
+        case FILE_TYPE_SYMLINK:     fileType = "symlink";   break;
+        case FILE_TYPE_DIR:         fileType = "directory"; break;
+        case FILE_TYPE_FILE:        fileType = "file";      break;
+        default:                    fileType = "?";         break;
+    }
+    printf("Enter %s name: ", fileType);
     read_line(name, MAX_NAME_SIZE);
 
     struct FileNode* node = create_file_node(currentDir, name, type);
