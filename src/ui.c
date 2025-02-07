@@ -47,8 +47,19 @@ void run_ui(struct FileNode* currentDir) {
             handle_create(currentDir, FILE_TYPE_SYMLINK);
             break;
 
+        case 'c': // change name
+            printf("Enter file node name: ");
+            char oldName[MAX_NAME_SIZE];
+            read_line(oldName, MAX_NAME_SIZE);
+            struct FileNode* current = find_file_node_in_curr_dir(currentDir, oldName);
+            printf("Enter new name: ");
+            char newName[MAX_NAME_SIZE];
+            read_line(newName, MAX_NAME_SIZE);
+            current->attributes.name = newName;
+            break;
+
         case 'e': // erase file node
-            printf("Enter file name: ");
+            printf("Enter file node name: ");
             char delName[MAX_NAME_SIZE];
             read_line(delName, MAX_NAME_SIZE);
             delete_file_node(currentDir, delName);
@@ -60,7 +71,7 @@ void run_ui(struct FileNode* currentDir) {
             break;
 
         case 'p': // get file node path
-            printf("Enter file name: ");
+            printf("Enter file node name: ");
             char search[MAX_NAME_SIZE];
             read_line(search, MAX_NAME_SIZE);
             char* path = get_file_node_path(currentDir, search);
@@ -119,6 +130,7 @@ void print_help() {
                  "create (f)ile\n"
                  "create (d)irectory\n"
                  "create (s)ymbolic link\n"
+                 "(c)hange name"
                  "(e)rase file node,\n"
                  "(w)rite text to file\n"
                  "(r)ead content from file,\n"
