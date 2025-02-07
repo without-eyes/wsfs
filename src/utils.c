@@ -52,3 +52,8 @@ char* read_user_input(void) {
     buff[len] = '\0';
     return buff;
 }
+
+void read_input(char* buffer, const size_t size) {
+    fgets(buffer, size, stdin);
+    buffer[strcspn(buffer, "\n")] = 0;
+}

@@ -41,4 +41,31 @@ void print_file_info(const struct FileNode* fileNode);
 */
 void print_dir_content(const struct FileNode* directory);
 
+/**
+    * Print list of commands.
+*/
+void print_help();
+
+/**
+    * Handles file node creation.
+    *
+    * @param[in] currentDir The directory where user is currently
+    * located.
+    * @param[in] type The type of file node that will be created.
+    *
+    * @pre currentDir != NULL
+*/
+void handle_create(struct FileNode* currentDir, enum FileType type);
+
+/**
+    * Handles reading file / writing into file.
+    *
+    * @param[in] currentDir The directory where user is currently
+    * located.
+    * @param[in] mode The mode of working with file(read/write).
+    *
+    * @pre currentDir != NULL
+*/
+void handle_read_write(const struct FileNode* currentDir, char mode);
+
 #endif //UI_H
