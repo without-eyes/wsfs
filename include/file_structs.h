@@ -49,21 +49,35 @@ struct FileNode {
     * file node by calling free(). If name of the directory is
     * "\" , it will be it's own parent.
     *
-    * @param[in] parent The directory where file will be located.
-    * @param[in] fileNodeName The name of new file node.
-    * @param[in] fileType The type of new file node.
-    * @return Returns file as pointer to struct FileNode.
+    * @param[in] parent The directory where file node will be
+    * located.
+    * @param[in] name The name of new file node.
+    * @param[in] type The type of new file node.
     *
-    * @pre parent != NULL
+    * @return Returns created file node.
+    *
+    * @pre parent != NULL && name != NULL
 */
-struct FileNode* create_file_node(struct FileNode* parent, const char* fileNodeName, enum FileType fileType);
+struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type);
 
 /**
-    * Add "child" file/directory to "parent" directory's linked list.
+    * Change current directory.
     *
-    * @param[in,out] parent The directory where file/directory will be
+    * @param[in,out] currentDir The directory where user is currently
     * located.
-    * @param[in] child The file/directory that will be added to "parent"
+    * @param[in] name The name of the directory where user
+    * wants to go.
+    *
+    * @pre currentDir != NULL && name != NULL
+*/
+void change_current_dir(struct FileNode** currentDir, const char* name);
+
+/**
+    * Add "child" file node to "parent" directory's linked list.
+    *
+    * @param[in] parent The directory where file node will be
+    * located.
+    * @param[in] child The file node that will be added to "parent"
     * directory.
     *
     * @pre parent != NULL && child != NULL
@@ -71,63 +85,77 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* fileNodeN
 void add_to_dir(struct FileNode* parent, struct FileNode* child);
 
 /**
-    * Get file type first letter(e.g. 'd' or 'f').
+    * Get file type first letter.
     *
     * @param[in] type The value from enum FileType.
+    *
     * @return Returns first letter of type as char.
 */
 char get_file_type_letter(enum FileType type);
 
 /**
-    * Write text into file.
+    * Write content into file.
     *
-    * @param[in] fileNode The file in which text will be written.
-    * @param[in] text The text which will be written into file.
+    * @param[in] node The file in which text will be written.
+    * @param[in] content The content which will be written into file.
+    *
+    * @pre node != NULL && content != NULL
 */
-void write_to_file(struct FileNode* fileNode, char* text);
+void write_to_file(struct FileNode* node, char* content);
 
 /**
     * Reads content from file.
     *
-    * @param[in] fileNode The file from which content will be read.
+    * @param[in] node The file node from which content will
+    * be read.
+    *
+    * @return Returns content of file.
+    *
+    * @pre node != NULL
 */
-void print_file_content(const struct FileNode* fileNode);
+char* read_file_content(const struct FileNode* node);
 
 /**
     * Find file node by name in current directory.
     *
-    * @param[in,out] currentDir The directory where user is currently
+    * @param[in] currentDir The directory where user is currently
     * located.
-    * @param[in] fileNodeName The name of the file node which user
+    * @param[in] name The name of the file node which user
     * wants to find.
     *
-    * @pre currentDir != NULL && fileNodeName != NULL
+    * @return Returns found file node.
+    *
+    * @pre currentDir != NULL && name != NULL
 */
-struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* fileNodeName);
+struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* name);
 
 /**
     * Find file node by name in entire file system.
     *
-    * @param[in,out] rootDir The root directory.
-    * @param[in] fileNodeName The name of the file node which user
+    * @param[in,out] root The root directory.
+    * @param[in] name The name of the file node which user
     * wants to find.
     *
-    * @pre rootDir != NULL && fileNodeName != NULL
+    * @return Returns found file node.
+    *
+    * @pre root != NULL && name != NULL
 */
-struct FileNode* find_file_node_in_fs(const struct FileNode* rootDir, const char* fileNodeName);
+struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* name);
 
 /**
-    * Get file node path.The caller is responsible for freeing
+    * Get file node path. The caller is responsible for freeing
     * the memory allocated for the file node by calling free().
     *
-    * @param[in,out] currentDir The directory where user is currently
+    * @param[in] currentDir The directory where user is currently
     * located.
-    * @param[in] fileNodeName The name of the file node which path
+    * @param[in] name The name of the file node which path
     * user wants to get.
     *
-    * @pre currentDir != NULL && fileNodeName != NULL
+    * @return Returns path to file node.
+    *
+    * @pre currentDir != NULL && name != NULL
 */
-char* get_file_node_path(const struct FileNode* currentDir, const char* fileNodeName);
+char* get_file_node_path(const struct FileNode* currentDir, const char* name);
 
 /**
     * Delete file node (and it's children if it is a directory) in
@@ -135,24 +163,12 @@ char* get_file_node_path(const struct FileNode* currentDir, const char* fileNode
     *
     * @param[in,out] currentDir The directory where user is currently
     * located.
-    * @param[in] fileNodeName The name of the file node which
+    * @param[in] name The name of the file node which
     * user wants to delete.
     *
-    * @pre currentDir != NULL && fileNodeName != NULL
+    * @pre currentDir != NULL && name != NULL
 */
-void delete_file_node(struct FileNode* currentDir, const char* fileNodeName);
-
-/**
-    * Change currentDir to directory with name dirToGoName.
-    *
-    * @param[in,out] currentDir The directory where user is currently
-    * located.
-    * @param[in] dirToGoName The name of the directory where user
-    * wants to go.
-    *
-    * @pre currentDir != NULL && dirToGoName != NULL
-*/
-void change_current_dir(struct FileNode** currentDir, const char* dirToGoName);
+void delete_file_node(struct FileNode* currentDir, const char* name);
 
 /**
     * Recursively free allocated memory of file node (and it's children

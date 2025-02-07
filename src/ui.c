@@ -155,10 +155,12 @@ void handle_read_write(const struct FileNode* currentDir, const char mode) {
     struct FileNode* file = find_file_node_in_curr_dir(currentDir, name);
     if (!file) return;
 
+    char* text;
     if (mode == 'w') {
-        char* text = read_user_input();
+        text = read_user_input();
         write_to_file(file, text);
     } else {
-        print_file_content(file);
+        text = read_file_content(file);
+        printf("%s", text);
     }
 }

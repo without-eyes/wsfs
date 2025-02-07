@@ -13,18 +13,29 @@
 #include <string.h>
 #include "../include/utils.h"
 
-struct FileNode* create_file_node(struct FileNode* parent, const char* fileNodeName, const enum FileType fileType) {
+struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type) {
     struct FileNode* fileNode = malloc(sizeof(struct FileNode));
-    fileNode->attributes.name = malloc(strlen(fileNodeName) + 1);
-    strcpy(fileNode->attributes.name, fileNodeName);
+    fileNode->attributes.name = malloc(strlen(name) + 1);
+    strcpy(fileNode->attributes.name, name);
     fileNode->attributes.createdAt = get_current_time();
-    fileNode->attributes.type = fileType;
+    fileNode->attributes.type = type;
     fileNode->attributes.directoryContent = NULL;
     fileNode->attributes.fileContent = NULL;
     fileNode->attributes.symlinkTarget = NULL;
     fileNode->next = NULL;
-    fileNode->parent = strcmp(fileNodeName, "\\") == 0 ? fileNode : parent;
+    fileNode->parent = strcmp(name, "\\") == 0 ? fileNode : parent;
     return fileNode;
+}
+
+void change_current_dir(struct FileNode** currentDir, const char* name) {
+    struct FileNode* current = find_file_node_in_curr_dir(*currentDir, name);
+    if (current == NULL) return;
+
+    while (current->attributes.type == FILE_TYPE_SYMLINK) {
+        current = current->attributes.symlinkTarget;
+    }
+
+    *currentDir = current;
 }
 
 void add_to_dir(struct FileNode* parent, struct FileNode* child) {
@@ -44,112 +55,100 @@ void add_to_dir(struct FileNode* parent, struct FileNode* child) {
 
 char get_file_type_letter(const enum FileType type) {
     switch (type) {
-        case FILE_TYPE_DIR:
-            return 'd';
-
-        case FILE_TYPE_FILE:
-            return 'f';
-
-        case FILE_TYPE_SYMLINK:
-            return 's';
-
-        case FILE_TYPE_UNKNOWN:
-            return '-';
-
-        default:
-            return '?';
+        case FILE_TYPE_DIR:         return 'd';
+        case FILE_TYPE_FILE:        return 'f';
+        case FILE_TYPE_SYMLINK:     return 's';
+        case FILE_TYPE_UNKNOWN:     return '-';
+        default:                    return '?';
     }
 }
 
-void write_to_file(struct FileNode* fileNode, char* text) {
-    if (fileNode == NULL || text == NULL) return;
+void write_to_file(struct FileNode* node, char* content) {
+    if (node == NULL || content == NULL) return;
 
-    struct FileNode* current = fileNode;
+    struct FileNode* current = node;
     while (current->attributes.type == FILE_TYPE_SYMLINK) {
         current = current->attributes.symlinkTarget;
     }
 
-    current->attributes.fileContent = text;
+    current->attributes.fileContent = content;
 }
 
-void print_file_content(const struct FileNode* fileNode) {
-    if (fileNode == NULL) return;
+char* read_file_content(const struct FileNode* node) {
+    if (node == NULL) return NULL;
 
-    const struct FileNode* current = fileNode;
+    const struct FileNode* current = node;
     while (current->attributes.type == FILE_TYPE_SYMLINK) {
         current = current->attributes.symlinkTarget;
     }
 
-    printf("%s\n", current->attributes.fileContent);
+    return current->attributes.fileContent;
 }
 
-struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* fileNodeName) {
-    if (currentDir == NULL || fileNodeName == NULL) return NULL;
+struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* name) {
+    if (currentDir == NULL || name == NULL) return NULL;
 
-    struct FileNode* currentFile = currentDir->attributes.directoryContent;
-    while (currentFile != NULL && strcmp(currentFile->attributes.name, fileNodeName) != 0) {
-        currentFile = currentFile->next;
+    struct FileNode* current = currentDir->attributes.directoryContent;
+    while (current != NULL && strcmp(current->attributes.name, name) != 0) {
+        current = current->next;
     }
-    return currentFile;
+
+    return current;
 }
 
-struct FileNode* find_file_node_in_fs(const struct FileNode* rootDir, const char* fileNodeName) {
-    if (rootDir == NULL || fileNodeName == NULL) return NULL;
+struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* name) {
+    if (root == NULL || name == NULL) return NULL;
 
-    if (strcmp(rootDir->attributes.name, fileNodeName) == 0) {
-        return (struct FileNode*)rootDir;
+    if (strcmp(root->attributes.name, name) == 0) {
+        return (struct FileNode*)root;
     }
 
-    const struct FileNode* currFileNode = rootDir->attributes.directoryContent;
-    while (currFileNode) {
-        struct FileNode* result = find_file_node_in_fs(currFileNode, fileNodeName);
+    const struct FileNode* current = root->attributes.directoryContent;
+    while (current) {
+        struct FileNode* result = find_file_node_in_fs(current, name);
         if (result) return result;
-        currFileNode = currFileNode->next;
+        current = current->next;
     }
 
     return NULL;
 }
 
-char* get_file_node_path(const struct FileNode* currentDir, const char* fileNodeName) {
-    if (currentDir == NULL || fileNodeName == NULL) return NULL;
+char* get_file_node_path(const struct FileNode* currentDir, const char* name) {
+    if (currentDir == NULL || name == NULL) return NULL;
 
     while (strcmp(currentDir->attributes.name, "\\") != 0) {
         currentDir = currentDir->parent;
     }
 
-    const struct FileNode* fileNode = find_file_node_in_fs(currentDir, fileNodeName);
+    const struct FileNode* node = find_file_node_in_fs(currentDir, name);
 
-    const struct FileNode* tempFileNode = fileNode;
+    const struct FileNode* temp = node;
     size_t pathLength = 1;
-    while (strcmp(tempFileNode->attributes.name, "\\") != 0) {
-        pathLength += strlen(tempFileNode->attributes.name) + 1;
-        tempFileNode = tempFileNode->parent;
+    while (strcmp(temp->attributes.name, "\\") != 0) {
+        pathLength += strlen(temp->attributes.name) + 1;
+        temp = temp->parent;
     }
 
     char* path = malloc(pathLength);
     path[pathLength - 1] = '\0';
     size_t pos = pathLength - 1;
-    const struct FileNode* currFileNode = fileNode;
-    while (strcmp(currFileNode->attributes.name, "\\") != 0) {
-        const size_t nameLen = strlen(currFileNode->attributes.name);
+    const struct FileNode* current = node;
+    while (strcmp(current->attributes.name, "\\") != 0) {
+        const size_t nameLen = strlen(current->attributes.name);
         pos -= nameLen;
-        memcpy(&path[pos], currFileNode->attributes.name, nameLen);
+        memcpy(&path[pos], current->attributes.name, nameLen);
         if (pos > 0) {
             path[--pos] = '\\';
         }
-        currFileNode = currFileNode->parent;
+        current = current->parent;
     }
 
     return path;
 }
 
-void delete_file_node(struct FileNode* currentDir, const char* fileNodeName) {
-    struct FileNode* fileNodeToDelete = find_file_node_in_curr_dir(currentDir, fileNodeName);
-    if (fileNodeToDelete == NULL ||
-        fileNodeToDelete->attributes.type == FILE_TYPE_DIR ||
-        fileNodeToDelete->attributes.directoryContent != NULL) {
-        return;
-    }
+void delete_file_node(struct FileNode* currentDir, const char* name) {
+    struct FileNode* fileNodeToDelete = find_file_node_in_curr_dir(currentDir, name);
+    if (fileNodeToDelete == NULL) return;
 
     struct FileNode* currentFileNode = currentDir->attributes.directoryContent;
     if (currentFileNode == fileNodeToDelete) {
@@ -165,15 +164,6 @@ void delete_file_node(struct FileNode* currentDir, const char* fileNodeName) {
 
     currentFileNode->next = currentFileNode->next->next;
     free_file_node_recursive(fileNodeToDelete);
-}
-
-void change_current_dir(struct FileNode** currentDir, const char* dirToGoName) {
-    struct FileNode* current = find_file_node_in_curr_dir(*currentDir, dirToGoName);
-    while (current->attributes.type == FILE_TYPE_SYMLINK) {
-        current = current->attributes.symlinkTarget;
-    }
-
-    *currentDir = current;
 }
 
 void free_file_node_recursive(struct FileNode* fileNode) {
