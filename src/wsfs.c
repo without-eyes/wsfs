@@ -18,17 +18,5 @@ struct FileNode* wsfs_init(void) {
 }
 
 void wsfs_deinit(struct FileNode* fileNode) {
-    if (fileNode == NULL) return;
-
-    if (fileNode->attributes.type == FILE_TYPE_DIR) {
-        struct FileNode* current = fileNode->attributes.directoryContent;
-        while (current != NULL) {
-            struct FileNode* next = current->next;
-            wsfs_deinit(current);
-            current = next;
-        }
-    }
-
-    free(fileNode->attributes.name);
-    free(fileNode);
+    free_file_node_recursive(fileNode);
 }

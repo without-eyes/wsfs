@@ -145,7 +145,7 @@ char* get_file_node_path(const struct FileNode* currentDir, const char* fileNode
 
 void delete_file_node(struct FileNode* currentDir, const char* fileNodeName) {
     struct FileNode* fileNodeToDelete = find_file_node_in_curr_dir(currentDir, fileNodeName);
-    if (fileNodeToDelete != NULL ||
+    if (fileNodeToDelete == NULL ||
         fileNodeToDelete->attributes.type == FILE_TYPE_DIR ||
         fileNodeToDelete->attributes.directoryContent != NULL) {
         return;
@@ -164,8 +164,7 @@ void delete_file_node(struct FileNode* currentDir, const char* fileNodeName) {
     }
 
     currentFileNode->next = currentFileNode->next->next;
-    free(fileNodeToDelete->attributes.name);
-    free(fileNodeToDelete);
+    free_file_node_recursive(fileNodeToDelete);
 }
 
 void change_current_dir(struct FileNode** currentDir, const char* dirToGoName) {
@@ -175,4 +174,20 @@ void change_current_dir(struct FileNode** currentDir, const char* dirToGoName) {
     }
 
     *currentDir = current;
+}
+
+void free_file_node_recursive(struct FileNode* fileNode) {
+    if (fileNode == NULL) return;
+
+    if (fileNode->attributes.type == FILE_TYPE_DIR) {
+        struct FileNode* current = fileNode->attributes.directoryContent;
+        while (current != NULL) {
+            struct FileNode* next = current->next;
+            free_file_node_recursive(current);
+            current = next;
+        }
+    }
+
+    free(fileNode->attributes.name);
+    free(fileNode);
 }

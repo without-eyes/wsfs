@@ -130,12 +130,12 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* rootDir, const char
 char* get_file_node_path(const struct FileNode* currentDir, const char* fileNodeName);
 
 /**
-    * Delete file node in current directory. CAN'T DELETE NOT EMPTY
-    * FOLDERS!
+    * Delete file node (and it's children if it is a directory) in
+    * current directory.
     *
     * @param[in,out] currentDir The directory where user is currently
     * located.
-    * @param[in] fileNodeName The name of the file node which path
+    * @param[in] fileNodeName The name of the file node which
     * user wants to delete.
     *
     * @pre currentDir != NULL && fileNodeName != NULL
@@ -153,5 +153,13 @@ void delete_file_node(struct FileNode* currentDir, const char* fileNodeName);
     * @pre currentDir != NULL && dirToGoName != NULL
 */
 void change_current_dir(struct FileNode** currentDir, const char* dirToGoName);
+
+/**
+    * Recursively free allocated memory of file node (and it's children
+    * if it is a directory).
+    *
+    * @param[in] fileNode The file node user wants to free.
+*/
+void free_file_node_recursive(struct FileNode* fileNode);
 
 #endif //FILE_H
