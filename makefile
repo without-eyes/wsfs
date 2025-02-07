@@ -11,7 +11,7 @@ PROJECT_NAME = wsfs
 SOURCES = $(wildcard ${SRCDIR}*.c)
 
 # Main targets
-all: clean $(PROJECT_NAME) run
+all: clean $(PROJECT_NAME)
 
 # Rules
 $(PROJECT_NAME):

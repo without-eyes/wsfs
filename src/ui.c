@@ -31,7 +31,7 @@ void run_ui(struct FileNode* currentDir) {
         case 'g': // go into directory
             printf("Enter directory name: ");
             char dir[MAX_NAME_SIZE];
-            read_input(dir, MAX_NAME_SIZE);
+            read_line(dir, MAX_NAME_SIZE);
             change_current_dir(&currentDir, dir);
             break;
 
@@ -50,7 +50,7 @@ void run_ui(struct FileNode* currentDir) {
         case 'e': // erase file node
             printf("Enter file name: ");
             char delName[MAX_NAME_SIZE];
-            read_input(delName, MAX_NAME_SIZE);
+            read_line(delName, MAX_NAME_SIZE);
             delete_file_node(currentDir, delName);
             break;
 
@@ -62,7 +62,7 @@ void run_ui(struct FileNode* currentDir) {
         case 'p': // get file node path
             printf("Enter file name: ");
             char search[MAX_NAME_SIZE];
-            read_input(search, MAX_NAME_SIZE);
+            read_line(search, MAX_NAME_SIZE);
             char* path = get_file_node_path(currentDir, search);
             printf("%s\n", path);
             free(path);
@@ -82,23 +82,23 @@ void run_ui(struct FileNode* currentDir) {
     }
 }
 
-void print_file_info(const struct FileNode* fileNode) {
-    if (fileNode == NULL) return;
+void print_file_info(const struct FileNode* node) {
+    if (node == NULL) return;
 
-    if (fileNode->attributes.type == FILE_TYPE_SYMLINK) {
-        printf("%c %2u:%02u %s -> %c %2u:%02u %s\n", get_file_type_letter(fileNode->attributes.type),
-                                        fileNode->attributes.createdAt.hour,
-                                        fileNode->attributes.createdAt.minute,
-                                        fileNode->attributes.name,
-                                        get_file_type_letter(fileNode->attributes.symlinkTarget->attributes.type),
-                                        fileNode->attributes.symlinkTarget->attributes.createdAt.hour,
-                                        fileNode->attributes.symlinkTarget->attributes.createdAt.minute,
-                                        fileNode->attributes.symlinkTarget->attributes.name);
+    if (node->attributes.type == FILE_TYPE_SYMLINK) {
+        printf("%c %2u:%02u %s -> %c %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+                                        node->attributes.createdAt.hour,
+                                        node->attributes.createdAt.minute,
+                                        node->attributes.name,
+                                        get_file_type_letter(node->attributes.symlinkTarget->attributes.type),
+                                        node->attributes.symlinkTarget->attributes.createdAt.hour,
+                                        node->attributes.symlinkTarget->attributes.createdAt.minute,
+                                        node->attributes.symlinkTarget->attributes.name);
     } else {
-        printf("%c %2u:%02u %s\n", get_file_type_letter(fileNode->attributes.type),
-                                        fileNode->attributes.createdAt.hour,
-                                        fileNode->attributes.createdAt.minute,
-                                        fileNode->attributes.name);
+        printf("%c %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+                                        node->attributes.createdAt.hour,
+                                        node->attributes.createdAt.minute,
+                                        node->attributes.name);
     }
 }
 
@@ -106,10 +106,10 @@ void print_dir_content(const struct FileNode* directory) {
     if (directory == NULL) return;
 
     print_file_info(directory);
-    const struct FileNode* currentFile = directory->attributes.directoryContent;
-    while (currentFile != NULL) {
-        print_file_info(currentFile);
-        currentFile = currentFile->next;
+    const struct FileNode* current = directory->attributes.directoryContent;
+    while (current != NULL) {
+        print_file_info(current);
+        current = current->next;
     }
 }
 
@@ -130,7 +130,7 @@ void print_help() {
 void handle_create(struct FileNode* currentDir, const enum FileType type) {
     char name[MAX_NAME_SIZE];
     printf("Enter %s name: ", (type == FILE_TYPE_FILE) ? "file" : "directory");
-    read_input(name, MAX_NAME_SIZE);
+    read_line(name, MAX_NAME_SIZE);
 
     struct FileNode* node = create_file_node(currentDir, name, type);
     add_to_dir(currentDir, node);
@@ -138,9 +138,9 @@ void handle_create(struct FileNode* currentDir, const enum FileType type) {
     if (type == FILE_TYPE_SYMLINK) {
         printf("Enter symlink target's name: ");
         char target[MAX_NAME_SIZE];
-        read_input(target, MAX_NAME_SIZE);
+        read_line(target, MAX_NAME_SIZE);
 
-        struct FileNode* root = currentDir;
+        const struct FileNode* root = currentDir;
         while (strcmp(root->attributes.name, "\\") != 0) root = root->parent;
 
         node->attributes.symlinkTarget = find_file_node_in_fs(root, target);
@@ -150,17 +150,17 @@ void handle_create(struct FileNode* currentDir, const enum FileType type) {
 void handle_read_write(const struct FileNode* currentDir, const char mode) {
     char name[MAX_NAME_SIZE];
     printf("Enter file name: ");
-    read_input(name, MAX_NAME_SIZE);
+    read_line(name, MAX_NAME_SIZE);
 
     struct FileNode* file = find_file_node_in_curr_dir(currentDir, name);
     if (!file) return;
 
-    char* text;
+    char* content;
     if (mode == 'w') {
-        text = read_user_input();
-        write_to_file(file, text);
+        content = read_all_user_input();
+        write_to_file(file, content);
     } else {
-        text = read_file_content(file);
-        printf("%s", text);
+        content = read_file_content(file);
+        printf("%s", content);
     }
 }

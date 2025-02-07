@@ -12,20 +12,17 @@
 #include "file_structs.h"
 
 /**
-    * Start, run in loop and free file system.
+    * Starts file system.
     *
-    * @return Returns root directory as pointer
-    * to struct FileNode.
+    * @return Returns root directory.
 */
 struct FileNode* wsfs_init(void);
 
 /**
-    * Free memory after program ends. In almost most cases
-    * you should pass root directory as parameter.
+    * Free memory after program ends.
     *
-    * @param[in] fileNode The file node that needs
-    * to be free.
+    * @param[in] root The root directory.
 */
-void wsfs_deinit(struct FileNode* fileNode);
+void wsfs_deinit(struct FileNode* root);
 
 #endif //WSFS_H

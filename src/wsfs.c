@@ -17,6 +17,6 @@ struct FileNode* wsfs_init(void) {
     return create_file_node(NULL, "\\", FILE_TYPE_DIR);
 }
 
-void wsfs_deinit(struct FileNode* fileNode) {
-    free_file_node_recursive(fileNode);
+void wsfs_deinit(struct FileNode* root) {
+    free_file_node_recursive(root);
 }

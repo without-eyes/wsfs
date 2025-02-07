@@ -12,7 +12,8 @@
 #include "../include/wsfs.h"
 
 /**
-    * Starts user interface.
+    * Starts the user interface with the specified current
+    * directory.
     *
     * @param[in] currentDir The current working
     * directory.
@@ -22,17 +23,20 @@
 void run_ui(struct FileNode* currentDir);
 
 /**
-    * Print file information in Linux's "ls -l"-like format.
+    * Prints file information in Linux's "ls -l"-like format.
     *
-    * @param[in] fileNode The file which information will be
+    * @param[in] node The file whose information will be
     * printed.
     *
-    * @pre fileNode != NULL
+    * @pre node != NULL
+    *
+    * @note The output will be printed to stdout in a format similar to:
+    *       f 00:01 test_file
 */
-void print_file_info(const struct FileNode* fileNode);
+void print_file_info(const struct FileNode* node);
 
 /**
-    * Print directory information and it's content information.
+    * Prints directory's and it's content's information.
     *
     * @param[in] directory The directory which content information
     * will be printed.
@@ -42,7 +46,7 @@ void print_file_info(const struct FileNode* fileNode);
 void print_dir_content(const struct FileNode* directory);
 
 /**
-    * Print list of commands.
+    * Prints list of commands.
 */
 void print_help();
 

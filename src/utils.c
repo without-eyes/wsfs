@@ -14,19 +14,19 @@
 #include <string.h>
 
 struct Timestamp get_current_time(void) {
-    time_t rawtime;
-    time(&rawtime);
-    struct tm* timeinfo = localtime(&rawtime);
+    time_t rawTime;
+    time(&rawTime);
+    const struct tm* timeInfo = localtime(&rawTime);
 
     struct Timestamp currentTime;
-    currentTime.hour = timeinfo->tm_hour;
-    currentTime.minute = timeinfo->tm_min;
+    currentTime.hour = timeInfo->tm_hour;
+    currentTime.minute = timeInfo->tm_min;
 
     return currentTime;
 }
 
-char* read_user_input(void) {
-    size_t buffSize = 1024;
+char* read_all_user_input(void) {
+    size_t buffSize = BUFFER_SIZE;
     size_t len = 0;
     char *buff = malloc(buffSize);
 
@@ -36,7 +36,7 @@ char* read_user_input(void) {
     while (fgets(line, sizeof(line), stdin)) {
         line[strcspn(line, "\n")] = 0;
 
-        if (strcmp(line, "EOF") == 0) break;
+        if (strcmp(line, END_OF_FILE_LINE) == 0) break;
 
         if (len + strlen(line) + 2 > buffSize) {
             buffSize *= 2;
@@ -53,7 +53,7 @@ char* read_user_input(void) {
     return buff;
 }
 
-void read_input(char* buffer, const size_t size) {
+void read_line(char* buffer, const size_t size) {
     fgets(buffer, size, stdin);
     buffer[strcspn(buffer, "\n")] = 0;
 }

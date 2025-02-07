@@ -10,32 +10,33 @@
 #define UTILS_H
 
 #include <stddef.h>
-
 #include "../include/file_structs.h"
+#define BUFFER_SIZE 1024
+#define END_OF_FILE_LINE "EOF"
 
 /**
     * Retrieves the current local time (hour and minute).
     *
-    * @return Returns a struct Timestamp containing the current
-    * hour and minute.
+    * @return Returns the current hour and minute.
 */
 struct Timestamp get_current_time(void);
 
 /**
-    * Read user input until he input "EOF".
+    * Reads user input until he input "EOF".
     *
     * @return Returns inputted text.
 */
-char* read_user_input(void);
+char* read_all_user_input(void);
 
 /**
-    * Read user input.
+    * Reads inputted line.
     *
-    * @param[in, out] buffer The buffer where user input will be placed.
+    * @param[in, out] buffer The buffer where user input will
+    * be placed.
     * @param[in] size The size of user input.
     *
     * @pre size > 0
 */
-void read_input(char* buffer, size_t size);
+void read_line(char* buffer, size_t size);
 
 #endif //UTILS_H
