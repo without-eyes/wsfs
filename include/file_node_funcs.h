@@ -1,47 +1,16 @@
 /**
-    * @file: file_structs.h
+    * @file: file_node_funcs.h
     * @author: without eyes
     *
-    * This file contains structs and functions related to files
-    * and file nodes.
+    * This file contains functions related to files and file nodes.
 */
 
 #ifndef FILE_H
 #define FILE_H
 
 #include <stdint.h>
+#include "file_node_structs.h"
 #define MAX_NAME_SIZE 32
-
-enum FileType {
-    FILE_TYPE_UNKNOWN = 0,
-    FILE_TYPE_FILE = 1,
-    FILE_TYPE_DIR = 2,
-    FILE_TYPE_SYMLINK = 3
-};
-
-struct FileNode;
-
-struct Timestamp {
-    uint8_t hour;
-    uint8_t minute;
-};
-
-struct FileAttributes {
-    char* name;
-    union {
-        struct FileNode* directoryContent;
-        struct FileNode* symlinkTarget;
-        char* fileContent;
-    };
-    struct Timestamp createdAt;
-    enum FileType type;
-};
-
-struct FileNode {
-    struct FileAttributes attributes;
-    struct FileNode* parent;
-    struct FileNode* next;
-};
 
 /**
     * Create file node in "parent" directory. The caller is

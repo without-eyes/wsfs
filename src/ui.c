@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/utils.h"
-#include "../include/file_structs.h"
+#include "../include/file_node_funcs.h"
 
 void run_ui(struct FileNode* currentDir) {
     while (1) {

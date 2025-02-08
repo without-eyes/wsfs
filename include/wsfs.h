@@ -9,7 +9,7 @@
 #ifndef WSFS_H
 #define WSFS_H
 
-#include "file_structs.h"
+#include "file_node_funcs.h"
 
 /**
     * Starts file system.

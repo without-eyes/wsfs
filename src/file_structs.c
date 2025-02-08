@@ -6,7 +6,7 @@
     * to files and file nodes.
 */
 
-#include "../include/file_structs.h"
+#include "../include/file_node_funcs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
