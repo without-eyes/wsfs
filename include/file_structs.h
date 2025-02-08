@@ -46,8 +46,8 @@ struct FileNode {
 /**
     * Create file node in "parent" directory. The caller is
     * responsible for freeing the memory allocated for the
-    * file node by calling free(). If name of the directory is
-    * "\" , it will be it's own parent.
+    * file node and it's name by calling free(). If name of
+    * the directory is "\" , it will be it's own parent.
     *
     * @param[in] parent The directory where file node will be
     * located.
@@ -156,6 +156,17 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* n
     * @pre currentDir != NULL && name != NULL
 */
 char* get_file_node_path(const struct FileNode* currentDir, const char* name);
+
+/**
+    * Changes file node name. The caller is responsible for freeing
+    * the memory allocated for the file node's name by calling free().
+    *
+    * @param[in,out] node The file node whose name will be changed.
+    * @param[in] name The new name of file node.
+    *
+    * @pre node != NULL && name != NULL
+*/
+void change_file_node_name(struct FileNode* node, const char* name);
 
 /**
     * Delete file node (and it's children if it is a directory) in

@@ -55,7 +55,7 @@ void run_ui(struct FileNode* currentDir) {
             printf("Enter new name: ");
             char newName[MAX_NAME_SIZE];
             read_line(newName, MAX_NAME_SIZE);
-            current->attributes.name = newName;
+            change_file_node_name(current, newName);
             break;
 
         case 'e': // erase file node

@@ -146,6 +146,12 @@ char* get_file_node_path(const struct FileNode* currentDir, const char* name) {
     return path;
 }
 
+void change_file_node_name(struct FileNode* node, const char* name) {
+    free(node->attributes.name);
+    node->attributes.name = malloc(strlen(name) + 1);
+    strcpy(node->attributes.name, name);
+}
+
 void delete_file_node(struct FileNode* currentDir, const char* name) {
     struct FileNode* fileNodeToDelete = find_file_node_in_curr_dir(currentDir, name);
     if (fileNodeToDelete == NULL) return;
