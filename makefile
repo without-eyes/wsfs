@@ -1,6 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -I$(IDIR) -g
+VFLAGS = -s --leak-check=full --show-leak-kinds=all
 
 # Directories
 IDIR = ./include/
@@ -20,8 +21,11 @@ $(PROJECT_NAME):
 run:
 	./$(PROJECT_NAME)
 
-clean:
-	rm -f $(PROJECT_NAME)
-
 doxygen:
 	doxygen Doxyfile
+
+valgrind:
+	valgrind $(VFLAGS) ./$(PROJECT_NAME)
+
+clean:
+	rm -f $(PROJECT_NAME)

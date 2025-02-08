@@ -178,6 +178,7 @@ void handle_read_write(const struct FileNode* currentDir, const char mode) {
     if (mode == 'w') {
         content = read_all_user_input();
         write_to_file(file, content);
+        free(content);
     } else {
         content = read_file_content(file);
         printf("%s", content);

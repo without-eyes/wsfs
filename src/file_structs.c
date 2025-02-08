@@ -71,6 +71,8 @@ void write_to_file(struct FileNode* node, char* content) {
         current = current->attributes.symlinkTarget;
     }
 
+    free(current->attributes.fileContent);
+    current->attributes.fileContent = malloc(strlen(content) + 1);
     current->attributes.fileContent = content;
 }
 
@@ -184,6 +186,9 @@ void free_file_node_recursive(struct FileNode* fileNode) {
         }
     }
 
+    if (fileNode->attributes.type == FILE_TYPE_FILE) {
+        free(fileNode->attributes.fileContent);
+    }
     free(fileNode->attributes.name);
     free(fileNode);
 }
