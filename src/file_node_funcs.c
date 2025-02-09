@@ -1,5 +1,5 @@
 /**
-    * @file: file_structs.c
+    * @file: file_node_funcs.c
     * @author: without eyes
     *
     * This file contains implementation of functions related
@@ -15,8 +15,7 @@
 
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type) {
     struct FileNode* fileNode = malloc(sizeof(struct FileNode));
-    fileNode->attributes.name = malloc(strlen(name) + 1);
-    strcpy(fileNode->attributes.name, name);
+    fileNode->attributes.name = strdup(name);
     fileNode->attributes.createdAt = get_current_time();
     fileNode->attributes.type = type;
     fileNode->attributes.directoryContent = NULL;
