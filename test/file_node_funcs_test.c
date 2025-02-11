@@ -286,7 +286,7 @@ Test(get_file_node_path, basic) {
     struct FileNode* file = create_file_node(root, "file", FILE_TYPE_FILE);
     add_to_dir(root, file);
 
-    char* path = get_file_node_path(root, "file");
+    char* path = get_file_node_path(file);
     cr_assert_str_eq(path, "\\file");
 
     free(path);
@@ -297,8 +297,7 @@ Test(get_file_node_path, basic) {
 }
 
 Test(get_file_node_path, dir_or_name_is_null) {
-    cr_assert_null(get_file_node_path(NULL, "file"));
-    cr_assert_null(get_file_node_path((struct FileNode*)1, NULL));
+    cr_assert_null(get_file_node_path(NULL));
 }
 
 Test(change_file_node_name, rename) {
