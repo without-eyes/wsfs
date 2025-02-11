@@ -74,7 +74,8 @@ void run_ui(struct FileNode* currentDir) {
             printf("Enter file node name: ");
             char search[MAX_NAME_SIZE];
             read_line(search, MAX_NAME_SIZE);
-            char* path = get_file_node_path(currentDir, search);
+            const struct FileNode* node = find_file_node_in_curr_dir(currentDir, search);
+            char* path = get_file_node_path(node);
             printf("%s\n", path);
             free(path);
             break;

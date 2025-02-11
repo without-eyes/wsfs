@@ -127,16 +127,13 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* n
     * Get file node path. The caller is responsible for freeing
     * the memory allocated for the file node by calling free().
     *
-    * @param[in] currentDir The directory where user is currently
-    * located.
-    * @param[in] name The name of the file node which path
-    * user wants to get.
+    * @param[in] node The node which path user wants to get.
     *
     * @return Returns path to file node.
     *
-    * @pre currentDir != NULL && name != NULL
+    * @pre node != NULL
 */
-char* get_file_node_path(const struct FileNode* currentDir, const char* name);
+char* get_file_node_path(const struct FileNode* node);
 
 /**
     * Changes file node name. The caller is responsible for freeing

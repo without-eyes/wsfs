@@ -117,14 +117,8 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* n
     return NULL;
 }
 
-char* get_file_node_path(const struct FileNode* currentDir, const char* name) {
-    if (currentDir == NULL || name == NULL) return NULL;
-
-    while (strcmp(currentDir->attributes.name, "\\") != 0) {
-        currentDir = currentDir->parent;
-    }
-
-    const struct FileNode* node = find_file_node_in_fs(currentDir, name);
+char* get_file_node_path(const struct FileNode* node) {
+    if (node == NULL) return NULL;
 
     const struct FileNode* temp = node;
     size_t pathLength = 1;
