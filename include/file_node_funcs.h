@@ -94,7 +94,7 @@ void write_to_file(struct FileNode* node, char* content);
     *
     * @pre node != NULL
 */
-char* read_file_content(const struct FileNode* node);
+char* read_file_content(struct FileNode* node);
 
 /**
     * Find file node by name in current directory.

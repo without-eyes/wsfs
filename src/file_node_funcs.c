@@ -64,7 +64,7 @@ struct FileNode* get_symlink_target(struct FileNode* symlink) {
     if (symlink == NULL) return NULL;
 
     struct FileNode* current = symlink;
-    while (current->attributes.type == FILE_TYPE_SYMLINK) {
+    while (current != NULL && current->attributes.type == FILE_TYPE_SYMLINK) {
         current = current->attributes.symlinkTarget;
     }
 
