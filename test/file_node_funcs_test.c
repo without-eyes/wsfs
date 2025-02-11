@@ -58,6 +58,52 @@ Test(create_file_node, root_creation) {
     free(root);
 }
 
+Test(get_file_node_size, null_node) {
+    cr_assert_eq(get_file_node_size(NULL), 0);
+}
+
+Test(get_file_node_size, empty_file_node) {
+    struct FileNode* node = create_file_node(NULL, "", FILE_TYPE_FILE);
+    const size_t expected_size = sizeof(struct FileNode) + strlen(node->attributes.name) + 1;
+    cr_assert_eq(get_file_node_size(node), expected_size);
+    free(node);
+}
+
+Test(get_file_node_size, file_with_content) {
+    struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE);
+    write_to_file(node, "Hello");
+    const size_t expected_size = sizeof(struct FileNode) + strlen("file") + 1 + strlen("Hello") + 1;
+    cr_assert_eq(get_file_node_size(node), expected_size);
+    free(node->attributes.name);
+    free(node->attributes.fileContent);
+    free(node);
+}
+
+Test(get_file_node_size, directory_with_files) {
+    struct FileNode* file1 = create_file_node(NULL, "file1", FILE_TYPE_FILE);
+    write_to_file(file1, "Hello");
+    struct FileNode* file2 = create_file_node(NULL, "file2", FILE_TYPE_FILE);
+    write_to_file(file2, "World");
+    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR);
+    add_to_dir(dir, file1);
+    add_to_dir(dir, file2);
+
+    size_t expected_size = sizeof(struct FileNode) + strlen("dir") + 1;
+    expected_size += sizeof(struct FileNode) + strlen("file1") + 1 + strlen("Hello") + 1;
+    expected_size += sizeof(struct FileNode) + strlen("file2") + 1 + strlen("World") + 1;
+
+    cr_assert_eq(get_file_node_size(dir), expected_size);
+
+    free(file1->attributes.name);
+    free(file1->attributes.fileContent);
+    free(file1);
+    free(file2->attributes.name);
+    free(file2->attributes.fileContent);
+    free(file2);
+    free(dir->attributes.name);
+    free(dir);
+}
+
 Test(change_current_dir, dir_exists) {
     struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR);
     struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR);

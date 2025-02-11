@@ -98,16 +98,19 @@ void print_file_info(const struct FileNode* node) {
     if (node == NULL) return;
 
     if (node->attributes.type == FILE_TYPE_SYMLINK) {
-        printf("%c %2u:%02u %s -> %c %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+        printf("%c %lu %2u:%02u %s -> %c %lu %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+                                        get_file_node_size(node),
                                         node->attributes.createdAt.hour,
                                         node->attributes.createdAt.minute,
                                         node->attributes.name,
                                         get_file_type_letter(node->attributes.symlinkTarget->attributes.type),
+                                        get_file_node_size(node->attributes.symlinkTarget),
                                         node->attributes.symlinkTarget->attributes.createdAt.hour,
                                         node->attributes.symlinkTarget->attributes.createdAt.minute,
                                         node->attributes.symlinkTarget->attributes.name);
     } else {
-        printf("%c %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+        printf("%c %lu %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+                                        get_file_node_size(node),
                                         node->attributes.createdAt.hour,
                                         node->attributes.createdAt.minute,
                                         node->attributes.name);

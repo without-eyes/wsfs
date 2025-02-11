@@ -26,6 +26,30 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* name, con
     return fileNode;
 }
 
+size_t get_file_node_size(const struct FileNode* node) {
+    if (node == NULL) return 0;
+
+    size_t total_size = sizeof(struct FileNode);
+
+    if (node->attributes.name) {
+        total_size += strlen(node->attributes.name) + 1;
+    }
+
+    if (node->attributes.type == FILE_TYPE_FILE && node->attributes.fileContent) {
+        total_size += strlen(node->attributes.fileContent) + 1;
+    }
+
+    if (node->attributes.type == FILE_TYPE_DIR) {
+        struct FileNode* child = node->attributes.directoryContent;
+        while (child != NULL) {
+            total_size += get_file_node_size(child);
+            child = child->next;
+        }
+    }
+
+    return total_size;
+}
+
 void change_current_dir(struct FileNode** currentDir, const char* name) {
     struct FileNode* current = find_file_node_in_curr_dir(*currentDir, name);
     if (current == NULL) return;
@@ -78,7 +102,7 @@ void write_to_file(struct FileNode* node, char* content) {
 
     free(current->attributes.fileContent);
     current->attributes.fileContent = malloc(strlen(content) + 1);
-    current->attributes.fileContent = content;
+    strcpy(current->attributes.fileContent, content);
 }
 
 char* read_file_content(struct FileNode* node) {

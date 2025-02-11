@@ -8,6 +8,8 @@
 #ifndef FILE_NODE_STRUCTS_H
 #define FILE_NODE_STRUCTS_H
 
+#include <stdint.h>
+
 enum FileType {
     FILE_TYPE_UNKNOWN = 0,
     FILE_TYPE_FILE = 1,

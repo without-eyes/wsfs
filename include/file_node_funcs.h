@@ -8,8 +8,8 @@
 #ifndef FILE_H
 #define FILE_H
 
-#include <stdint.h>
 #include "file_node_structs.h"
+#include <stddef.h>
 #define MAX_NAME_SIZE 32
 
 /**
@@ -28,6 +28,18 @@
     * @pre parent != NULL && name != NULL
 */
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type);
+
+/**
+    * Get size of file node.
+    *
+    * @param[in] node The node which size user wants to
+    * get.
+    *
+    * @return Returns size of file node.
+    *
+    * @pre node != NULL
+*/
+size_t get_file_node_size(const struct FileNode* node);
 
 /**
     * Change current directory.
