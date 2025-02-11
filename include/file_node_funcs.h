@@ -63,6 +63,18 @@ void add_to_dir(struct FileNode* parent, struct FileNode* child);
 char get_file_type_letter(enum FileType type);
 
 /**
+    * Gets the target of symbolic link.
+    *
+    * @param[in] symlink The symbolic link whose target user
+    * wants to get.
+    *
+    * @return Returns the target of symbolic link.
+    *
+    * @pre symlink != NULL
+*/
+struct FileNode* get_symlink_target(struct FileNode* symlink);
+
+/**
     * Write content into file.
     *
     * @param[in] node The file in which text will be written.

@@ -30,9 +30,7 @@ void change_current_dir(struct FileNode** currentDir, const char* name) {
     struct FileNode* current = find_file_node_in_curr_dir(*currentDir, name);
     if (current == NULL) return;
 
-    while (current->attributes.type == FILE_TYPE_SYMLINK) {
-        current = current->attributes.symlinkTarget;
-    }
+    current = get_symlink_target(current);
 
     *currentDir = current;
 }
@@ -62,26 +60,31 @@ char get_file_type_letter(const enum FileType type) {
     }
 }
 
-void write_to_file(struct FileNode* node, char* content) {
-    if (node == NULL || content == NULL) return;
+struct FileNode* get_symlink_target(struct FileNode* symlink) {
+    if (symlink == NULL) return NULL;
 
-    struct FileNode* current = node;
+    struct FileNode* current = symlink;
     while (current->attributes.type == FILE_TYPE_SYMLINK) {
         current = current->attributes.symlinkTarget;
     }
+
+    return current;
+}
+
+void write_to_file(struct FileNode* node, char* content) {
+    if (node == NULL || content == NULL) return;
+
+    struct FileNode* current = get_symlink_target(node);
 
     free(current->attributes.fileContent);
     current->attributes.fileContent = malloc(strlen(content) + 1);
     current->attributes.fileContent = content;
 }
 
-char* read_file_content(const struct FileNode* node) {
+char* read_file_content(struct FileNode* node) {
     if (node == NULL) return NULL;
 
-    const struct FileNode* current = node;
-    while (current->attributes.type == FILE_TYPE_SYMLINK) {
-        current = current->attributes.symlinkTarget;
-    }
+    const struct FileNode* current = get_symlink_target(node);
 
     return current->attributes.fileContent;
 }
