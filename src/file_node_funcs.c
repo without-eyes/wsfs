@@ -168,6 +168,27 @@ char* get_file_node_path(const struct FileNode* node) {
     return path;
 }
 
+void change_file_node_location(struct FileNode* location, struct FileNode* node) {
+    if (node == NULL || location == NULL) return;
+    if (node->parent == location) return;
+
+    if (node->parent != NULL) {
+        struct FileNode** prev_ptr = &node->parent->attributes.directoryContent;
+
+        while (*prev_ptr && *prev_ptr != node) {
+            prev_ptr = &(*prev_ptr)->next;
+        }
+
+        if (*prev_ptr == node) {
+            *prev_ptr = node->next;
+        }
+    }
+
+    node->next = NULL;
+    node->parent = location;
+    add_to_dir(location, node);
+}
+
 void change_file_node_name(struct FileNode* node, const char* name) {
     free(node->attributes.name);
     node->attributes.name = malloc(strlen(name) + 1);

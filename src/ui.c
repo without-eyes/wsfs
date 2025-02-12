@@ -23,6 +23,7 @@ void run_ui(struct FileNode* currentDir) {
         const char input = getchar();
         while (getchar() != '\n'); // Consume newline character left in buffer
 
+        char name[MAX_NAME_SIZE];
         switch (input) {
         case 'h': // show help
             print_help();
@@ -30,9 +31,8 @@ void run_ui(struct FileNode* currentDir) {
 
         case 'g': // go into directory
             printf("Enter directory name: ");
-            char dir[MAX_NAME_SIZE];
-            read_line(dir, MAX_NAME_SIZE);
-            change_current_dir(&currentDir, dir);
+            read_line(name, MAX_NAME_SIZE);
+            change_current_dir(&currentDir, name);
             break;
 
         case 'f': // create file
@@ -49,20 +49,17 @@ void run_ui(struct FileNode* currentDir) {
 
         case 'c': // change name
             printf("Enter file node name: ");
-            char oldName[MAX_NAME_SIZE];
-            read_line(oldName, MAX_NAME_SIZE);
-            struct FileNode* current = find_file_node_in_curr_dir(currentDir, oldName);
+            read_line(name, MAX_NAME_SIZE);
+            struct FileNode* current = find_file_node_in_curr_dir(currentDir, name);
             printf("Enter new name: ");
-            char newName[MAX_NAME_SIZE];
-            read_line(newName, MAX_NAME_SIZE);
-            change_file_node_name(current, newName);
+            read_line(name, MAX_NAME_SIZE);
+            change_file_node_name(current, name);
             break;
 
         case 'e': // erase file node
             printf("Enter file node name: ");
-            char delName[MAX_NAME_SIZE];
-            read_line(delName, MAX_NAME_SIZE);
-            delete_file_node(currentDir, delName);
+            read_line(name, MAX_NAME_SIZE);
+            delete_file_node(currentDir, name);
             break;
 
         case 'w': // write into file
@@ -70,12 +67,22 @@ void run_ui(struct FileNode* currentDir) {
             handle_read_write(currentDir, input);
             break;
 
+        case 'm': // move node to new location
+            printf("Enter file node name: ");
+            read_line(name, MAX_NAME_SIZE);
+            struct FileNode* moveNode = find_file_node_in_curr_dir(currentDir, name);
+            printf("Enter new location directory name: ");
+            read_line(name, MAX_NAME_SIZE);
+            struct FileNode* dir = find_file_node_in_curr_dir(currentDir, name);
+            change_file_node_location(dir, moveNode);
+            break;
+
         case 'p': // get file node path
             printf("Enter file node name: ");
             char search[MAX_NAME_SIZE];
             read_line(search, MAX_NAME_SIZE);
-            const struct FileNode* node = find_file_node_in_curr_dir(currentDir, search);
-            char* path = get_file_node_path(node);
+            const struct FileNode* pathNode = find_file_node_in_curr_dir(currentDir, search);
+            char* path = get_file_node_path(pathNode);
             printf("%s\n", path);
             free(path);
             break;
@@ -139,6 +146,7 @@ void print_help() {
                  "(w)rite text to file\n"
                  "(r)ead content from file,\n"
                  "(g)o into directory,\n"
+                 "(m)ove file node to new location\n"
                  "get file node (p)ath,\n"
                  "go (b)ack");
 }

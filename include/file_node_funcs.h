@@ -148,6 +148,16 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* n
 char* get_file_node_path(const struct FileNode* node);
 
 /**
+    * Changes file node location.
+    *
+    * @param[in,out] node The file node whose location will be changed.
+    * @param[in] location The file node where node will be located.
+    *
+    * @pre node != NULL && location != NULL
+*/
+void change_file_node_location(struct FileNode* location, struct FileNode* node);
+
+/**
     * Changes file node name. The caller is responsible for freeing
     * the memory allocated for the file node's name by calling free().
     *

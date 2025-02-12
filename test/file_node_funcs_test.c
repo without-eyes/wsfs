@@ -346,6 +346,54 @@ Test(get_file_node_path, dir_or_name_is_null) {
     cr_assert_null(get_file_node_path(NULL));
 }
 
+Test(change_file_node_location, move_valid_node) {
+    struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR);
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR);
+    struct FileNode* node = create_file_node(parent, "file", FILE_TYPE_FILE);
+    add_to_dir(parent, node);
+
+    change_file_node_location(location, node);
+
+    cr_assert_null(parent->attributes.directoryContent);
+    cr_assert_eq(node->parent, location);
+    cr_assert_eq(location->attributes.directoryContent, node);
+}
+
+Test(change_file_node_location, move_null_node) {
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR);
+
+    change_file_node_location(location, NULL);
+    // Expect no crash
+}
+
+Test(change_file_node_location, move_node_from_empty_parent) {
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR);
+    struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE);
+
+    change_file_node_location(location, node);
+
+    cr_assert_eq(node->parent, location);
+}
+
+Test(change_file_node_location, move_middle_node) {
+    struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR);
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR);
+
+    struct FileNode* node1 = create_file_node(parent, "file1", FILE_TYPE_FILE);
+    struct FileNode* node2 = create_file_node(parent, "file2", FILE_TYPE_FILE);
+    struct FileNode* node3 = create_file_node(parent, "file3", FILE_TYPE_FILE);
+
+    add_to_dir(parent, node1);
+    add_to_dir(parent, node2);
+    add_to_dir(parent, node3);
+
+    change_file_node_location(location, node2);
+
+    cr_assert_eq(node1->next, node3);
+    cr_assert_eq(node2->parent, location);
+    cr_assert_eq(location->attributes.directoryContent, node2);
+}
+
 Test(change_file_node_name, rename) {
     struct FileNode* file = create_file_node(NULL, "old", FILE_TYPE_FILE);
 
