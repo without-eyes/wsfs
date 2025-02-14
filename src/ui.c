@@ -21,7 +21,7 @@ void run_ui(struct FileNode* currentDir) {
         printf("Input command('h' for help): ");
 
         const char input = getchar();
-        while (getchar() != '\n'); // Consume newline character left in buffer
+        while (getchar() != '\n') {} // Consume newline character left in buffer
 
         char name[MAX_NAME_SIZE];
         switch (input) {

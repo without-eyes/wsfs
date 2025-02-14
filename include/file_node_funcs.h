@@ -94,7 +94,7 @@ struct FileNode* get_symlink_target(struct FileNode* symlink);
     *
     * @pre node != NULL && content != NULL
 */
-void write_to_file(struct FileNode* node, char* content);
+void write_to_file(struct FileNode* node, const char* content);
 
 /**
     * Reads content from file.

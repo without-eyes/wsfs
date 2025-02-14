@@ -20,8 +20,7 @@ enum FileType {
 struct FileNode;
 
 struct Timestamp {
-    uint8_t hour;
-    uint8_t minute;
+    uint8_t hour, minute;
 };
 
 struct FileAttributes {

@@ -40,7 +40,7 @@ size_t get_file_node_size(const struct FileNode* node) {
     }
 
     if (node->attributes.type == FILE_TYPE_DIR) {
-        struct FileNode* child = node->attributes.directoryContent;
+        const struct FileNode* child = node->attributes.directoryContent;
         while (child != NULL) {
             total_size += get_file_node_size(child);
             child = child->next;
@@ -95,7 +95,7 @@ struct FileNode* get_symlink_target(struct FileNode* symlink) {
     return current;
 }
 
-void write_to_file(struct FileNode* node, char* content) {
+void write_to_file(struct FileNode* node, const char* content) {
     if (node == NULL || content == NULL) return;
 
     struct FileNode* current = get_symlink_target(node);
@@ -134,7 +134,7 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* n
     const struct FileNode* current = root->attributes.directoryContent;
     while (current) {
         struct FileNode* result = find_file_node_in_fs(current, name);
-        if (result) return result;
+        if (result != NULL) return result;
         current = current->next;
     }
 

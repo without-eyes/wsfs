@@ -31,7 +31,7 @@ void run_ui(struct FileNode* currentDir);
     * @pre node != NULL
     *
     * @note The output will be printed to stdout in a format similar to:
-    *       f 00:01 test_file
+    *       f 42 00:01 test_file
 */
 void print_file_info(const struct FileNode* node);
 
