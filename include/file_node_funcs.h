@@ -42,16 +42,15 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* name, enu
 size_t get_file_node_size(const struct FileNode* node);
 
 /**
-    * Change current directory.
+    * Changes current directory.
     *
     * @param[in,out] currentDir The directory where user is currently
     * located.
-    * @param[in] name The name of the directory where user
-    * wants to go.
+    * @param[in] newCurrentDir The directory where user wants to go.
     *
-    * @pre currentDir != NULL && name != NULL
+    * @pre currentDir != NULL && newCurrentDir != NULL
 */
-void change_current_dir(struct FileNode** currentDir, const char* name);
+void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurrentDir);
 
 /**
     * Add "child" file node to "parent" directory's linked list.

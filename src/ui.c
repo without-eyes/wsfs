@@ -32,7 +32,8 @@ void run_ui(struct FileNode* currentDir) {
         case 'g': // go into directory
             printf("Enter directory name: ");
             read_line(name, MAX_NAME_SIZE);
-            change_current_dir(&currentDir, name);
+            struct FileNode* newCurrentDir = find_file_node_in_curr_dir(currentDir, name);
+            change_current_dir(&currentDir, newCurrentDir);
             break;
 
         case 'f': // create file

@@ -109,7 +109,7 @@ Test(change_current_dir, dir_exists) {
     struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR);
     add_to_dir(currentDir, newCurrentDir);
 
-    change_current_dir(&currentDir, newCurrentDir->attributes.name);
+    change_current_dir(&currentDir, newCurrentDir);
 
     cr_assert_eq(currentDir, newCurrentDir);
     cr_assert_str_eq(currentDir->attributes.name,           newCurrentDir->attributes.name);
@@ -131,7 +131,7 @@ Test(change_current_dir, dir_exists) {
 Test(change_current_dir, dir_not_exists) {
     struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR);
 
-    change_current_dir(&currentDir, "not_exists");
+    change_current_dir(&currentDir, NULL);
 
     cr_assert_str_eq(currentDir->attributes.name,           currentDir->attributes.name);
     cr_assert_eq(currentDir->attributes.createdAt.hour,     currentDir->attributes.createdAt.hour);
@@ -155,7 +155,7 @@ Test(change_current_dir, symlink) {
     add_to_dir(currentDir, newCurrentDir);
     symlink->attributes.symlinkTarget = newCurrentDir;
 
-    change_current_dir(&currentDir, symlink->attributes.name);
+    change_current_dir(&currentDir, symlink);
 
     cr_assert_str_eq(currentDir->attributes.name,           newCurrentDir->attributes.name);
     cr_assert_eq(currentDir->attributes.createdAt.hour,     newCurrentDir->attributes.createdAt.hour);

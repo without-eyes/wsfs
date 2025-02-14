@@ -50,13 +50,12 @@ size_t get_file_node_size(const struct FileNode* node) {
     return total_size;
 }
 
-void change_current_dir(struct FileNode** currentDir, const char* name) {
-    struct FileNode* current = find_file_node_in_curr_dir(*currentDir, name);
-    if (current == NULL) return;
+void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurrentDir) {
+    if (currentDir == NULL || newCurrentDir == NULL) return;
 
-    current = get_symlink_target(current);
+    newCurrentDir = get_symlink_target(newCurrentDir);
 
-    *currentDir = current;
+    *currentDir = newCurrentDir;
 }
 
 void add_to_dir(struct FileNode* parent, struct FileNode* child) {
