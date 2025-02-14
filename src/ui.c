@@ -165,7 +165,6 @@ void handle_create(struct FileNode* currentDir, const enum FileType type) {
     read_line(name, MAX_NAME_SIZE);
 
     struct FileNode* node = create_file_node(currentDir, name, type);
-    add_to_dir(currentDir, node);
 
     if (type == FILE_TYPE_SYMLINK) {
         printf("Enter symlink target's name: ");

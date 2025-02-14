@@ -23,6 +23,7 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* name, con
     fileNode->attributes.symlinkTarget = NULL;
     fileNode->next = NULL;
     fileNode->parent = strcmp(name, "\\") == 0 ? fileNode : parent;
+    if (parent != NULL) add_to_dir(parent, fileNode);
     return fileNode;
 }
 

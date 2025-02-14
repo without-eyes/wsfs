@@ -80,13 +80,11 @@ Test(get_file_node_size, file_with_content) {
 }
 
 Test(get_file_node_size, directory_with_files) {
-    struct FileNode* file1 = create_file_node(NULL, "file1", FILE_TYPE_FILE);
-    write_to_file(file1, "Hello");
-    struct FileNode* file2 = create_file_node(NULL, "file2", FILE_TYPE_FILE);
-    write_to_file(file2, "World");
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR);
-    add_to_dir(dir, file1);
-    add_to_dir(dir, file2);
+    struct FileNode* file1 = create_file_node(dir, "file1", FILE_TYPE_FILE);
+    write_to_file(file1, "Hello");
+    struct FileNode* file2 = create_file_node(dir, "file2", FILE_TYPE_FILE);
+    write_to_file(file2, "World");
 
     size_t expected_size = sizeof(struct FileNode) + strlen("dir") + 1;
     expected_size += sizeof(struct FileNode) + strlen("file1") + 1 + strlen("Hello") + 1;
@@ -107,7 +105,6 @@ Test(get_file_node_size, directory_with_files) {
 Test(change_current_dir, dir_exists) {
     struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR);
     struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR);
-    add_to_dir(currentDir, newCurrentDir);
 
     change_current_dir(&currentDir, newCurrentDir);
 
@@ -151,8 +148,6 @@ Test(change_current_dir, symlink) {
     struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR);
     struct FileNode* symlink = create_file_node(currentDir, "symlink", FILE_TYPE_SYMLINK);
     struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR);
-    add_to_dir(currentDir, symlink);
-    add_to_dir(currentDir, newCurrentDir);
     symlink->attributes.symlinkTarget = newCurrentDir;
 
     change_current_dir(&currentDir, symlink);
@@ -234,7 +229,7 @@ Test(get_symlink_target, symlink_on_symlink) {
 
 Test(write_to_file, basic) {
     struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE);
-    char content[] = "content";
+    const char content[] = "content";
 
     write_to_file(node, content);
 
@@ -260,7 +255,7 @@ Test(write_to_file, symlink) {
     struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK);
     struct FileNode* target = create_file_node(NULL, "file", FILE_TYPE_FILE);
     symlink->attributes.symlinkTarget = target;
-    char content[] = "content";
+    const char content[] = "content";
 
     write_to_file(symlink, content);
 
@@ -274,7 +269,7 @@ Test(write_to_file, symlink) {
 
 Test(read_file_content, basic) {
     struct FileNode* file = create_file_node(NULL, "file", FILE_TYPE_FILE);
-    char content[] = "content";
+    const char content[] = "content";
     write_to_file(file, content);
 
     cr_assert_str_eq(read_file_content(file), content);
@@ -289,8 +284,7 @@ Test(read_file_content, node_is_null) {
 
 Test(find_file_node_in_curr_dir, basic) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR);
-    struct FileNode* file = create_file_node(NULL, "file", FILE_TYPE_FILE);
-    add_to_dir(dir, file);
+    struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE);
 
     cr_assert_eq(find_file_node_in_curr_dir(dir, file->attributes.name), file);
 
@@ -330,7 +324,6 @@ Test(find_file_node_in_fs, root_or_name_is_null) {
 Test(get_file_node_path, basic) {
     struct FileNode* root = create_file_node(NULL, "\\", FILE_TYPE_DIR);
     struct FileNode* file = create_file_node(root, "file", FILE_TYPE_FILE);
-    add_to_dir(root, file);
 
     char* path = get_file_node_path(file);
     cr_assert_str_eq(path, "\\file");
@@ -350,7 +343,6 @@ Test(change_file_node_location, move_valid_node) {
     struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR);
     struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR);
     struct FileNode* node = create_file_node(parent, "file", FILE_TYPE_FILE);
-    add_to_dir(parent, node);
 
     change_file_node_location(location, node);
 
@@ -383,10 +375,6 @@ Test(change_file_node_location, move_middle_node) {
     struct FileNode* node2 = create_file_node(parent, "file2", FILE_TYPE_FILE);
     struct FileNode* node3 = create_file_node(parent, "file3", FILE_TYPE_FILE);
 
-    add_to_dir(parent, node1);
-    add_to_dir(parent, node2);
-    add_to_dir(parent, node3);
-
     change_file_node_location(location, node2);
 
     cr_assert_eq(node1->next, node3);
@@ -408,7 +396,6 @@ Test(change_file_node_name, rename) {
 Test(delete_file_node, delete_existing) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR);
     struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE);
-    add_to_dir(dir, file);
 
     delete_file_node(dir, "file");
 
