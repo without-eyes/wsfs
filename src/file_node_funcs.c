@@ -84,6 +84,12 @@ char get_file_type_letter(const enum FileType type) {
     }
 }
 
+void set_symlink_target(struct FileNode* symlink, struct FileNode* target) {
+    if (symlink == NULL || target == NULL) return;
+
+    symlink->attributes.symlinkTarget = target;
+}
+
 struct FileNode* get_symlink_target(struct FileNode* symlink) {
     if (symlink == NULL) return NULL;
 

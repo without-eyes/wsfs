@@ -74,6 +74,18 @@ void add_to_dir(struct FileNode* parent, struct FileNode* child);
 char get_file_type_letter(enum FileType type);
 
 /**
+    * Sets the target of symbolic link.
+    *
+    * @param[in] symlink The symbolic link which target will
+    * be set.
+    * @param[in] target The file node that will be the target
+    * of symbolic link.
+    *
+    * @pre symlink != NULL && target != NULL
+*/
+void set_symlink_target(struct FileNode* symlink, struct FileNode* target);
+
+/**
     * Gets the target of symbolic link.
     *
     * @param[in] symlink The symbolic link whose target user

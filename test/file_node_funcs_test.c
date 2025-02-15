@@ -148,7 +148,7 @@ Test(change_current_dir, symlink) {
     struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR);
     struct FileNode* symlink = create_file_node(currentDir, "symlink", FILE_TYPE_SYMLINK);
     struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR);
-    symlink->attributes.symlinkTarget = newCurrentDir;
+    set_symlink_target(symlink, newCurrentDir);
 
     change_current_dir(&currentDir, symlink);
 
@@ -176,10 +176,35 @@ Test(get_file_type_letter, all_types) {
     cr_assert_eq(get_file_type_letter(999),                 '?');
 }
 
+Test(set_symlink_target, valid_symlink_target) {
+    struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK);
+    struct FileNode* target = create_file_node(NULL, "target_file", FILE_TYPE_FILE);
+
+    set_symlink_target(symlink, target);
+
+    cr_assert_eq(symlink->attributes.symlinkTarget, target);
+}
+
+Test(set_symlink_target, set_symlink_target_to_null) {
+    struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK);
+
+    set_symlink_target(symlink, NULL);
+
+    cr_assert_null(symlink->attributes.symlinkTarget);
+}
+
+Test(set_symlink_target, null_symlink_does_nothing) {
+    struct FileNode* target = create_file_node(NULL, "target_file", FILE_TYPE_FILE);
+
+    set_symlink_target(NULL, target);
+
+    // No assertion needed; just ensuring it does not crash
+}
+
 Test(get_symlink_target, basic) {
     struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK);
     struct FileNode* target = create_file_node(NULL, "file", FILE_TYPE_FILE);
-    symlink->attributes.symlinkTarget = target;
+    set_symlink_target(symlink, target);
 
     const struct FileNode* result = get_symlink_target(symlink);
 
@@ -212,8 +237,8 @@ Test(get_symlink_target, symlink_on_symlink) {
     struct FileNode* firstSymlink = create_file_node(NULL, "symlink1", FILE_TYPE_SYMLINK);
     struct FileNode* secondSymlink = create_file_node(NULL, "symlink2", FILE_TYPE_SYMLINK);
     struct FileNode* target = create_file_node(NULL, "file", FILE_TYPE_FILE);
-    firstSymlink->attributes.symlinkTarget = secondSymlink;
-    secondSymlink->attributes.symlinkTarget = target;
+    set_symlink_target(firstSymlink, secondSymlink);
+    set_symlink_target(secondSymlink, target);
 
     const struct FileNode* result = get_symlink_target(firstSymlink);
 
@@ -254,7 +279,7 @@ Test(write_to_file, node_or_content_is_null) {
 Test(write_to_file, symlink) {
     struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK);
     struct FileNode* target = create_file_node(NULL, "file", FILE_TYPE_FILE);
-    symlink->attributes.symlinkTarget = target;
+    set_symlink_target(symlink, target);
     const char content[] = "content";
 
     write_to_file(symlink, content);

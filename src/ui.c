@@ -175,7 +175,8 @@ void handle_create(struct FileNode* currentDir, const enum FileType type) {
         const struct FileNode* root = currentDir;
         while (strcmp(root->attributes.name, "\\") != 0) root = root->parent;
 
-        node->attributes.symlinkTarget = find_file_node_in_fs(root, target);
+        struct FileNode* targetNode = find_file_node_in_fs(root, target);
+        set_symlink_target(node, targetNode);
     }
 }
 
