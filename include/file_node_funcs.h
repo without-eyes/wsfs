@@ -21,13 +21,14 @@
     * @param[in] parent The directory where file node will be
     * located.
     * @param[in] name The name of new file node.
-    * @param[in] type The type of new file node.
+    * @param[in] type The type of new file node(use FILE_TYPE_*)
+    * @param permissions The permission of file(use PERM_*).
     *
     * @return Returns created file node.
     *
     * @pre parent != NULL && name != NULL
 */
-struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type);
+struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type, enum Permissions permissions);
 
 /**
     * Gets size of file node recursively.
@@ -72,6 +73,15 @@ void add_to_dir(struct FileNode* parent, struct FileNode* child);
     * @return Returns first letter of type as char.
 */
 char get_file_type_letter(enum FileType type);
+
+/**
+    * Get permission's letter.
+    *
+    * @param[in] permission The permission from enum Permissions.
+    *
+    * @return Returns first letter of type as char.
+*/
+char get_permission_letter(enum Permissions permission);
 
 /**
     * Sets the target of symbolic link.

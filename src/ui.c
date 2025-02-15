@@ -107,18 +107,27 @@ void print_file_info(const struct FileNode* node) {
     if (node == NULL) return;
 
     if (node->attributes.type == FILE_TYPE_SYMLINK) {
-        printf("%c %lu %2u:%02u %s -> %c %lu %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+        printf("%c%c%c%c %lu %2u:%02u %s -> %c%c%c%c %lu %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+                                        get_permission_letter(node->attributes.permissions & 4),
+                                        get_permission_letter(node->attributes.permissions & 2),
+                                        get_permission_letter(node->attributes.permissions & 1),
                                         get_file_node_size(node),
                                         node->attributes.createdAt.hour,
                                         node->attributes.createdAt.minute,
                                         node->attributes.name,
                                         get_file_type_letter(node->attributes.symlinkTarget->attributes.type),
+                                        get_permission_letter(node->attributes.symlinkTarget->attributes.permissions & 4),
+                                        get_permission_letter(node->attributes.symlinkTarget->attributes.permissions & 2),
+                                        get_permission_letter(node->attributes.symlinkTarget->attributes.permissions & 1),
                                         get_file_node_size(node->attributes.symlinkTarget),
                                         node->attributes.symlinkTarget->attributes.createdAt.hour,
                                         node->attributes.symlinkTarget->attributes.createdAt.minute,
                                         node->attributes.symlinkTarget->attributes.name);
     } else {
-        printf("%c %lu %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+        printf("%c%c%c%c %lu %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
+                                        get_permission_letter(node->attributes.permissions & 4),
+                                        get_permission_letter(node->attributes.permissions & 2),
+                                        get_permission_letter(node->attributes.permissions & 1),
                                         get_file_node_size(node),
                                         node->attributes.createdAt.hour,
                                         node->attributes.createdAt.minute,
@@ -165,7 +174,7 @@ void handle_create(struct FileNode* currentDir, const enum FileType type) {
     printf("Enter %s name: ", fileType);
     read_line(name, MAX_NAME_SIZE);
 
-    struct FileNode* node = create_file_node(currentDir, name, type);
+    struct FileNode* node = create_file_node(currentDir, name, type, PERM_READ | PERM_WRITE);
 
     if (type == FILE_TYPE_SYMLINK) {
         printf("Enter symlink target's name: ");

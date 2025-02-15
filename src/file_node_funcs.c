@@ -13,11 +13,12 @@
 #include <string.h>
 #include "../include/utils.h"
 
-struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type) {
+struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type, const enum Permissions permissions) {
     struct FileNode* fileNode = malloc(sizeof(struct FileNode));
     fileNode->attributes.name = strdup(name);
     fileNode->attributes.createdAt = get_current_time();
     fileNode->attributes.type = type;
+    fileNode->attributes.permissions = permissions;
     fileNode->attributes.directoryContent = NULL;
     fileNode->attributes.fileContent = NULL;
     fileNode->attributes.symlinkTarget = NULL;
@@ -81,6 +82,16 @@ char get_file_type_letter(const enum FileType type) {
         case FILE_TYPE_SYMLINK:     return 's';
         case FILE_TYPE_UNKNOWN:     return '-';
         default:                    return '?';
+    }
+}
+
+char get_permission_letter(const enum Permissions permission) {
+    switch (permission) {
+        case PERM_READ:     return 'r';
+        case PERM_WRITE:    return 'w';
+        case PERM_EXEC:     return 'x';
+        case PERM_NONE:     return '-';
+        default:            return '?';
     }
 }
 

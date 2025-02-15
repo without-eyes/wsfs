@@ -17,6 +17,13 @@ enum FileType {
     FILE_TYPE_SYMLINK = 3
 };
 
+enum Permissions {
+    PERM_NONE = 0,
+    PERM_READ = 4,
+    PERM_WRITE = 2,
+    PERM_EXEC = 1,
+};
+
 struct FileNode;
 
 struct Timestamp {
@@ -32,6 +39,7 @@ struct FileAttributes {
     };
     struct Timestamp createdAt;
     enum FileType type;
+    enum Permissions permissions;
 };
 
 struct FileNode {
