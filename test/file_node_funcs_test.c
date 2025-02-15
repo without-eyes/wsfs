@@ -397,7 +397,7 @@ Test(delete_file_node, delete_existing) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR);
     struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE);
 
-    delete_file_node(dir, "file");
+    delete_file_node(dir, file);
 
     cr_assert_null(dir->attributes.directoryContent);
 

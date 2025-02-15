@@ -60,7 +60,8 @@ void run_ui(struct FileNode* currentDir) {
         case 'e': // erase file node
             printf("Enter file node name: ");
             read_line(name, MAX_NAME_SIZE);
-            delete_file_node(currentDir, name);
+            struct FileNode* fileNodeToDelete = find_file_node_in_curr_dir(currentDir, name);
+            delete_file_node(currentDir, fileNodeToDelete);
             break;
 
         case 'w': // write into file

@@ -195,24 +195,22 @@ void change_file_node_name(struct FileNode* node, const char* name) {
     strcpy(node->attributes.name, name);
 }
 
-void delete_file_node(struct FileNode* currentDir, const char* name) {
-    struct FileNode* fileNodeToDelete = find_file_node_in_curr_dir(currentDir, name);
-    if (fileNodeToDelete == NULL) return;
+void delete_file_node(struct FileNode* currentDir, struct FileNode* node) {
+    if (currentDir == NULL || node == NULL) return;
 
     struct FileNode* currentFileNode = currentDir->attributes.directoryContent;
-    if (currentFileNode == fileNodeToDelete) {
+    if (currentFileNode == node) {
         currentDir->attributes.directoryContent = currentDir->attributes.directoryContent->next;
-        free(fileNodeToDelete->attributes.name);
-        free(fileNodeToDelete);
+        free_file_node_recursive(node);
         return;
     }
 
-    while (currentFileNode->next != fileNodeToDelete) {
+    while (currentFileNode->next != node) {
         currentFileNode = currentFileNode->next;
     }
 
     currentFileNode->next = currentFileNode->next->next;
-    free_file_node_recursive(fileNodeToDelete);
+    free_file_node_recursive(node);
 }
 
 void free_file_node_recursive(struct FileNode* fileNode) {

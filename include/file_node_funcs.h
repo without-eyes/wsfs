@@ -173,12 +173,11 @@ void change_file_node_name(struct FileNode* node, const char* name);
     *
     * @param[in,out] currentDir The directory where user is currently
     * located.
-    * @param[in] name The name of the file node which
-    * user wants to delete.
+    * @param[in] node The file node which user wants to delete.
     *
-    * @pre currentDir != NULL && name != NULL
+    * @pre currentDir != NULL && node != NULL
 */
-void delete_file_node(struct FileNode* currentDir, const char* name);
+void delete_file_node(struct FileNode* currentDir, struct FileNode* node);
 
 /**
     * Recursively free allocated memory of file node (and it's children
