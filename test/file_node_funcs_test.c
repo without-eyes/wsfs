@@ -62,6 +62,30 @@ Test(create_file_node, root_creation) {
     free(root);
 }
 
+Test(change_permissions, change_valid_node_permissions) {
+    struct FileNode node;
+    node.attributes.permissions = PERM_NONE;
+
+    change_permissions(&node, PERM_READ);
+
+    cr_assert_eq(node.attributes.permissions, PERM_READ);
+}
+
+Test(change_permissions, null_node_no_change) {
+    change_permissions(NULL, PERM_NONE);
+
+    // No assertion needed; just ensuring it does not crash
+}
+
+Test(change_permissions, change_multiple_perms) {
+    struct FileNode node;
+    node.attributes.permissions = PERM_NONE;
+
+    change_permissions(&node, PERM_READ | PERM_WRITE);
+
+    cr_assert_eq(node.attributes.permissions, PERM_READ | PERM_WRITE);
+}
+
 Test(get_file_node_size, null_node) {
     cr_assert_eq(get_file_node_size(NULL), 0);
 }

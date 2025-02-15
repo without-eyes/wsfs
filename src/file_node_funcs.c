@@ -28,6 +28,12 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* name, con
     return fileNode;
 }
 
+void change_permissions(struct FileNode* node, const enum Permissions permissions) {
+    if (node == NULL) return;
+
+    node->attributes.permissions = permissions;
+}
+
 size_t get_file_node_size(const struct FileNode* node) {
     if (node == NULL) return 0;
 

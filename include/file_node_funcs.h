@@ -31,6 +31,17 @@
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type, enum Permissions permissions);
 
 /**
+    * Changes the permissions of file node.
+    *
+    * @param[in] node The file node which permissions will be
+    * changed.
+    * @param permissions The permission of file(use PERM_*).
+    *
+    * @pre node != NULL
+*/
+void change_permissions(struct FileNode* node, enum Permissions permissions);
+
+/**
     * Gets size of file node recursively.
     *
     * @param[in] node The node which size user wants to

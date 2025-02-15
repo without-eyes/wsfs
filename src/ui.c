@@ -48,6 +48,16 @@ void run_ui(struct FileNode* currentDir) {
             handle_create(currentDir, FILE_TYPE_SYMLINK);
             break;
 
+        case 'x': // change permissions
+            printf("Enter file node name: ");
+            read_line(name, MAX_NAME_SIZE);
+            struct FileNode* permChangeNode = find_file_node_in_curr_dir(currentDir, name);
+            printf("Enter new permissions(r=4, w=2, x=1): ");
+            int perms;
+            scanf("%d", &perms);
+            change_permissions(permChangeNode, perms);
+            break;
+
         case 'c': // change name
             printf("Enter file node name: ");
             read_line(name, MAX_NAME_SIZE);
@@ -152,7 +162,8 @@ void print_help() {
                  "create (f)ile\n"
                  "create (d)irectory\n"
                  "create (s)ymbolic link\n"
-                 "(c)hange name"
+                 "(x) change node permissions\n"
+                 "(c)hange name\n"
                  "(e)rase file node,\n"
                  "(w)rite text to file\n"
                  "(r)ead content from file,\n"
