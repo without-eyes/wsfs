@@ -30,7 +30,7 @@
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type);
 
 /**
-    * Get size of file node.
+    * Gets size of file node recursively.
     *
     * @param[in] node The node which size user wants to
     * get.
@@ -122,7 +122,7 @@ char* read_file_content(struct FileNode* node);
 struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* name);
 
 /**
-    * Find file node by name in entire file system.
+    * Find file node by name in entire file system recursively.
     *
     * @param[in,out] root The root directory.
     * @param[in] name The name of the file node which user
