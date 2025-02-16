@@ -219,6 +219,77 @@ Test(change_current_dir, dir_without_permissions) {
     free(newCurrentDir);
 }
 
+Test(add_to_dir, add_first_child_to_empty_directory) {
+    struct FileNode* parent = create_file_node(NULL, "parent", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+    struct FileNode* child = create_file_node(NULL, "child", FILE_TYPE_FILE, PERM_NONE);
+
+    add_to_dir(parent, child);
+
+    cr_assert_eq(parent->attributes.directoryContent, child);
+    cr_assert_null(child->next);
+
+    free(parent->attributes.name);
+    free(parent);
+    free(child->attributes.name);
+    free(child);
+}
+
+Test(add_to_dir, add_multiple_children) {
+    struct FileNode* parent = create_file_node(NULL, "parent", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+    struct FileNode* child1 = create_file_node(NULL, "child1", FILE_TYPE_FILE, PERM_NONE);
+    struct FileNode* child2 = create_file_node(NULL, "child2", FILE_TYPE_FILE, PERM_NONE);
+
+    add_to_dir(parent, child1);
+    add_to_dir(parent, child2);
+
+    cr_assert_eq(parent->attributes.directoryContent, child1);
+    cr_assert_eq(child1->next, child2);
+    cr_assert_null(child2->next);
+
+    free(parent->attributes.name);
+    free(parent);
+    free(child1->attributes.name);
+    free(child1);
+    free(child2->attributes.name);
+    free(child2);
+}
+
+Test(add_to_dir, add_null_child_does_nothing) {
+    struct FileNode* parent = create_file_node(NULL, "parent", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+
+    add_to_dir(parent, NULL);
+
+    cr_assert_null(parent->attributes.directoryContent);
+
+    free(parent->attributes.name);
+    free(parent);
+}
+
+Test(add_to_dir, add_child_to_null_parent_does_nothing) {
+    struct FileNode* child = create_file_node(NULL, "child", FILE_TYPE_FILE, PERM_NONE);
+
+    add_to_dir(NULL, child);
+
+    cr_assert_null(child->next);
+
+    free(child->attributes.name);
+    free(child);
+}
+
+Test(add_to_dir, add_to_directory_without_permissions) {
+    struct FileNode* parent = create_file_node(NULL, "parent", FILE_TYPE_DIR, PERM_NONE);
+    struct FileNode* child = create_file_node(NULL, "child", FILE_TYPE_FILE, PERM_NONE);
+
+    add_to_dir(parent, child);
+
+    cr_assert_null(parent->attributes.directoryContent);
+
+    free(parent->attributes.name);
+    free(parent);
+    free(child->attributes.name);
+    free(child);
+}
+
 Test(get_file_type_letter, all_types) {
     cr_assert_eq(get_file_type_letter(FILE_TYPE_DIR),       'd');
     cr_assert_eq(get_file_type_letter(FILE_TYPE_FILE),      'f');
