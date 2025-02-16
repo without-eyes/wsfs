@@ -35,7 +35,7 @@ void change_permissions(struct FileNode* node, const enum Permissions permission
 }
 
 size_t get_file_node_size(const struct FileNode* node) {
-    if (node == NULL) return 0;
+    if (node == NULL || (node->attributes.permissions & PERM_READ) != PERM_READ) return 0;
 
     size_t total_size = sizeof(struct FileNode);
 
@@ -59,7 +59,9 @@ size_t get_file_node_size(const struct FileNode* node) {
 }
 
 void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurrentDir) {
-    if (currentDir == NULL || newCurrentDir == NULL) return;
+    if (*currentDir == NULL || newCurrentDir == NULL ||
+        (newCurrentDir->attributes.permissions & PERM_READ) != PERM_READ ||
+        (newCurrentDir->attributes.permissions & PERM_EXEC) != PERM_EXEC) return;
 
     newCurrentDir = get_symlink_target(newCurrentDir);
 
@@ -67,7 +69,7 @@ void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurren
 }
 
 void add_to_dir(struct FileNode* parent, struct FileNode* child) {
-    if (parent == NULL || child == NULL) return;
+    if (parent == NULL || child == NULL || (parent->attributes.permissions & PERM_WRITE) != PERM_WRITE) return;
 
     if (parent->attributes.directoryContent == NULL) {
         parent->attributes.directoryContent = child;
@@ -102,13 +104,13 @@ char get_permission_letter(const enum Permissions permission) {
 }
 
 void set_symlink_target(struct FileNode* symlink, struct FileNode* target) {
-    if (symlink == NULL || target == NULL) return;
+    if (symlink == NULL || target == NULL || (symlink->attributes.permissions & PERM_WRITE) != PERM_WRITE) return;
 
     symlink->attributes.symlinkTarget = target;
 }
 
 struct FileNode* get_symlink_target(struct FileNode* symlink) {
-    if (symlink == NULL) return NULL;
+    if (symlink == NULL || (symlink->attributes.permissions & PERM_READ) != PERM_READ) return NULL;
 
     struct FileNode* current = symlink;
     while (current != NULL && current->attributes.type == FILE_TYPE_SYMLINK) {
@@ -119,7 +121,7 @@ struct FileNode* get_symlink_target(struct FileNode* symlink) {
 }
 
 void write_to_file(struct FileNode* node, const char* content) {
-    if (node == NULL || content == NULL) return;
+    if (node == NULL || content == NULL || (node->attributes.permissions & PERM_WRITE) != PERM_WRITE) return;
 
     struct FileNode* current = get_symlink_target(node);
 
@@ -129,7 +131,7 @@ void write_to_file(struct FileNode* node, const char* content) {
 }
 
 char* read_file_content(struct FileNode* node) {
-    if (node == NULL) return NULL;
+    if (node == NULL || (node->attributes.permissions & PERM_READ) != PERM_READ) return NULL;
 
     const struct FileNode* current = get_symlink_target(node);
 
@@ -137,7 +139,9 @@ char* read_file_content(struct FileNode* node) {
 }
 
 struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* name) {
-    if (currentDir == NULL || name == NULL) return NULL;
+    if (currentDir == NULL || name == NULL ||
+        (currentDir->attributes.permissions & PERM_READ) != PERM_READ ||
+        (currentDir->attributes.permissions & PERM_EXEC) != PERM_EXEC) return NULL;
 
     struct FileNode* current = currentDir->attributes.directoryContent;
     while (current != NULL && strcmp(current->attributes.name, name) != 0) {
@@ -192,7 +196,9 @@ char* get_file_node_path(const struct FileNode* node) {
 }
 
 void change_file_node_location(struct FileNode* location, struct FileNode* node) {
-    if (node == NULL || location == NULL) return;
+    if (node == NULL || location == NULL ||
+        (location->attributes.permissions & PERM_WRITE) != PERM_WRITE ||
+        (node->attributes.permissions & PERM_WRITE) != PERM_WRITE) return;
     if (node->parent == location) return;
 
     if (node->parent != NULL) {
@@ -213,6 +219,8 @@ void change_file_node_location(struct FileNode* location, struct FileNode* node)
 }
 
 void change_file_node_name(struct FileNode* node, const char* name) {
+    if ((node->attributes.permissions & PERM_WRITE) != PERM_WRITE) return;
+
     free(node->attributes.name);
     node->attributes.name = malloc(strlen(name) + 1);
     strcpy(node->attributes.name, name);

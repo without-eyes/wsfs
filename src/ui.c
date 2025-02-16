@@ -185,7 +185,7 @@ void handle_create(struct FileNode* currentDir, const enum FileType type) {
     printf("Enter %s name: ", fileType);
     read_line(name, MAX_NAME_SIZE);
 
-    struct FileNode* node = create_file_node(currentDir, name, type, PERM_READ | PERM_WRITE);
+    struct FileNode* node = create_file_node(currentDir, name, type, PERM_READ | PERM_WRITE | PERM_EXEC);
 
     if (type == FILE_TYPE_SYMLINK) {
         printf("Enter symlink target's name: ");

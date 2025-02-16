@@ -98,17 +98,25 @@ Test(get_file_node_size, empty_file_node) {
 }
 
 Test(get_file_node_size, file_with_content) {
-    struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_READ);
+    struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
     write_to_file(node, "Hello");
     const size_t expected_size = sizeof(struct FileNode) + strlen("file") + 1 + strlen("Hello") + 1;
+
     cr_assert_eq(get_file_node_size(node), expected_size);
+
     free(node->attributes.name);
     free(node->attributes.fileContent);
     free(node);
 }
 
+Test(get_file_node_size, file_without_permissions) {
+    struct FileNode* node = create_file_node(NULL, "", FILE_TYPE_FILE, PERM_NONE);
+    cr_assert_eq(get_file_node_size(node), 0);
+    free(node);
+}
+
 Test(get_file_node_size, directory_with_files) {
-    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ);
+    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
     struct FileNode* file1 = create_file_node(dir, "file1", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
     write_to_file(file1, "Hello");
     struct FileNode* file2 = create_file_node(dir, "file2", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
@@ -132,7 +140,7 @@ Test(get_file_node_size, directory_with_files) {
 
 Test(change_current_dir, dir_exists) {
     struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
-    struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR, PERM_READ);
+    struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR, PERM_READ | PERM_EXEC);
 
     change_current_dir(&currentDir, newCurrentDir);
 
@@ -174,8 +182,8 @@ Test(change_current_dir, dir_not_exists) {
 
 Test(change_current_dir, symlink) {
     struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
-    struct FileNode* symlink = create_file_node(currentDir, "symlink", FILE_TYPE_SYMLINK, PERM_READ | PERM_WRITE);
-    struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR, PERM_READ);
+    struct FileNode* symlink = create_file_node(currentDir, "symlink", FILE_TYPE_SYMLINK, PERM_READ | PERM_WRITE | PERM_EXEC);
+    struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR, PERM_READ | PERM_EXEC);
     set_symlink_target(symlink, newCurrentDir);
 
     change_current_dir(&currentDir, symlink);
@@ -196,6 +204,21 @@ Test(change_current_dir, symlink) {
     free(currentDir);
 }
 
+Test(change_current_dir, dir_without_permissions) {
+    struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+    struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR, PERM_NONE);
+    struct FileNode* temp = currentDir;
+
+    change_current_dir(&currentDir, newCurrentDir);
+
+    cr_assert_neq(currentDir, newCurrentDir);
+
+    free(temp->parent->attributes.name);
+    free(temp->parent);
+    free(newCurrentDir->attributes.name);
+    free(newCurrentDir);
+}
+
 Test(get_file_type_letter, all_types) {
     cr_assert_eq(get_file_type_letter(FILE_TYPE_DIR),       'd');
     cr_assert_eq(get_file_type_letter(FILE_TYPE_FILE),      'f');
@@ -213,7 +236,7 @@ Test(get_permission_letter, all_permissions) {
 }
 
 Test(set_symlink_target, valid_symlink_target) {
-    struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK, PERM_READ | PERM_WRITE);
+    struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK, PERM_WRITE);
     struct FileNode* target = create_file_node(NULL, "target_file", FILE_TYPE_FILE, PERM_NONE);
 
     set_symlink_target(symlink, target);
@@ -222,7 +245,7 @@ Test(set_symlink_target, valid_symlink_target) {
 }
 
 Test(set_symlink_target, set_symlink_target_to_null) {
-    struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK, PERM_READ | PERM_WRITE);
+    struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK, PERM_WRITE);
 
     set_symlink_target(symlink, NULL);
 
@@ -288,6 +311,21 @@ Test(get_symlink_target, symlink_on_symlink) {
     free(firstSymlink);
 }
 
+Test(get_symlink_target, symlink_without_permissions) {
+    struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK, PERM_NONE);
+    struct FileNode* target = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_NONE);
+    set_symlink_target(symlink, target);
+
+    const struct FileNode* result = get_symlink_target(symlink);
+
+    cr_assert_null(result);
+
+    free(target->attributes.name);
+    free(target);
+    free(symlink->attributes.name);
+    free(symlink);
+}
+
 Test(write_to_file, basic) {
     struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
     const char content[] = "content";
@@ -314,7 +352,7 @@ Test(write_to_file, node_or_content_is_null) {
 
 Test(write_to_file, symlink) {
     struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK, PERM_READ | PERM_WRITE);
-    struct FileNode* target = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
+    struct FileNode* target = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_WRITE);
     set_symlink_target(symlink, target);
     const char content[] = "content";
 
@@ -328,8 +366,20 @@ Test(write_to_file, symlink) {
     free(symlink);
 }
 
+Test(write_to_file, file_without_permissions) {
+    struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_NONE);
+    const char content[] = "content";
+
+    write_to_file(node, content);
+
+    cr_assert_null(node->attributes.fileContent);
+
+    free(node->attributes.name);
+    free(node);
+}
+
 Test(read_file_content, basic) {
-    struct FileNode* file = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
+    struct FileNode* file = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_READ | PERM_WRITE | PERM_EXEC);
     const char content[] = "content";
     write_to_file(file, content);
 
@@ -343,9 +393,20 @@ Test(read_file_content, node_is_null) {
     cr_assert_null(read_file_content(NULL));
 }
 
+Test(read_file_content, file_without_permissions) {
+    struct FileNode* file = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_NONE);
+    const char content[] = "content";
+    write_to_file(file, content);
+
+    cr_assert_null(read_file_content(file));
+
+    free(file->attributes.name);
+    free(file);
+}
+
 Test(find_file_node_in_curr_dir, basic) {
-    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
-    struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE, PERM_READ);
+    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ | PERM_WRITE | PERM_EXEC);
+    struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE, PERM_NONE);
 
     cr_assert_eq(find_file_node_in_curr_dir(dir, file->attributes.name), file);
 
@@ -361,9 +422,21 @@ Test(find_file_node_in_curr_dir, dir_or_name_is_null) {
 }
 
 Test(find_file_node_in_curr_dir, find_non_existing_file) {
-    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ);
+    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ | PERM_EXEC);
     cr_assert_null(find_file_node_in_curr_dir(dir, "not exist"));
 
+    free(dir->attributes.name);
+    free(dir);
+}
+
+Test(find_file_node_in_curr_dir, dir_without_permissions) {
+    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_NONE);
+    struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE, PERM_NONE);
+
+    cr_assert_null(find_file_node_in_curr_dir(dir, file->attributes.name));
+
+    free(file->attributes.name);
+    free(file);
     free(dir->attributes.name);
     free(dir);
 }
@@ -374,7 +447,7 @@ Test(find_file_node_in_fs, root_or_name_is_null) {
 }
 
 Test(get_file_node_path, basic) {
-    struct FileNode* root = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+    struct FileNode* root = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE | PERM_EXEC);
     struct FileNode* file = create_file_node(root, "file", FILE_TYPE_FILE, PERM_NONE);
 
     char* path = get_file_node_path(file);
@@ -392,9 +465,9 @@ Test(get_file_node_path, dir_or_name_is_null) {
 }
 
 Test(change_file_node_location, move_valid_node) {
-    struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
-    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
-    struct FileNode* node = create_file_node(parent, "file", FILE_TYPE_FILE, PERM_NONE);
+    struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* node = create_file_node(parent, "file", FILE_TYPE_FILE, PERM_WRITE);
 
     change_file_node_location(location, node);
 
@@ -411,8 +484,8 @@ Test(change_file_node_location, move_null_node) {
 }
 
 Test(change_file_node_location, move_node_from_empty_parent) {
-    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
-    struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_NONE);
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_WRITE);
 
     change_file_node_location(location, node);
 
@@ -421,11 +494,11 @@ Test(change_file_node_location, move_node_from_empty_parent) {
 
 Test(change_file_node_location, move_middle_node) {
     struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
-    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR, PERM_WRITE);
 
-    struct FileNode* node1 = create_file_node(parent, "file1", FILE_TYPE_FILE, PERM_NONE);
-    struct FileNode* node2 = create_file_node(parent, "file2", FILE_TYPE_FILE, PERM_NONE);
-    struct FileNode* node3 = create_file_node(parent, "file3", FILE_TYPE_FILE, PERM_NONE);
+    struct FileNode* node1 = create_file_node(parent, "file1", FILE_TYPE_FILE, PERM_WRITE);
+    struct FileNode* node2 = create_file_node(parent, "file2", FILE_TYPE_FILE, PERM_WRITE);
+    struct FileNode* node3 = create_file_node(parent, "file3", FILE_TYPE_FILE, PERM_WRITE);
 
     change_file_node_location(location, node2);
 
@@ -434,8 +507,30 @@ Test(change_file_node_location, move_middle_node) {
     cr_assert_eq(location->attributes.directoryContent, node2);
 }
 
+Test(change_file_node_location, new_location_without_permissions) {
+    struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR, PERM_NONE);
+    struct FileNode* node = create_file_node(parent, "file", FILE_TYPE_FILE, PERM_WRITE);
+
+    change_file_node_location(location, node);
+
+    cr_assert_eq(node->parent, parent);
+    cr_assert_null(location->attributes.directoryContent);
+}
+
+Test(change_file_node_location, node_without_permissions) {
+    struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* location = create_file_node(NULL, "new location", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* node = create_file_node(parent, "file", FILE_TYPE_FILE, PERM_NONE);
+
+    change_file_node_location(location, node);
+
+    cr_assert_eq(node->parent, parent);
+    cr_assert_null(location->attributes.directoryContent);
+}
+
 Test(change_file_node_name, rename) {
-    struct FileNode* file = create_file_node(NULL, "old", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
+    struct FileNode* file = create_file_node(NULL, "old", FILE_TYPE_FILE, PERM_WRITE);
 
     change_file_node_name(file, "new");
 
@@ -446,7 +541,7 @@ Test(change_file_node_name, rename) {
 }
 
 Test(delete_file_node, delete_existing) {
-    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+    struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_WRITE);
     struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE, PERM_NONE);
 
     delete_file_node(dir, file);

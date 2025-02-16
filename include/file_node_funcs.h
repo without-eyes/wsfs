@@ -50,6 +50,7 @@ void change_permissions(struct FileNode* node, enum Permissions permissions);
     * @return Returns size of file node.
     *
     * @pre node != NULL
+    * @pre node must have READ permission
 */
 size_t get_file_node_size(const struct FileNode* node);
 
@@ -61,6 +62,7 @@ size_t get_file_node_size(const struct FileNode* node);
     * @param[in] newCurrentDir The directory where user wants to go.
     *
     * @pre currentDir != NULL && newCurrentDir != NULL
+    * @pre newCurrentDir must have READ and EXEC permission
 */
 void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurrentDir);
 
@@ -73,6 +75,7 @@ void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurren
     * directory.
     *
     * @pre parent != NULL && child != NULL
+    * @pre parent must have WRITE permission
 */
 void add_to_dir(struct FileNode* parent, struct FileNode* child);
 
@@ -103,6 +106,7 @@ char get_permission_letter(enum Permissions permission);
     * of symbolic link.
     *
     * @pre symlink != NULL && target != NULL
+    * @pre symlink must have WRITE permission
 */
 void set_symlink_target(struct FileNode* symlink, struct FileNode* target);
 
@@ -115,6 +119,7 @@ void set_symlink_target(struct FileNode* symlink, struct FileNode* target);
     * @return Returns the target of symbolic link.
     *
     * @pre symlink != NULL
+    * @pre symlink must have READ permission
 */
 struct FileNode* get_symlink_target(struct FileNode* symlink);
 
@@ -125,6 +130,7 @@ struct FileNode* get_symlink_target(struct FileNode* symlink);
     * @param[in] content The content which will be written into file.
     *
     * @pre node != NULL && content != NULL
+    * @pre node must have WRITE permission
 */
 void write_to_file(struct FileNode* node, const char* content);
 
@@ -137,6 +143,7 @@ void write_to_file(struct FileNode* node, const char* content);
     * @return Returns content of file.
     *
     * @pre node != NULL
+    * @pre node must have READ permission
 */
 char* read_file_content(struct FileNode* node);
 
@@ -151,6 +158,7 @@ char* read_file_content(struct FileNode* node);
     * @return Returns found file node.
     *
     * @pre currentDir != NULL && name != NULL
+    * @pre currentDir must have READ and EXEC permission
 */
 struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* name);
 
@@ -186,6 +194,8 @@ char* get_file_node_path(const struct FileNode* node);
     * @param[in] location The file node where node will be located.
     *
     * @pre node != NULL && location != NULL
+    * @pre location must have WRITE permission
+    * @pre node must have WRITE permission
 */
 void change_file_node_location(struct FileNode* location, struct FileNode* node);
 
@@ -197,6 +207,7 @@ void change_file_node_location(struct FileNode* location, struct FileNode* node)
     * @param[in] name The new name of file node.
     *
     * @pre node != NULL && name != NULL
+    * @pre node must have WRITE permission
 */
 void change_file_node_name(struct FileNode* node, const char* name);
 
