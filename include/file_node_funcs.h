@@ -42,6 +42,16 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* name, enu
 void change_permissions(struct FileNode* node, enum Permissions permissions);
 
 /**
+    * Compares permissions.
+    *
+    * @param[in] left The first permissions.
+    * @param[in] right The second permissions.
+    *
+    * @return Returns 0 if false, other number if true.
+*/
+int is_permissions_equal(enum Permissions left, enum Permissions right);
+
+/**
     * Gets size of file node recursively.
     *
     * @param[in] node The node which size user wants to

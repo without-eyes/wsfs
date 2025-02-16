@@ -86,6 +86,12 @@ Test(change_permissions, change_multiple_perms) {
     cr_assert_eq(node.attributes.permissions, PERM_READ | PERM_WRITE);
 }
 
+Test(is_permissions_equal, all) {
+    cr_assert_eq(is_permissions_equal(PERM_NONE, PERM_NONE), 1);
+    cr_assert_eq(is_permissions_equal(PERM_READ | PERM_WRITE, PERM_WRITE | PERM_READ), 1);
+    cr_assert_eq(is_permissions_equal(PERM_READ, PERM_WRITE), 0);
+}
+
 Test(get_file_node_size, null_node) {
     cr_assert_eq(get_file_node_size(NULL), 0);
 }
