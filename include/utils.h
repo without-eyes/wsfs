@@ -10,7 +10,6 @@
 #define UTILS_H
 
 #include <stddef.h>
-#include "../include/file_node_funcs.h"
 #define BUFFER_SIZE 1024
 #define END_OF_FILE_LINE "EOF"
 

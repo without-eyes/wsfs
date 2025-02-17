@@ -9,7 +9,7 @@
 #ifndef UI_H
 #define UI_H
 
-#include "../include/wsfs.h"
+#include "file_node_structs.h"
 
 /**
     * Starts the user interface with the specified current

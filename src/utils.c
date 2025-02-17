@@ -12,6 +12,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/file_node_structs.h"
 
 struct Timestamp get_current_time(void) {
     time_t rawTime;
