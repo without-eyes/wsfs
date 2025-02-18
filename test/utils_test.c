@@ -9,6 +9,7 @@
 #include "../include/utils.h"
 
 #include <time.h>
+#include "../include/file_node_structs.h"
 #include "criterion/criterion.h"
 
 Test(get_current_time, basic) {

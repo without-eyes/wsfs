@@ -87,7 +87,7 @@ void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurren
     * @pre parent != NULL && child != NULL
     * @pre parent must have WRITE permission
 */
-void add_to_dir(struct FileNode* parent, struct FileNode* child);
+void add_to_dir(struct FileNode* restrict parent, struct FileNode* restrict child);
 
 /**
     * Get file type first letter.
@@ -207,7 +207,7 @@ char* get_file_node_path(const struct FileNode* node);
     * @pre location must have WRITE permission
     * @pre node must have WRITE permission
 */
-void change_file_node_location(struct FileNode* location, struct FileNode* node);
+void change_file_node_location(struct FileNode* restrict location, struct FileNode* restrict node);
 
 /**
     * Changes file node name. The caller is responsible for freeing
@@ -231,7 +231,7 @@ void change_file_node_name(struct FileNode* node, const char* name);
     *
     * @pre currentDir != NULL && node != NULL
 */
-void delete_file_node(struct FileNode* currentDir, struct FileNode* node);
+void delete_file_node(struct FileNode* restrict currentDir, struct FileNode* restrict node);
 
 /**
     * Recursively free allocated memory of file node (and it's children

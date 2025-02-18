@@ -2,7 +2,7 @@
 CC = gcc
 CFLAGS = -Wall -I$(IDIR) -g
 VFLAGS = -s --leak-check=full --show-leak-kinds=all
-TFLAGS = -lcriterion --coverage -g -O0
+TFLAGS = -lcriterion --coverage -g -O3
 
 # Directories
 IDIR = ./include/

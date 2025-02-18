@@ -53,8 +53,8 @@ void run_ui(struct FileNode* currentDir) {
             read_line(name, MAX_NAME_SIZE);
             struct FileNode* permChangeNode = find_file_node_in_curr_dir(currentDir, name);
             printf("Enter new permissions(r=4, w=2, x=1): ");
-            int perms;
-            scanf("%d", &perms);
+            uint8_t perms;
+            scanf("%hhd", &perms);
             change_permissions(permChangeNode, perms);
             break;
 
@@ -116,32 +116,32 @@ void run_ui(struct FileNode* currentDir) {
 void print_file_info(const struct FileNode* node) {
     if (node == NULL) return;
 
-    if (node->attributes.type == FILE_TYPE_SYMLINK) {
-        printf("%c%c%c%c %lu %2u:%02u %s -> %c%c%c%c %lu %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
-                                        get_permission_letter(node->attributes.permissions & 4),
-                                        get_permission_letter(node->attributes.permissions & 2),
-                                        get_permission_letter(node->attributes.permissions & 1),
+    if (node->info.properties.type == FILE_TYPE_SYMLINK) {
+        printf("%c%c%c%c %lu %2u:%02u %s -> %c%c%c%c %lu %2u:%02u %s\n", get_file_type_letter(node->info.properties.type),
+                                        get_permission_letter(node->info.properties.permissions & 4),
+                                        get_permission_letter(node->info.properties.permissions & 2),
+                                        get_permission_letter(node->info.properties.permissions & 1),
                                         get_file_node_size(node),
-                                        node->attributes.createdAt.hour,
-                                        node->attributes.createdAt.minute,
-                                        node->attributes.name,
-                                        get_file_type_letter(node->attributes.symlinkTarget->attributes.type),
-                                        get_permission_letter(node->attributes.symlinkTarget->attributes.permissions & 4),
-                                        get_permission_letter(node->attributes.symlinkTarget->attributes.permissions & 2),
-                                        get_permission_letter(node->attributes.symlinkTarget->attributes.permissions & 1),
-                                        get_file_node_size(node->attributes.symlinkTarget),
-                                        node->attributes.symlinkTarget->attributes.createdAt.hour,
-                                        node->attributes.symlinkTarget->attributes.createdAt.minute,
-                                        node->attributes.symlinkTarget->attributes.name);
+                                        node->info.metadata.creationTime.hour,
+                                        node->info.metadata.creationTime.minute,
+                                        node->info.metadata.name,
+                                        get_file_type_letter(node->info.data.symlinkTarget->info.properties.type),
+                                        get_permission_letter(node->info.data.symlinkTarget->info.properties.permissions & 4),
+                                        get_permission_letter(node->info.data.symlinkTarget->info.properties.permissions & 2),
+                                        get_permission_letter(node->info.data.symlinkTarget->info.properties.permissions & 1),
+                                        get_file_node_size(node->info.data.symlinkTarget),
+                                        node->info.data.symlinkTarget->info.metadata.creationTime.hour,
+                                        node->info.data.symlinkTarget->info.metadata.creationTime.minute,
+                                        node->info.data.symlinkTarget->info.metadata.name);
     } else {
-        printf("%c%c%c%c %lu %2u:%02u %s\n", get_file_type_letter(node->attributes.type),
-                                        get_permission_letter(node->attributes.permissions & 4),
-                                        get_permission_letter(node->attributes.permissions & 2),
-                                        get_permission_letter(node->attributes.permissions & 1),
+        printf("%c%c%c%c %lu %2u:%02u %s\n", get_file_type_letter(node->info.properties.type),
+                                        get_permission_letter(node->info.properties.permissions & 4),
+                                        get_permission_letter(node->info.properties.permissions & 2),
+                                        get_permission_letter(node->info.properties.permissions & 1),
                                         get_file_node_size(node),
-                                        node->attributes.createdAt.hour,
-                                        node->attributes.createdAt.minute,
-                                        node->attributes.name);
+                                        node->info.metadata.creationTime.hour,
+                                        node->info.metadata.creationTime.minute,
+                                        node->info.metadata.name);
     }
 }
 
@@ -149,7 +149,7 @@ void print_dir_content(const struct FileNode* directory) {
     if (directory == NULL) return;
 
     print_file_info(directory);
-    const struct FileNode* current = directory->attributes.directoryContent;
+    const struct FileNode* current = directory->info.data.directoryContent;
     while (current != NULL) {
         print_file_info(current);
         current = current->next;
@@ -193,7 +193,7 @@ void handle_create(struct FileNode* currentDir, const enum FileType type) {
         read_line(target, MAX_NAME_SIZE);
 
         const struct FileNode* root = currentDir;
-        while (strcmp(root->attributes.name, "\\") != 0) root = root->parent;
+        while (strcmp(root->info.metadata.name, "\\") != 0) root = root->parent;
 
         struct FileNode* targetNode = find_file_node_in_fs(root, target);
         set_symlink_target(node, targetNode);

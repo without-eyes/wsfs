@@ -22,20 +22,20 @@ Test(create_file_node, basic_creation) {
     struct FileNode* child = create_file_node(parent, name, type, permissions);
 
     struct Timestamp timestamp = get_current_time();
-    cr_assert_str_eq(child->attributes.name,            name);
-    cr_assert_eq(child->attributes.createdAt.hour,      timestamp.hour);
-    cr_assert_eq(child->attributes.createdAt.minute,    timestamp.minute);
-    cr_assert_eq(child->attributes.type,                type);
-    cr_assert_eq(child->attributes.permissions,         permissions);
-    cr_assert_eq(child->parent,                         parent);
-    cr_assert_null(child->attributes.directoryContent);
-    cr_assert_null(child->attributes.fileContent);
-    cr_assert_null(child->attributes.symlinkTarget);
+    cr_assert_str_eq(child->info.metadata.name, name);
+    cr_assert_eq(child->info.metadata.creationTime.hour, timestamp.hour);
+    cr_assert_eq(child->info.metadata.creationTime.minute, timestamp.minute);
+    cr_assert_eq(child->info.properties.type, type);
+    cr_assert_eq(child->info.properties.permissions, permissions);
+    cr_assert_eq(child->parent, parent);
+    cr_assert_null(child->info.data.directoryContent);
+    cr_assert_null(child->info.data.fileContent);
+    cr_assert_null(child->info.data.symlinkTarget);
     cr_assert_null(child->next);
 
-    free(child->attributes.name);
+    free(child->info.metadata.name);
     free(child);
-    free(parent->attributes.name);
+    free(parent->info.metadata.name);
     free(parent);
 }
 
@@ -47,28 +47,28 @@ Test(create_file_node, root_creation) {
     struct FileNode* root = create_file_node(NULL, name, type, permissions);
 
     struct Timestamp timestamp = get_current_time();
-    cr_assert_str_eq(root->attributes.name,             name);
-    cr_assert_eq(root->attributes.createdAt.hour,       timestamp.hour);
-    cr_assert_eq(root->attributes.createdAt.minute,     timestamp.minute);
-    cr_assert_eq(root->attributes.type,                 type);
-    cr_assert_eq(root->attributes.permissions,          permissions);
-    cr_assert_eq(root->parent,                          root);
-    cr_assert_null(root->attributes.directoryContent);
-    cr_assert_null(root->attributes.fileContent);
-    cr_assert_null(root->attributes.symlinkTarget);
+    cr_assert_str_eq(root->info.metadata.name, name);
+    cr_assert_eq(root->info.metadata.creationTime.hour, timestamp.hour);
+    cr_assert_eq(root->info.metadata.creationTime.minute, timestamp.minute);
+    cr_assert_eq(root->info.properties.type, type);
+    cr_assert_eq(root->info.properties.permissions, permissions);
+    cr_assert_eq(root->parent, root);
+    cr_assert_null(root->info.data.directoryContent);
+    cr_assert_null(root->info.data.fileContent);
+    cr_assert_null(root->info.data.symlinkTarget);
     cr_assert_null(root->next);
 
-    free(root->attributes.name);
+    free(root->info.metadata.name);
     free(root);
 }
 
 Test(change_permissions, change_valid_node_permissions) {
     struct FileNode node;
-    node.attributes.permissions = PERM_NONE;
+    node.info.properties.permissions = PERM_NONE;
 
     change_permissions(&node, PERM_READ);
 
-    cr_assert_eq(node.attributes.permissions, PERM_READ);
+    cr_assert_eq(node.info.properties.permissions, PERM_READ);
 }
 
 Test(change_permissions, null_node_no_change) {
@@ -79,11 +79,11 @@ Test(change_permissions, null_node_no_change) {
 
 Test(change_permissions, change_multiple_perms) {
     struct FileNode node;
-    node.attributes.permissions = PERM_NONE;
+    node.info.properties.permissions = PERM_NONE;
 
     change_permissions(&node, PERM_READ | PERM_WRITE);
 
-    cr_assert_eq(node.attributes.permissions, PERM_READ | PERM_WRITE);
+    cr_assert_eq(node.info.properties.permissions, PERM_READ | PERM_WRITE);
 }
 
 Test(is_permissions_equal, all) {
@@ -98,7 +98,7 @@ Test(get_file_node_size, null_node) {
 
 Test(get_file_node_size, empty_file_node) {
     struct FileNode* node = create_file_node(NULL, "", FILE_TYPE_FILE, PERM_READ);
-    const size_t expected_size = sizeof(struct FileNode) + strlen(node->attributes.name) + 1;
+    const size_t expected_size = sizeof(struct FileNode) + strlen(node->info.metadata.name) + 1;
     cr_assert_eq(get_file_node_size(node), expected_size);
     free(node);
 }
@@ -110,8 +110,8 @@ Test(get_file_node_size, file_with_content) {
 
     cr_assert_eq(get_file_node_size(node), expected_size);
 
-    free(node->attributes.name);
-    free(node->attributes.fileContent);
+    free(node->info.metadata.name);
+    free(node->info.data.fileContent);
     free(node);
 }
 
@@ -134,13 +134,13 @@ Test(get_file_node_size, directory_with_files) {
 
     cr_assert_eq(get_file_node_size(dir), expected_size);
 
-    free(file1->attributes.name);
-    free(file1->attributes.fileContent);
+    free(file1->info.metadata.name);
+    free(file1->info.data.fileContent);
     free(file1);
-    free(file2->attributes.name);
-    free(file2->attributes.fileContent);
+    free(file2->info.metadata.name);
+    free(file2->info.data.fileContent);
     free(file2);
-    free(dir->attributes.name);
+    free(dir->info.metadata.name);
     free(dir);
 }
 
@@ -151,19 +151,19 @@ Test(change_current_dir, dir_exists) {
     change_current_dir(&currentDir, newCurrentDir);
 
     cr_assert_eq(currentDir, newCurrentDir);
-    cr_assert_str_eq(currentDir->attributes.name,           newCurrentDir->attributes.name);
-    cr_assert_eq(currentDir->attributes.createdAt.hour,     newCurrentDir->attributes.createdAt.hour);
-    cr_assert_eq(currentDir->attributes.createdAt.minute,   newCurrentDir->attributes.createdAt.minute);
-    cr_assert_eq(currentDir->attributes.type,               newCurrentDir->attributes.type);
-    cr_assert_eq(currentDir->attributes.directoryContent,   newCurrentDir->attributes.directoryContent);
-    cr_assert_eq(currentDir->attributes.fileContent,        newCurrentDir->attributes.fileContent);
-    cr_assert_eq(currentDir->attributes.symlinkTarget,      newCurrentDir->attributes.symlinkTarget);
-    cr_assert_eq(currentDir->next,                          newCurrentDir->next);
-    cr_assert_eq(currentDir->parent,                        newCurrentDir->parent);
+    cr_assert_str_eq(currentDir->info.metadata.name, newCurrentDir->info.metadata.name);
+    cr_assert_eq(currentDir->info.metadata.creationTime.hour, newCurrentDir->info.metadata.creationTime.hour);
+    cr_assert_eq(currentDir->info.metadata.creationTime.minute, newCurrentDir->info.metadata.creationTime.minute);
+    cr_assert_eq(currentDir->info.properties.type, newCurrentDir->info.properties.type);
+    cr_assert_eq(currentDir->info.data.directoryContent, newCurrentDir->info.data.directoryContent);
+    cr_assert_eq(currentDir->info.data.fileContent, newCurrentDir->info.data.fileContent);
+    cr_assert_eq(currentDir->info.data.symlinkTarget, newCurrentDir->info.data.symlinkTarget);
+    cr_assert_eq(currentDir->next, newCurrentDir->next);
+    cr_assert_eq(currentDir->parent, newCurrentDir->parent);
 
-    free(currentDir->parent->attributes.name);
+    free(currentDir->parent->info.metadata.name);
     free(currentDir->parent);
-    free(currentDir->attributes.name);
+    free(currentDir->info.metadata.name);
     free(currentDir);
 }
 
@@ -172,17 +172,17 @@ Test(change_current_dir, dir_not_exists) {
 
     change_current_dir(&currentDir, NULL);
 
-    cr_assert_str_eq(currentDir->attributes.name,           currentDir->attributes.name);
-    cr_assert_eq(currentDir->attributes.createdAt.hour,     currentDir->attributes.createdAt.hour);
-    cr_assert_eq(currentDir->attributes.createdAt.minute,   currentDir->attributes.createdAt.minute);
-    cr_assert_eq(currentDir->attributes.type,               currentDir->attributes.type);
-    cr_assert_eq(currentDir->attributes.directoryContent,   currentDir->attributes.directoryContent);
-    cr_assert_eq(currentDir->attributes.fileContent,        currentDir->attributes.fileContent);
-    cr_assert_eq(currentDir->attributes.symlinkTarget,      currentDir->attributes.symlinkTarget);
-    cr_assert_eq(currentDir->next,                          currentDir->next);
-    cr_assert_eq(currentDir->parent,                        currentDir->parent);
+    cr_assert_str_eq(currentDir->info.metadata.name, currentDir->info.metadata.name);
+    cr_assert_eq(currentDir->info.metadata.creationTime.hour, currentDir->info.metadata.creationTime.hour);
+    cr_assert_eq(currentDir->info.metadata.creationTime.minute, currentDir->info.metadata.creationTime.minute);
+    cr_assert_eq(currentDir->info.properties.type, currentDir->info.properties.type);
+    cr_assert_eq(currentDir->info.data.directoryContent, currentDir->info.data.directoryContent);
+    cr_assert_eq(currentDir->info.data.fileContent, currentDir->info.data.fileContent);
+    cr_assert_eq(currentDir->info.data.symlinkTarget, currentDir->info.data.symlinkTarget);
+    cr_assert_eq(currentDir->next, currentDir->next);
+    cr_assert_eq(currentDir->parent, currentDir->parent);
 
-    free(currentDir->attributes.name);
+    free(currentDir->info.metadata.name);
     free(currentDir);
 }
 
@@ -194,34 +194,34 @@ Test(change_current_dir, symlink) {
 
     change_current_dir(&currentDir, symlink);
 
-    cr_assert_str_eq(currentDir->attributes.name,           newCurrentDir->attributes.name);
-    cr_assert_eq(currentDir->attributes.createdAt.hour,     newCurrentDir->attributes.createdAt.hour);
-    cr_assert_eq(currentDir->attributes.createdAt.minute,   newCurrentDir->attributes.createdAt.minute);
-    cr_assert_eq(currentDir->attributes.type,               newCurrentDir->attributes.type);
-    cr_assert_eq(currentDir->attributes.directoryContent,   newCurrentDir->attributes.directoryContent);
-    cr_assert_eq(currentDir->attributes.fileContent,        newCurrentDir->attributes.fileContent);
-    cr_assert_eq(currentDir->attributes.symlinkTarget,      newCurrentDir->attributes.symlinkTarget);
-    cr_assert_eq(currentDir->next,                          newCurrentDir->next);
-    cr_assert_eq(currentDir->parent,                        newCurrentDir->parent);
+    cr_assert_str_eq(currentDir->info.metadata.name, newCurrentDir->info.metadata.name);
+    cr_assert_eq(currentDir->info.metadata.creationTime.hour, newCurrentDir->info.metadata.creationTime.hour);
+    cr_assert_eq(currentDir->info.metadata.creationTime.minute, newCurrentDir->info.metadata.creationTime.minute);
+    cr_assert_eq(currentDir->info.properties.type, newCurrentDir->info.properties.type);
+    cr_assert_eq(currentDir->info.data.directoryContent, newCurrentDir->info.data.directoryContent);
+    cr_assert_eq(currentDir->info.data.fileContent, newCurrentDir->info.data.fileContent);
+    cr_assert_eq(currentDir->info.data.symlinkTarget, newCurrentDir->info.data.symlinkTarget);
+    cr_assert_eq(currentDir->next, newCurrentDir->next);
+    cr_assert_eq(currentDir->parent, newCurrentDir->parent);
 
-    free(currentDir->parent->attributes.name);
+    free(currentDir->parent->info.metadata.name);
     free(currentDir->parent);
-    free(currentDir->attributes.name);
+    free(currentDir->info.metadata.name);
     free(currentDir);
 }
 
 Test(change_current_dir, dir_without_permissions) {
     struct FileNode* currentDir = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
     struct FileNode* newCurrentDir = create_file_node(currentDir, "dir", FILE_TYPE_DIR, PERM_NONE);
-    struct FileNode* temp = currentDir;
+    const struct FileNode* temp = currentDir;
 
     change_current_dir(&currentDir, newCurrentDir);
 
     cr_assert_neq(currentDir, newCurrentDir);
 
-    free(temp->parent->attributes.name);
+    free(temp->parent->info.metadata.name);
     free(temp->parent);
-    free(newCurrentDir->attributes.name);
+    free(newCurrentDir->info.metadata.name);
     free(newCurrentDir);
 }
 
@@ -231,12 +231,12 @@ Test(add_to_dir, add_first_child_to_empty_directory) {
 
     add_to_dir(parent, child);
 
-    cr_assert_eq(parent->attributes.directoryContent, child);
+    cr_assert_eq(parent->info.data.directoryContent, child);
     cr_assert_null(child->next);
 
-    free(parent->attributes.name);
+    free(parent->info.metadata.name);
     free(parent);
-    free(child->attributes.name);
+    free(child->info.metadata.name);
     free(child);
 }
 
@@ -248,15 +248,15 @@ Test(add_to_dir, add_multiple_children) {
     add_to_dir(parent, child1);
     add_to_dir(parent, child2);
 
-    cr_assert_eq(parent->attributes.directoryContent, child1);
+    cr_assert_eq(parent->info.data.directoryContent, child1);
     cr_assert_eq(child1->next, child2);
     cr_assert_null(child2->next);
 
-    free(parent->attributes.name);
+    free(parent->info.metadata.name);
     free(parent);
-    free(child1->attributes.name);
+    free(child1->info.metadata.name);
     free(child1);
-    free(child2->attributes.name);
+    free(child2->info.metadata.name);
     free(child2);
 }
 
@@ -265,9 +265,9 @@ Test(add_to_dir, add_null_child_does_nothing) {
 
     add_to_dir(parent, NULL);
 
-    cr_assert_null(parent->attributes.directoryContent);
+    cr_assert_null(parent->info.data.directoryContent);
 
-    free(parent->attributes.name);
+    free(parent->info.metadata.name);
     free(parent);
 }
 
@@ -278,7 +278,7 @@ Test(add_to_dir, add_child_to_null_parent_does_nothing) {
 
     cr_assert_null(child->next);
 
-    free(child->attributes.name);
+    free(child->info.metadata.name);
     free(child);
 }
 
@@ -288,11 +288,11 @@ Test(add_to_dir, add_to_directory_without_permissions) {
 
     add_to_dir(parent, child);
 
-    cr_assert_null(parent->attributes.directoryContent);
+    cr_assert_null(parent->info.data.directoryContent);
 
-    free(parent->attributes.name);
+    free(parent->info.metadata.name);
     free(parent);
-    free(child->attributes.name);
+    free(child->info.metadata.name);
     free(child);
 }
 
@@ -301,7 +301,7 @@ Test(get_file_type_letter, all_types) {
     cr_assert_eq(get_file_type_letter(FILE_TYPE_FILE),      'f');
     cr_assert_eq(get_file_type_letter(FILE_TYPE_SYMLINK),   's');
     cr_assert_eq(get_file_type_letter(FILE_TYPE_UNKNOWN),   '-');
-    cr_assert_eq(get_file_type_letter(999),                 '?');
+    cr_assert_eq(get_file_type_letter(-1),                  '?');
 }
 
 Test(get_permission_letter, all_permissions) {
@@ -309,7 +309,7 @@ Test(get_permission_letter, all_permissions) {
     cr_assert_eq(get_permission_letter(PERM_READ),   'r');
     cr_assert_eq(get_permission_letter(PERM_WRITE),  'w');
     cr_assert_eq(get_permission_letter(PERM_EXEC),   'x');
-    cr_assert_eq(get_permission_letter(999),         '?');
+    cr_assert_eq(get_permission_letter(-1),          '?');
 }
 
 Test(set_symlink_target, valid_symlink_target) {
@@ -318,7 +318,7 @@ Test(set_symlink_target, valid_symlink_target) {
 
     set_symlink_target(symlink, target);
 
-    cr_assert_eq(symlink->attributes.symlinkTarget, target);
+    cr_assert_eq(symlink->info.data.symlinkTarget, target);
 }
 
 Test(set_symlink_target, set_symlink_target_to_null) {
@@ -326,7 +326,7 @@ Test(set_symlink_target, set_symlink_target_to_null) {
 
     set_symlink_target(symlink, NULL);
 
-    cr_assert_null(symlink->attributes.symlinkTarget);
+    cr_assert_null(symlink->info.data.symlinkTarget);
 }
 
 Test(set_symlink_target, null_symlink_does_nothing) {
@@ -346,9 +346,9 @@ Test(get_symlink_target, basic) {
 
     cr_assert_eq(result, target);
 
-    free(target->attributes.name);
+    free(target->info.metadata.name);
     free(target);
-    free(symlink->attributes.name);
+    free(symlink->info.metadata.name);
     free(symlink);
 }
 
@@ -365,7 +365,7 @@ Test(get_symlink_target, target_is_null) {
 
     cr_assert_null(result);
 
-    free(symlink->attributes.name);
+    free(symlink->info.metadata.name);
     free(symlink);
 }
 
@@ -380,11 +380,11 @@ Test(get_symlink_target, symlink_on_symlink) {
 
     cr_assert_eq(result, target);
 
-    free(target->attributes.name);
+    free(target->info.metadata.name);
     free(target);
-    free(secondSymlink->attributes.name);
+    free(secondSymlink->info.metadata.name);
     free(secondSymlink);
-    free(firstSymlink->attributes.name);
+    free(firstSymlink->info.metadata.name);
     free(firstSymlink);
 }
 
@@ -397,9 +397,9 @@ Test(get_symlink_target, symlink_without_permissions) {
 
     cr_assert_null(result);
 
-    free(target->attributes.name);
+    free(target->info.metadata.name);
     free(target);
-    free(symlink->attributes.name);
+    free(symlink->info.metadata.name);
     free(symlink);
 }
 
@@ -409,9 +409,9 @@ Test(write_to_file, basic) {
 
     write_to_file(node, content);
 
-    cr_assert_str_eq(node->attributes.fileContent, content);
+    cr_assert_str_eq(node->info.data.fileContent, content);
 
-    free(node->attributes.name);
+    free(node->info.metadata.name);
     free(node);
 }
 
@@ -419,11 +419,11 @@ Test(write_to_file, node_or_content_is_null) {
     struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
 
     write_to_file(node, NULL);
-    cr_assert_eq(node->attributes.fileContent, NULL);
+    cr_assert_eq(node->info.data.fileContent, NULL);
 
     write_to_file(NULL, "content");
 
-    free(node->attributes.name);
+    free(node->info.metadata.name);
     free(node);
 }
 
@@ -435,11 +435,11 @@ Test(write_to_file, symlink) {
 
     write_to_file(symlink, content);
 
-    cr_assert_str_eq(target->attributes.fileContent, content);
+    cr_assert_str_eq(target->info.data.fileContent, content);
 
-    free(target->attributes.name);
+    free(target->info.metadata.name);
     free(target);
-    free(symlink->attributes.name);
+    free(symlink->info.metadata.name);
     free(symlink);
 }
 
@@ -449,9 +449,9 @@ Test(write_to_file, file_without_permissions) {
 
     write_to_file(node, content);
 
-    cr_assert_null(node->attributes.fileContent);
+    cr_assert_null(node->info.data.fileContent);
 
-    free(node->attributes.name);
+    free(node->info.metadata.name);
     free(node);
 }
 
@@ -462,7 +462,7 @@ Test(read_file_content, basic) {
 
     cr_assert_str_eq(read_file_content(file), content);
 
-    free(file->attributes.name);
+    free(file->info.metadata.name);
     free(file);
 }
 
@@ -477,7 +477,7 @@ Test(read_file_content, file_without_permissions) {
 
     cr_assert_null(read_file_content(file));
 
-    free(file->attributes.name);
+    free(file->info.metadata.name);
     free(file);
 }
 
@@ -485,11 +485,11 @@ Test(find_file_node_in_curr_dir, basic) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ | PERM_WRITE | PERM_EXEC);
     struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE, PERM_NONE);
 
-    cr_assert_eq(find_file_node_in_curr_dir(dir, file->attributes.name), file);
+    cr_assert_eq(find_file_node_in_curr_dir(dir, file->info.metadata.name), file);
 
-    free(file->attributes.name);
+    free(file->info.metadata.name);
     free(file);
-    free(dir->attributes.name);
+    free(dir->info.metadata.name);
     free(dir);
 }
 
@@ -502,7 +502,7 @@ Test(find_file_node_in_curr_dir, find_non_existing_file) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_READ | PERM_EXEC);
     cr_assert_null(find_file_node_in_curr_dir(dir, "not exist"));
 
-    free(dir->attributes.name);
+    free(dir->info.metadata.name);
     free(dir);
 }
 
@@ -510,11 +510,11 @@ Test(find_file_node_in_curr_dir, dir_without_permissions) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR, PERM_NONE);
     struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE, PERM_NONE);
 
-    cr_assert_null(find_file_node_in_curr_dir(dir, file->attributes.name));
+    cr_assert_null(find_file_node_in_curr_dir(dir, file->info.metadata.name));
 
-    free(file->attributes.name);
+    free(file->info.metadata.name);
     free(file);
-    free(dir->attributes.name);
+    free(dir->info.metadata.name);
     free(dir);
 }
 
@@ -531,9 +531,9 @@ Test(get_file_node_path, basic) {
     cr_assert_str_eq(path, "\\file");
 
     free(path);
-    free(file->attributes.name);
+    free(file->info.metadata.name);
     free(file);
-    free(root->attributes.name);
+    free(root->info.metadata.name);
     free(root);
 }
 
@@ -548,9 +548,9 @@ Test(change_file_node_location, move_valid_node) {
 
     change_file_node_location(location, node);
 
-    cr_assert_null(parent->attributes.directoryContent);
+    cr_assert_null(parent->info.data.directoryContent);
     cr_assert_eq(node->parent, location);
-    cr_assert_eq(location->attributes.directoryContent, node);
+    cr_assert_eq(location->info.data.directoryContent, node);
 }
 
 Test(change_file_node_location, move_null_node) {
@@ -581,7 +581,7 @@ Test(change_file_node_location, move_middle_node) {
 
     cr_assert_eq(node1->next, node3);
     cr_assert_eq(node2->parent, location);
-    cr_assert_eq(location->attributes.directoryContent, node2);
+    cr_assert_eq(location->info.data.directoryContent, node2);
 }
 
 Test(change_file_node_location, new_location_without_permissions) {
@@ -592,7 +592,7 @@ Test(change_file_node_location, new_location_without_permissions) {
     change_file_node_location(location, node);
 
     cr_assert_eq(node->parent, parent);
-    cr_assert_null(location->attributes.directoryContent);
+    cr_assert_null(location->info.data.directoryContent);
 }
 
 Test(change_file_node_location, node_without_permissions) {
@@ -603,7 +603,7 @@ Test(change_file_node_location, node_without_permissions) {
     change_file_node_location(location, node);
 
     cr_assert_eq(node->parent, parent);
-    cr_assert_null(location->attributes.directoryContent);
+    cr_assert_null(location->info.data.directoryContent);
 }
 
 Test(change_file_node_name, rename) {
@@ -611,9 +611,9 @@ Test(change_file_node_name, rename) {
 
     change_file_node_name(file, "new");
 
-    cr_assert_str_eq(file->attributes.name, "new");
+    cr_assert_str_eq(file->info.metadata.name, "new");
 
-    free(file->attributes.name);
+    free(file->info.metadata.name);
     free(file);
 }
 
@@ -623,8 +623,8 @@ Test(delete_file_node, delete_existing) {
 
     delete_file_node(dir, file);
 
-    cr_assert_null(dir->attributes.directoryContent);
+    cr_assert_null(dir->info.data.directoryContent);
 
-    free(dir->attributes.name);
+    free(dir->info.metadata.name);
     free(dir);
 }
