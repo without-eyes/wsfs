@@ -2,12 +2,11 @@
 
 ## Overview
 
-WSFS is a RAM-based file system written in C. It has writing/reading files, directories, symbolic links using a
-hierarchical node-based system.
+WSFS is a RAM-based file system written in C. It has writing/reading files, directories, and symbolic links using a hierarchical node-based system.
 
 ## Features
 
-- System is tree that has single-linked list as child.
+- System is a tree that has a single-linked list as a child.
 - Path resolution to retrieve full paths of files.
 - Recursive file search.
 
@@ -22,7 +21,7 @@ hierarchical node-based system.
 git clone https://github.com/without-eyes/wsfs.git
 cd wsfs
 
-# Generate documentation(located in ./docs/)
+# Generate documentation (located in ./docs/)
 sudo apt-get install doxygen doxygen-gui graphviz
 make doxygen
 
@@ -43,34 +42,38 @@ make
 - `f` - Create a file
 - `d` - Create a directory
 - `s` - Create a symbolic link
-- `e` - Delete(erase) file node
+- `x` - Chnage node's permissions
+- `c` - Change node's name
+- `e` - Delete (erase) file node
 - `w` - Write into file
 - `r` - Read from file
 - `g` - Go into child directory
-- `p` - Get path of file node
-- `b` - Go back into parent directory
+- `m` - Move file node to new location
+- `p` - Get the path of the file node
+- `b` - Go back into the parent directory
 
 ## Code Structure
 
 ```
 wsfs/
 │── src/
-│   ├── file_structs.c      # File system logic
-│   ├── main.c              # Entry point
-|   ├── ui.c                # User interface functions
-│   ├── utils.c             # Utility functions
-|   ├── wsfs.c              # File system functions
+│   ├── file_node_funcs.c     # File system structs and enums
+|   ├── file_node_structs.c   # File system functions
+│   ├── main.c                # Entry point
+|   ├── ui.c                  # User interface functions
+│   ├── utils.c               # Utility functions
+|   ├── wsfs.c                # File system functions
 │
 │── include/
-│   ├── file_structs.h      # File node structures and functions
-|   ├── ui.h                # User interface functions
-│   ├── utils.h             # Utility functions
-|   ├── wsfs.h              # File system functions
+│   ├── file_structs.h        # File node structures and functions
+|   ├── ui.h                  # User interface functions
+│   ├── utils.h               # Utility functions
+|   ├── wsfs.h                # File system functions
 │
-│── docs/                   # Documentation location
+│── docs/                     # Documentation location
 |
-│── makefile                # Build system
-│── README.md               # Project overview
+│── makefile                  # Build system
+│── README.md                 # Project overview
 ```
 
 ## Example
@@ -95,6 +98,35 @@ gdb ./wsfs
 
 Set breakpoints and run step-by-step debugging.
 
+## Contributing
+
+Contributions are welcome! Follow these steps to contribute:
+
+1. **Read [Contribution guide](CONTRIBUTING.md)** before contributting.
+2. **Fork the repository** on GitHub.
+3. **Clone your fork** locally:
+   ```sh
+   git clone https://github.com/without-eyes/wsfs.git
+   cd wsfs
+   ```
+4. **Create a new branch** for your changes:
+   ```sh
+   git checkout -b my-feature-branch
+   ```
+5. **Make your changes** and commit:
+   ```sh
+   git add .
+   git commit -m "Description of changes"
+   ```
+6. **Push your changes** to GitHub:
+   ```sh
+   git push origin my-feature-branch
+   ```
+7. **Submit a Pull Request** via GitHub.
+
+Make sure to follow the project's coding style and include necessary documentation for your changes.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
