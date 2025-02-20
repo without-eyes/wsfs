@@ -39,6 +39,9 @@ struct FileNode; /**< Forward declaration of FileNode struct */
  * @brief Represents a time value with hour and minute.
  */
 struct Timestamp {
+    uint16_t year;  /**< Year value (0-65535) */
+    uint8_t month;  /**< Year value (0-11) */
+    uint8_t day;  /**< Year value (1-31) */
     uint8_t hour;   /**< Hour value (0-23) */
     uint8_t minute; /**< Minute value (0-59) */
 };

@@ -17,9 +17,18 @@ Test(get_current_time, basic) {
     time(&rawTime);
     const struct tm* timeInfo = localtime(&rawTime);
 
-    const struct Timestamp currentTime1 = { timeInfo->tm_hour, timeInfo->tm_min };
+    const struct Timestamp currentTime1 = {
+        .year=timeInfo->tm_year + 1900,
+        .month=timeInfo->tm_mon + 1,
+        .day=timeInfo->tm_mday,
+        .hour=timeInfo->tm_hour,
+        .minute=timeInfo->tm_min,
+    };
     const struct Timestamp currentTime2 = get_current_time();
 
-    cr_assert_eq(currentTime1.hour,     currentTime2.hour);
-    cr_assert_eq(currentTime1.minute,   currentTime2.minute);
+    cr_assert_eq(currentTime1.year, currentTime2.year);
+    cr_assert_eq(currentTime1.month, currentTime2.month);
+    cr_assert_eq(currentTime1.day, currentTime2.day);
+    cr_assert_eq(currentTime1.hour, currentTime2.hour);
+    cr_assert_eq(currentTime1.minute, currentTime2.minute);
 }

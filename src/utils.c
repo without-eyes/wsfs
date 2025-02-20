@@ -20,6 +20,9 @@ struct Timestamp get_current_time(void) {
     const struct tm* timeInfo = localtime(&rawTime);
 
     struct Timestamp currentTime;
+    currentTime.year = timeInfo->tm_year + 1900;
+    currentTime.month = timeInfo->tm_mon + 1;
+    currentTime.day = timeInfo->tm_mday;
     currentTime.hour = timeInfo->tm_hour;
     currentTime.minute = timeInfo->tm_min;
 

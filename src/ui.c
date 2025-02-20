@@ -116,33 +116,33 @@ void run_ui(struct FileNode* currentDir) {
 void print_file_info(const struct FileNode* node) {
     if (node == NULL) return;
 
-    if (node->info.properties.type == FILE_TYPE_SYMLINK) {
-        printf("%c%c%c%c %lu %2u:%02u %s -> %c%c%c%c %lu %2u:%02u %s\n", get_file_type_letter(node->info.properties.type),
+    printf("%c%c%c%c %6lu %04u-%02u-%02u %02u:%02u %s", get_file_type_letter(node->info.properties.type),
                                         get_permission_letter(node->info.properties.permissions & 4),
                                         get_permission_letter(node->info.properties.permissions & 2),
                                         get_permission_letter(node->info.properties.permissions & 1),
                                         get_file_node_size(node),
+                                        node->info.metadata.creationTime.year,
+                                        node->info.metadata.creationTime.month,
+                                        node->info.metadata.creationTime.day,
                                         node->info.metadata.creationTime.hour,
                                         node->info.metadata.creationTime.minute,
-                                        node->info.metadata.name,
-                                        get_file_type_letter(node->info.data.symlinkTarget->info.properties.type),
+                                        node->info.metadata.name);
+
+    if (node->info.properties.type == FILE_TYPE_SYMLINK) {
+        printf(" -> %c%c%c%c %6lu %04u-%02u-%02u %02u:%02u %s", get_file_type_letter(node->info.data.symlinkTarget->info.properties.type),
                                         get_permission_letter(node->info.data.symlinkTarget->info.properties.permissions & 4),
                                         get_permission_letter(node->info.data.symlinkTarget->info.properties.permissions & 2),
                                         get_permission_letter(node->info.data.symlinkTarget->info.properties.permissions & 1),
                                         get_file_node_size(node->info.data.symlinkTarget),
+                                        node->info.data.symlinkTarget->info.metadata.creationTime.year,
+                                        node->info.data.symlinkTarget->info.metadata.creationTime.month,
+                                        node->info.data.symlinkTarget->info.metadata.creationTime.day,
                                         node->info.data.symlinkTarget->info.metadata.creationTime.hour,
                                         node->info.data.symlinkTarget->info.metadata.creationTime.minute,
                                         node->info.data.symlinkTarget->info.metadata.name);
-    } else {
-        printf("%c%c%c%c %lu %2u:%02u %s\n", get_file_type_letter(node->info.properties.type),
-                                        get_permission_letter(node->info.properties.permissions & 4),
-                                        get_permission_letter(node->info.properties.permissions & 2),
-                                        get_permission_letter(node->info.properties.permissions & 1),
-                                        get_file_node_size(node),
-                                        node->info.metadata.creationTime.hour,
-                                        node->info.metadata.creationTime.minute,
-                                        node->info.metadata.name);
     }
+
+    puts(""); // new line
 }
 
 void print_dir_content(const struct FileNode* directory) {
