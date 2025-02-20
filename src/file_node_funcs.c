@@ -40,27 +40,41 @@ int is_permissions_equal(const enum Permissions left, const enum Permissions rig
 
 size_t get_file_node_size(const struct FileNode* node) {
     if (node == NULL ||
-        !is_permissions_equal(node->info.properties.permissions, PERM_READ)) return 0;
-
-    size_t total_size = sizeof(struct FileNode);
-
-    if (node->info.metadata.name) {
-        total_size += strlen(node->info.metadata.name) + 1;
+        !is_permissions_equal(node->info.properties.permissions, PERM_READ)) {
+        return 0;
     }
 
-    if (node->info.properties.type == FILE_TYPE_FILE && node->info.data.fileContent) {
-        total_size += strlen(node->info.data.fileContent) + 1;
-    }
+    size_t totalSize = 0;
+    const struct FileNode* stack[512];
+    int top = -1;
 
-    if (node->info.properties.type == FILE_TYPE_DIR) {
-        const struct FileNode* child = node->info.data.directoryContent;
-        while (child != NULL) {
-            total_size += get_file_node_size(child);
-            child = child->next;
+    stack[++top] = node;
+
+    while (top >= 0) {
+        const struct FileNode* topNode = stack[top--];
+
+        if (topNode == NULL) continue;
+
+        totalSize += sizeof(struct FileNode);
+
+        if (topNode->info.metadata.name) {
+            totalSize += strlen(topNode->info.metadata.name) + 1;
+        }
+
+        if (topNode->info.properties.type == FILE_TYPE_FILE && topNode->info.data.fileContent) {
+            totalSize += strlen(topNode->info.data.fileContent) + 1;
+        }
+
+        if (topNode->info.properties.type == FILE_TYPE_DIR) {
+            const struct FileNode* child = topNode->info.data.directoryContent;
+            while (child != NULL) {
+                stack[++top] = child;
+                child = child->next;
+            }
         }
     }
 
-    return total_size;
+    return totalSize;
 }
 
 void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurrentDir) {
