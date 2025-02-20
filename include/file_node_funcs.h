@@ -173,7 +173,7 @@ char* read_file_content(struct FileNode* node);
 struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, const char* name);
 
 /**
-    * Find file node by name in entire file system recursively.
+    * Find file node by name in entire file system.
     *
     * @param[in,out] root The root directory.
     * @param[in] name The name of the file node which user

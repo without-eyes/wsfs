@@ -178,15 +178,27 @@ struct FileNode* find_file_node_in_curr_dir(const struct FileNode* currentDir, c
 struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* name) {
     if (root == NULL || name == NULL) return NULL;
 
-    if (strcmp(root->info.metadata.name, name) == 0) {
-        return (struct FileNode*)root;
-    }
+    const struct FileNode* stack[512];
+    int top = -1;
 
-    const struct FileNode* current = root->info.data.directoryContent;
-    while (current) {
-        struct FileNode* result = find_file_node_in_fs(current, name);
-        if (result != NULL) return result;
-        current = current->next;
+    stack[++top] = root;
+
+    while (top >= 0) {
+        const struct FileNode* node = stack[top--];
+
+        if (node == NULL) continue;
+
+        if (strcmp(node->info.metadata.name, name) == 0) {
+            return (struct FileNode*)node;
+        }
+
+        if (node->info.properties.type == FILE_TYPE_DIR) {
+            const struct FileNode* child = node->info.data.directoryContent;
+            while (child != NULL) {
+                stack[++top] = child;
+                child = child->next;
+            }
+        }
     }
 
     return NULL;
