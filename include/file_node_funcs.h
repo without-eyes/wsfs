@@ -234,11 +234,11 @@ void change_file_node_name(struct FileNode* node, const char* name);
 void delete_file_node(struct FileNode* restrict currentDir, struct FileNode* restrict node);
 
 /**
-    * Recursively free allocated memory of file node (and it's children
+    * Frees allocated memory of file node (and it's children
     * if it is a directory).
     *
-    * @param[in] fileNode The file node user wants to free.
+    * @param[in] node The file node user wants to free.
 */
-void free_file_node_recursive(struct FileNode* fileNode);
+void free_file_node_recursive(struct FileNode* node);
 
 #endif //FILE_H

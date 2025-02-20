@@ -280,21 +280,30 @@ void delete_file_node(struct FileNode* restrict currentDir, struct FileNode* res
     free_file_node_recursive(node);
 }
 
-void free_file_node_recursive(struct FileNode* fileNode) {
-    if (fileNode == NULL) return;
+void free_file_node_recursive(struct FileNode* node) {
+    if (node == NULL) return;
 
-    if (fileNode->info.properties.type == FILE_TYPE_DIR) {
-        struct FileNode* current = fileNode->info.data.directoryContent;
-        while (current != NULL) {
-            struct FileNode* next = current->next;
-            free_file_node_recursive(current);
-            current = next;
+    struct FileNode* stack[512];
+    int top = -1;
+
+    stack[++top] = node;
+
+    while (top >= 0) {
+        struct FileNode* topNode = stack[top--];
+
+        if (topNode->info.properties.type == FILE_TYPE_DIR) {
+            struct FileNode* child = topNode->info.data.directoryContent;
+            while (child != NULL) {
+                struct FileNode* next = child->next;
+                stack[++top] = child;
+                child = next;
+            }
         }
-    }
 
-    if (fileNode->info.properties.type == FILE_TYPE_FILE) {
-        free(fileNode->info.data.fileContent);
+        if (topNode->info.properties.type == FILE_TYPE_FILE) {
+            free(topNode->info.data.fileContent);
+        }
+        free(topNode->info.metadata.name);
+        free(topNode);
     }
-    free(fileNode->info.metadata.name);
-    free(fileNode);
 }
