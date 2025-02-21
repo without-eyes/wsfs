@@ -67,6 +67,16 @@ void run_ui(struct FileNode* currentDir) {
             change_file_node_name(current, name);
             break;
 
+        case 'o': // copy file node to location
+            printf("Enter file node name: ");
+            read_line(name, MAX_NAME_SIZE);
+            struct FileNode* nodeToCopy = find_file_node_in_curr_dir(currentDir, name);
+            printf("Enter location name: ");
+            read_line(name, MAX_NAME_SIZE);
+            struct FileNode* location = find_file_node_in_curr_dir(currentDir, name);
+            copy_file_node(location, nodeToCopy);
+            break;
+
         case 'e': // erase file node
             printf("Enter file node name: ");
             read_line(name, MAX_NAME_SIZE);
@@ -164,6 +174,7 @@ void print_help() {
                  "create (s)ymbolic link\n"
                  "(x) change node permissions\n"
                  "(c)hange name\n"
+                 "c(o)py file node to location\n"
                  "(e)rase file node,\n"
                  "(w)rite text to file\n"
                  "(r)ead content from file,\n"

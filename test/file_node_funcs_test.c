@@ -606,6 +606,52 @@ Test(change_file_node_location, node_without_permissions) {
     cr_assert_null(location->info.data.directoryContent);
 }
 
+Test(copy_file_node, copy_single_file) {
+    struct FileNode* root = create_file_node(NULL, "root", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* file = create_file_node(root, "file", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
+    write_to_file(file, "Hello");
+
+    copy_file_node(root, file);
+
+    cr_assert_not_null(root->info.data.directoryContent);
+    cr_assert_not_null(root->info.data.directoryContent->next);
+    cr_assert_str_eq(root->info.data.directoryContent->next->info.metadata.name, "file");
+    cr_assert_str_eq(root->info.data.directoryContent->next->info.data.fileContent, "Hello");
+}
+
+Test(copy_file_node, copy_directory_structure) {
+    struct FileNode* root = create_file_node(NULL, "root", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* subdir = create_file_node(root, "subdir", FILE_TYPE_DIR, PERM_WRITE);
+    struct FileNode* file = create_file_node(subdir, "file", FILE_TYPE_FILE, PERM_READ | PERM_WRITE);
+    write_to_file(file, "World");
+
+    copy_file_node(root, subdir);
+
+    cr_assert_not_null(root->info.data.directoryContent->next);
+    cr_assert_str_eq(root->info.data.directoryContent->next->info.metadata.name, "subdir");
+    cr_assert_not_null(root->info.data.directoryContent->next->info.data.directoryContent);
+    cr_assert_str_eq(root->info.data.directoryContent->next->info.data.directoryContent->info.metadata.name, "file");
+    cr_assert_str_eq(root->info.data.directoryContent->next->info.data.directoryContent->info.data.fileContent, "World");
+}
+
+Test(copy_file_node, null_inputs) {
+    struct FileNode* root = create_file_node(NULL, "root", FILE_TYPE_DIR, PERM_WRITE);
+
+    copy_file_node(NULL, root);
+    copy_file_node(root, NULL);
+
+    cr_assert_null(root->info.data.directoryContent);
+}
+
+Test(copy_file_node, non_writable_directory) {
+    struct FileNode* root = create_file_node(NULL, "root", FILE_TYPE_DIR, PERM_NONE);
+    struct FileNode* file = create_file_node(root, "file", FILE_TYPE_FILE, PERM_NONE);
+
+    copy_file_node(root, file);
+
+    cr_assert_null(root->info.data.directoryContent);
+}
+
 Test(change_file_node_name, rename) {
     struct FileNode* file = create_file_node(NULL, "old", FILE_TYPE_FILE, PERM_WRITE);
 

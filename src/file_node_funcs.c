@@ -254,6 +254,65 @@ void change_file_node_location(struct FileNode* restrict location, struct FileNo
     add_to_dir(location, node);
 }
 
+void copy_file_node(struct FileNode* restrict location, struct FileNode* restrict node) {
+    if (location == NULL || node == NULL ||
+        location->info.properties.type != FILE_TYPE_DIR ||
+        !is_permissions_equal(location->info.properties.permissions, PERM_WRITE)) return;
+
+    struct FileNode* nodeCopy = malloc(sizeof(struct FileNode));
+    memcpy(nodeCopy, node, sizeof(struct FileNode));
+
+    nodeCopy->info.metadata.name = NULL;
+    nodeCopy->info.data.fileContent = NULL;
+    nodeCopy->info.data.directoryContent = NULL;
+    nodeCopy->next = NULL;
+
+    if (node->info.metadata.name != NULL) {
+        nodeCopy->info.metadata.name = strdup(node->info.metadata.name);
+    }
+
+    if (node->info.properties.type == FILE_TYPE_FILE && node->info.data.fileContent != NULL) {
+        nodeCopy->info.data.fileContent = strdup(node->info.data.fileContent);
+    }
+
+    nodeCopy->parent = location;
+    add_to_dir(location, nodeCopy);
+
+    if (node->info.properties.type == FILE_TYPE_DIR) {
+        struct FileNode* child = node->info.data.directoryContent;
+        struct FileNode* prevCopy = NULL;
+
+        while (child != NULL) {
+            struct FileNode* childCopy = malloc(sizeof(struct FileNode));
+            memcpy(childCopy, child, sizeof(struct FileNode));
+
+            childCopy->info.metadata.name = NULL;
+            childCopy->info.data.fileContent = NULL;
+            childCopy->info.data.directoryContent = NULL;
+            childCopy->next = NULL;
+
+            if (child->info.metadata.name != NULL) {
+                childCopy->info.metadata.name = strdup(child->info.metadata.name);
+            }
+
+            if (child->info.properties.type == FILE_TYPE_FILE && child->info.data.fileContent != NULL) {
+                childCopy->info.data.fileContent = strdup(child->info.data.fileContent);
+            }
+
+            childCopy->parent = nodeCopy;
+
+            if (prevCopy == NULL) {
+                nodeCopy->info.data.directoryContent = childCopy;
+            } else {
+                prevCopy->next = childCopy;
+            }
+
+            prevCopy = childCopy;
+            child = child->next;
+        }
+    }
+}
+
 void change_file_node_name(struct FileNode* node, const char* name) {
     if (!is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return;
 

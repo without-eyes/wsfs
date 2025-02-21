@@ -153,7 +153,7 @@ void write_to_file(struct FileNode* node, const char* content);
     * @return Returns content of file.
     *
     * @pre node != NULL
-    * @pre node must have READ permission
+    * @pre node must have WRITE and READ permission
 */
 char* read_file_content(struct FileNode* node);
 
@@ -198,16 +198,29 @@ struct FileNode* find_file_node_in_fs(const struct FileNode* root, const char* n
 char* get_file_node_path(const struct FileNode* node);
 
 /**
-    * Changes file node location.
+    * Copy file node to location.
     *
-    * @param[in,out] node The file node whose location will be changed.
-    * @param[in] location The file node where node will be located.
+    * @param[in,out] node The file node which will be copied.
+    * @param[in] location The directory where node will be copied.
     *
     * @pre node != NULL && location != NULL
     * @pre location must have WRITE permission
     * @pre node must have WRITE permission
 */
 void change_file_node_location(struct FileNode* restrict location, struct FileNode* restrict node);
+
+/**
+    * Changes file node location. The caller is responsible for freeing
+    * the memory allocated for the file node by calling free().
+    *
+    * @param[in,out] node The file node whose location will be changed.
+    * @param[in] location The file node where node will be located.
+    *
+    * @pre node != NULL && location != NULL
+    * @pre location must have FILE_TYPE_DIR
+    * @pre location must have WRITE permission
+*/
+void copy_file_node(struct FileNode* restrict location, struct FileNode* restrict node);
 
 /**
     * Changes file node name. The caller is responsible for freeing
