@@ -25,15 +25,15 @@ cd wsfs
 sudo apt-get install doxygen doxygen-gui graphviz
 make doxygen
 
-# Build the project
+# Compile shared library
 make
 ```
 
 ## Usage
 
 ```sh
-# Run the WSFS application
-./wsfs
+# Use WSFS library
+$(CC) your_sources -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) -o $@
 ```
 
 ### Commands:
