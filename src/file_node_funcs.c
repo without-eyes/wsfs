@@ -14,27 +14,32 @@
 #include "../include/utils.h"
 
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type, const enum Permissions permissions) {
-    struct FileNode* fileNode = malloc(sizeof(struct FileNode));
-    fileNode->info.metadata.name = strdup(name);
-    fileNode->info.metadata.creationTime = get_current_time();
-    fileNode->info.properties.type = type;
-    fileNode->info.properties.permissions = permissions;
-    fileNode->info.data.directoryContent = NULL;
-    fileNode->info.data.fileContent = NULL;
-    fileNode->info.data.symlinkTarget = NULL;
-    fileNode->next = NULL;
-    fileNode->parent = strcmp(name, "\\") == 0 ? fileNode : parent;
-    if (parent != NULL) add_to_dir(parent, fileNode);
-    return fileNode;
+    struct FileNode* node = malloc(sizeof(struct FileNode));
+    if (node == NULL) return NULL;
+
+    node->info.metadata.name = name != NULL ? strdup(name) : strdup("?");
+    node->info.metadata.creationTime = get_current_time();
+    node->info.properties.type = type;
+    node->info.properties.permissions = permissions;
+    node->info.data.directoryContent = NULL;
+    node->info.data.fileContent = NULL;
+    node->info.data.symlinkTarget = NULL;
+    node->next = NULL;
+    node->parent = strcmp(name, "\\") == 0 ? node : parent;
+    if (parent != node) add_to_dir(parent, node);
+
+    return node;
 }
 
-void change_permissions(struct FileNode* node, const enum Permissions permissions) {
-    if (node == NULL) return;
+uint8_t change_permissions(struct FileNode* node, const enum Permissions permissions) {
+    if (node == NULL) return EXIT_FAILURE;
 
     node->info.properties.permissions = permissions;
+
+    return EXIT_SUCCESS;
 }
 
-int is_permissions_equal(const enum Permissions left, const enum Permissions right) {
+uint8_t is_permissions_equal(const enum Permissions left, const enum Permissions right) {
     return (left & right) == right;
 }
 
@@ -77,23 +82,25 @@ size_t get_file_node_size(const struct FileNode* node) {
     return totalSize;
 }
 
-void change_current_dir(struct FileNode** currentDir, struct FileNode* newCurrentDir) {
+uint8_t change_current_dir(struct FileNode** currentDir, struct FileNode* newCurrentDir) {
     if (*currentDir == NULL || newCurrentDir == NULL ||
         !is_permissions_equal(newCurrentDir->info.properties.permissions, PERM_READ) ||
-        !is_permissions_equal(newCurrentDir->info.properties.permissions, PERM_EXEC)) return;
+        !is_permissions_equal(newCurrentDir->info.properties.permissions, PERM_EXEC)) return EXIT_FAILURE;
 
     newCurrentDir = get_symlink_target(newCurrentDir);
 
     *currentDir = newCurrentDir;
+
+    return EXIT_SUCCESS;
 }
 
-void add_to_dir(struct FileNode* restrict parent, struct FileNode* restrict child) {
+uint8_t add_to_dir(struct FileNode* restrict parent, struct FileNode* restrict child) {
     if (parent == NULL || child == NULL ||
-        !is_permissions_equal(parent->info.properties.permissions, PERM_WRITE)) return;
+        !is_permissions_equal(parent->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
 
     if (parent->info.data.directoryContent == NULL) {
         parent->info.data.directoryContent = child;
-        return;
+        return EXIT_FAILURE;
     }
 
     struct FileNode* current = parent->info.data.directoryContent;
@@ -101,6 +108,8 @@ void add_to_dir(struct FileNode* restrict parent, struct FileNode* restrict chil
         current = current->next;
     }
     current->next = child;
+
+    return EXIT_SUCCESS;
 }
 
 char get_file_type_letter(const enum FileType type) {
@@ -123,11 +132,13 @@ char get_permission_letter(const enum Permissions permission) {
     }
 }
 
-void set_symlink_target(struct FileNode* symlink, struct FileNode* target) {
+uint8_t set_symlink_target(struct FileNode* symlink, struct FileNode* target) {
     if (symlink == NULL || target == NULL ||
-        !is_permissions_equal(symlink->info.properties.permissions, PERM_WRITE)) return;
+        !is_permissions_equal(symlink->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
 
     symlink->info.data.symlinkTarget = target;
+
+    return EXIT_SUCCESS;
 }
 
 struct FileNode* get_symlink_target(struct FileNode* symlink) {
@@ -142,15 +153,17 @@ struct FileNode* get_symlink_target(struct FileNode* symlink) {
     return current;
 }
 
-void write_to_file(struct FileNode* node, const char* content) {
+uint8_t write_to_file(struct FileNode* node, const char* content) {
     if (node == NULL || content == NULL ||
-        !is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return;
+        !is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
 
     struct FileNode* current = get_symlink_target(node);
 
     free(current->info.data.fileContent);
-    current->info.data.fileContent = malloc(strlen(content) + 1);
-    strcpy(current->info.data.fileContent, content);
+    current->info.data.fileContent = strdup(content);
+    if (current->info.data.fileContent == NULL) return EXIT_FAILURE;
+
+    return EXIT_SUCCESS;
 }
 
 char* read_file_content(struct FileNode* node) {
@@ -231,11 +244,11 @@ char* get_file_node_path(const struct FileNode* node) {
     return path;
 }
 
-void change_file_node_location(struct FileNode* restrict location, struct FileNode* restrict node) {
+uint8_t change_file_node_location(struct FileNode* restrict location, struct FileNode* restrict node) {
     if (node == NULL || location == NULL ||
+        node->parent == location ||
         !is_permissions_equal(location->info.properties.permissions, PERM_WRITE) ||
-        !is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return;
-    if (node->parent == location) return;
+        !is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
 
     if (node->parent != NULL) {
         struct FileNode** prev_ptr = &node->parent->info.data.directoryContent;
@@ -252,14 +265,17 @@ void change_file_node_location(struct FileNode* restrict location, struct FileNo
     node->next = NULL;
     node->parent = location;
     add_to_dir(location, node);
+
+    return EXIT_SUCCESS;
 }
 
-void copy_file_node(struct FileNode* restrict location, struct FileNode* restrict node) {
+uint8_t copy_file_node(struct FileNode* restrict location, const struct FileNode* restrict node) {
     if (location == NULL || node == NULL ||
         location->info.properties.type != FILE_TYPE_DIR ||
-        !is_permissions_equal(location->info.properties.permissions, PERM_WRITE)) return;
+        !is_permissions_equal(location->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
 
     struct FileNode* nodeCopy = malloc(sizeof(struct FileNode));
+    if (nodeCopy == NULL) return EXIT_FAILURE;
     memcpy(nodeCopy, node, sizeof(struct FileNode));
 
     nodeCopy->info.metadata.name = NULL;
@@ -284,6 +300,7 @@ void copy_file_node(struct FileNode* restrict location, struct FileNode* restric
 
         while (child != NULL) {
             struct FileNode* childCopy = malloc(sizeof(struct FileNode));
+            if (childCopy == NULL) return EXIT_FAILURE;
             memcpy(childCopy, child, sizeof(struct FileNode));
 
             childCopy->info.metadata.name = NULL;
@@ -311,24 +328,28 @@ void copy_file_node(struct FileNode* restrict location, struct FileNode* restric
             child = child->next;
         }
     }
+
+    return EXIT_SUCCESS;
 }
 
-void change_file_node_name(struct FileNode* node, const char* name) {
-    if (!is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return;
+uint8_t change_file_node_name(struct FileNode* node, const char* name) {
+    if (!is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
 
     free(node->info.metadata.name);
-    node->info.metadata.name = malloc(strlen(name) + 1);
-    strcpy(node->info.metadata.name, name);
+    node->info.metadata.name = strdup(name);
+    if (node->info.metadata.name == NULL) return EXIT_FAILURE;
+
+    return EXIT_SUCCESS;
 }
 
-void delete_file_node(struct FileNode* restrict currentDir, struct FileNode* restrict node) {
-    if (currentDir == NULL || node == NULL) return;
+uint8_t delete_file_node(struct FileNode* restrict currentDir, struct FileNode* restrict node) {
+    if (currentDir == NULL || node == NULL) return EXIT_FAILURE;
 
     struct FileNode* currentFileNode = currentDir->info.data.directoryContent;
     if (currentFileNode == node) {
         currentDir->info.data.directoryContent = currentDir->info.data.directoryContent->next;
         free_file_node_recursive(node);
-        return;
+        return EXIT_FAILURE;
     }
 
     while (currentFileNode->next != node) {
@@ -337,10 +358,12 @@ void delete_file_node(struct FileNode* restrict currentDir, struct FileNode* res
 
     currentFileNode->next = currentFileNode->next->next;
     free_file_node_recursive(node);
+
+    return EXIT_SUCCESS;
 }
 
-void free_file_node_recursive(struct FileNode* node) {
-    if (node == NULL) return;
+uint8_t free_file_node_recursive(struct FileNode* node) {
+    if (node == NULL) return EXIT_FAILURE;
 
     struct FileNode* stack[512];
     int top = -1;
@@ -365,4 +388,6 @@ void free_file_node_recursive(struct FileNode* node) {
         free(topNode->info.metadata.name);
         free(topNode);
     }
+
+    return EXIT_SUCCESS;
 }
