@@ -15,7 +15,9 @@ PROJECT_NAME = wsfs
 TESTS_NAME = tests_bin
 LIB_NAME = libwsfs.so
 
-SOURCES = $(wildcard ${SRCDIR}*.c)
+SOURCES = $(filter-out ${SRCDIR}ui.c, \
+          $(wildcard ${SRCDIR}*.c))
+
 TESTS = $(filter-out ${SRCDIR}main.c, \
 		$(SOURCES) \
 		$(wildcard ${TESTDIR}*.c))
