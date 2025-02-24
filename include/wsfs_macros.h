@@ -1,0 +1,11 @@
+#ifndef WSFS_MACROS_H
+#define WSFS_MACROS_H
+
+#define MAX_MEMORY_SIZE 1024
+#define MAX_FILE_COUNT 50
+#define PERMISSION_MASK 7
+#define MAX_NAME_SIZE 32
+#define BUFFER_SIZE 1024
+#define END_OF_FILE_LINE "EOF"
+
+#endif //WSFS_MACROS_H

@@ -10,7 +10,6 @@
 
 #include "file_node_structs.h"
 #include <stddef.h>
-#define MAX_NAME_SIZE 32
 
 /**
     * Create file node in "parent" directory. The caller is
@@ -283,5 +282,12 @@ uint8_t delete_file_node(struct FileNode* restrict currentDir, struct FileNode* 
     * @pre node != NULL
 */
 uint8_t free_file_node_recursive(struct FileNode* node);
+
+/**
+    * Retrieves the current local time (hour and minute).
+    *
+    * @return Returns the current hour and minute.
+*/
+struct Timestamp get_current_time(void);
 
 #endif //FILE_H

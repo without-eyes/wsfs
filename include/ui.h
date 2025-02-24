@@ -9,6 +9,7 @@
 #ifndef UI_H
 #define UI_H
 
+#include <stddef.h>
 #include "file_node_structs.h"
 
 /**
@@ -71,5 +72,23 @@ void handle_create(struct FileNode* currentDir, enum FileType type);
     * @pre currentDir != NULL
 */
 void handle_read_write(const struct FileNode* currentDir, char mode);
+
+/**
+    * Reads user input until he input "EOF".
+    *
+    * @return Returns inputted text.
+*/
+char* read_all_user_input(void);
+
+/**
+    * Reads inputted line.
+    *
+    * @param[in, out] buffer The buffer where user input will
+    * be placed.
+    * @param[in] size The size of user input.
+    *
+    * @pre size > 0
+*/
+void read_line(char* buffer, size_t size);
 
 #endif //UI_H

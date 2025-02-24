@@ -8,7 +8,6 @@
 
 #include "../include/wsfs.h"
 
-#include "../include/utils.h"
 #include "criterion/criterion.h"
 
 Test(wsfs_init, basic) {

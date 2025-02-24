@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/utils.h"
 #include "../include/file_node_funcs.h"
+#include "../include/wsfs_macros.h"
 
 void run_ui(struct FileNode* currentDir) {
     while (1) {
@@ -228,4 +228,37 @@ void handle_read_write(const struct FileNode* currentDir, const char mode) {
         content = read_file_content(file);
         printf("%s", content);
     }
+}
+
+char* read_all_user_input(void) {
+    size_t buffSize = BUFFER_SIZE;
+    size_t len = 0;
+    char *buff = malloc(buffSize);
+
+    puts("Enter text (Type 'EOF' on a new line to finish):");
+
+    char line[256];
+    while (fgets(line, sizeof(line), stdin)) {
+        line[strcspn(line, "\n")] = 0;
+
+        if (strcmp(line, END_OF_FILE_LINE) == 0) break;
+
+        if (len + strlen(line) + 2 > buffSize) {
+            buffSize *= 2;
+            char *newBuff = realloc(buff, buffSize);
+            buff = newBuff;
+        }
+
+        strcpy(buff + len, line);
+        len += strlen(line);
+        buff[len++] = '\n';
+    }
+
+    buff[len] = '\0';
+    return buff;
+}
+
+void read_line(char* buffer, const size_t size) {
+    fgets(buffer, size, stdin);
+    buffer[strcspn(buffer, "\n")] = 0;
 }

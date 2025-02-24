@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/utils.h"
+#include <time.h>
 
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type, const enum Permissions permissions) {
     struct FileNode* node = malloc(sizeof(struct FileNode));
@@ -390,4 +390,19 @@ uint8_t free_file_node_recursive(struct FileNode* node) {
     }
 
     return EXIT_SUCCESS;
+}
+
+struct Timestamp get_current_time(void) {
+    time_t rawTime;
+    time(&rawTime);
+    const struct tm* timeInfo = localtime(&rawTime);
+
+    struct Timestamp currentTime;
+    currentTime.year = timeInfo->tm_year + 1900;
+    currentTime.month = timeInfo->tm_mon + 1;
+    currentTime.day = timeInfo->tm_mday;
+    currentTime.hour = timeInfo->tm_hour;
+    currentTime.minute = timeInfo->tm_min;
+
+    return currentTime;
 }
