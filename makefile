@@ -15,11 +15,12 @@ PROJECT_NAME = wsfs
 TESTS_NAME = tests_bin
 LIB_NAME = libwsfs.so
 
-SOURCES = $(filter-out ${SRCDIR}ui.c, \
-          $(wildcard ${SRCDIR}*.c))
+LIB_SOURCES = ${SRCDIR}file_node_funcs.c ${SRCDIR}wsfs.c
+PROG_SOURCES = ${SRCDIR}main.c ${SRCDIR}ui.c
 
 TESTS = $(filter-out ${SRCDIR}main.c, \
-		$(SOURCES) \
+		$(LIB_SOURCES) \
+		$(PROG_SOURCES) \
 		$(wildcard ${TESTDIR}*.c))
 
 # Main targets
@@ -29,12 +30,12 @@ test: clean criterion run_test
 
 # Rules
 # Build shared library
-$(LIB_NAME): $(SOURCES)
+$(LIB_NAME): $(LIB_SOURCES)
 	$(CC) $(LFLAGS) $^ -o $(LIBDIR)$@
 
 # Build main executable linked with shared library
 $(PROJECT_NAME): $(LIB_NAME)
-	$(CC) $(SRCDIR)main.c -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) -o $@
+	$(CC) $(PROG_SOURCES) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) -o $@
 
 # Run tests
 run_test:
