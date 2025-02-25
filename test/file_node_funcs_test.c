@@ -91,6 +91,27 @@ Test(is_permissions_equal, all) {
     cr_assert_eq(is_permissions_equal(PERM_READ, PERM_WRITE), 0);
 }
 
+Test(root_node, set_and_get) {
+    struct FileNode* testNode = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+
+    set_root_node(testNode);
+    const struct FileNode* retrievedNode = get_root_node();
+
+    cr_assert_eq(retrievedNode, testNode);
+    cr_assert_str_eq(retrievedNode->info.metadata.name, "\\");
+}
+
+Test(root_node, set_null_does_not_change_root) {
+    struct FileNode* testNode = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE);
+
+    set_root_node(testNode);
+    set_root_node(NULL); // This should not change root
+
+    const struct FileNode* retrieved_node = get_root_node();
+
+    cr_assert_eq(retrieved_node, testNode);
+}
+
 Test(get_file_node_size, null_node) {
     cr_assert_eq(get_file_node_size(NULL), 0);
 }
