@@ -16,9 +16,11 @@
 #include "../include/wsfs_macros.h"
 
 static struct FileNode* root = NULL;
+static unsigned long long int fileCount = 0;
 
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type, const enum Permissions permissions) {
-    if (!is_enough_memory(sizeof(struct FileNode) + strlen(name))) return NULL;
+    if (!is_enough_memory(sizeof(struct FileNode) + strlen(name)) ||
+        !is_file_count_within_limit()) return NULL;
 
     struct FileNode* node = malloc(sizeof(struct FileNode));
     if (node == NULL) return NULL;
@@ -33,6 +35,8 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* name, con
     node->next = NULL;
     node->parent = strcmp(name, "\\") == 0 ? node : parent;
     if (parent != node) add_to_dir(parent, node);
+
+    fileCount++;
 
     return node;
 }
@@ -291,7 +295,8 @@ uint8_t copy_file_node(struct FileNode* restrict location, const struct FileNode
     if (location == NULL || node == NULL ||
         location->info.properties.type != FILE_TYPE_DIR ||
         !is_permissions_equal(location->info.properties.permissions, PERM_WRITE) ||
-        !is_enough_memory(sizeof(struct FileNode) + strlen(node->info.metadata.name) + strlen(node->info.data.fileContent))) return EXIT_FAILURE;
+        !is_enough_memory(sizeof(struct FileNode) + strlen(node->info.metadata.name) + strlen(node->info.data.fileContent)) ||
+        !is_file_count_within_limit()) return EXIT_FAILURE;
 
     struct FileNode* nodeCopy = malloc(sizeof(struct FileNode));
     if (nodeCopy == NULL) return EXIT_FAILURE;
@@ -312,13 +317,15 @@ uint8_t copy_file_node(struct FileNode* restrict location, const struct FileNode
 
     nodeCopy->parent = location;
     add_to_dir(location, nodeCopy);
+    fileCount++;
 
     if (node->info.properties.type == FILE_TYPE_DIR) {
         const struct FileNode* child = node->info.data.directoryContent;
         struct FileNode* prevCopy = NULL;
 
         while (child != NULL) {
-            if (!is_enough_memory(sizeof(struct FileNode) + strlen(child->info.metadata.name) + strlen(child->info.data.fileContent))) return EXIT_FAILURE;
+            if (!is_enough_memory(sizeof(struct FileNode) + strlen(child->info.metadata.name) + strlen(child->info.data.fileContent)) ||
+                is_file_count_within_limit()) return EXIT_FAILURE;
 
             struct FileNode* childCopy = malloc(sizeof(struct FileNode));
             if (childCopy == NULL) return EXIT_FAILURE;
@@ -347,6 +354,7 @@ uint8_t copy_file_node(struct FileNode* restrict location, const struct FileNode
 
             prevCopy = childCopy;
             child = child->next;
+            fileCount++;
         }
     }
 
@@ -409,6 +417,7 @@ uint8_t free_file_node_recursive(struct FileNode* node) {
         }
         free(topNode->info.metadata.name);
         free(topNode);
+        fileCount--;
     }
 
     return EXIT_SUCCESS;
@@ -431,4 +440,8 @@ struct Timestamp get_current_time(void) {
 
 uint8_t is_enough_memory(const unsigned long long newMemory) {
     return get_file_node_size(root) + newMemory < MAX_MEMORY_SIZE;
+}
+
+uint8_t is_file_count_within_limit() {
+    return fileCount < MAX_FILE_COUNT;
 }

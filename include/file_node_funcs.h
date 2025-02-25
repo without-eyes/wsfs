@@ -314,4 +314,12 @@ struct Timestamp get_current_time(void);
 */
 uint8_t is_enough_memory(unsigned long long newMemory);
 
+/**
+    * Check if file count is smaller than MAX_FILE_COUNT.
+    *
+    * @return Returns 1 if file count is within limit, else
+    * returns 0.
+*/
+uint8_t is_file_count_within_limit();
+
 #endif //FILE_H
