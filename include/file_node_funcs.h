@@ -55,6 +55,22 @@ uint8_t change_permissions(struct FileNode* node, enum Permissions permissions);
 uint8_t is_permissions_equal(enum Permissions left, enum Permissions right);
 
 /**
+    * Sets root node.
+    *
+    * @param[in] node The node which will become root.
+    *
+    * @pre node != NULL
+*/
+void set_root_node(struct FileNode* node);
+
+/**
+    * Returns root node.
+    *
+    * @return Returns root node.
+*/
+struct FileNode* get_root_node();
+
+/**
     * Gets size of file node recursively.
     *
     * @param[in] node The node which size user wants to
@@ -289,5 +305,13 @@ uint8_t free_file_node_recursive(struct FileNode* node);
     * @return Returns the current hour and minute.
 */
 struct Timestamp get_current_time(void);
+
+/**
+    * Check if used memory isn't bigger than MAX_MEMORY_SIZE.
+    *
+    * @return Returns 1 if there is memory available, else
+    * returns 0.
+*/
+uint8_t is_memory_available();
 
 #endif //FILE_H

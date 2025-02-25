@@ -13,6 +13,8 @@
 #include <string.h>
 #include <time.h>
 
+static struct FileNode* root = NULL;
+
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type, const enum Permissions permissions) {
     struct FileNode* node = malloc(sizeof(struct FileNode));
     if (node == NULL) return NULL;
@@ -41,6 +43,15 @@ uint8_t change_permissions(struct FileNode* node, const enum Permissions permiss
 
 uint8_t is_permissions_equal(const enum Permissions left, const enum Permissions right) {
     return (left & right) == right;
+}
+
+void set_root_node(struct FileNode* node) {
+    if (node == NULL) return;
+    root = node;
+}
+
+struct FileNode* get_root_node() {
+    return root;
 }
 
 size_t get_file_node_size(const struct FileNode* node) {
@@ -295,7 +306,7 @@ uint8_t copy_file_node(struct FileNode* restrict location, const struct FileNode
     add_to_dir(location, nodeCopy);
 
     if (node->info.properties.type == FILE_TYPE_DIR) {
-        struct FileNode* child = node->info.data.directoryContent;
+        const struct FileNode* child = node->info.data.directoryContent;
         struct FileNode* prevCopy = NULL;
 
         while (child != NULL) {
