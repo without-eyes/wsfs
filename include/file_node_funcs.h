@@ -26,7 +26,8 @@
     * @return Returns NULL if memory allocation failed, else
     * returns created file node.
     *
-    * @note If pass name as NULL, the name of the node will be "?"
+    * @note If pass name as NULL, the name of the node will be "?".
+    * @note From the given permissions will be subtracted PERMISSION_MASK.
 */
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type, enum Permissions permissions);
 

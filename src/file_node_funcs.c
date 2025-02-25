@@ -28,7 +28,7 @@ struct FileNode* create_file_node(struct FileNode* parent, const char* name, con
     node->info.metadata.name = name != NULL ? strdup(name) : strdup("?");
     node->info.metadata.creationTime = get_current_time();
     node->info.properties.type = type;
-    node->info.properties.permissions = permissions;
+    node->info.properties.permissions = abs(permissions - PERMISSION_MASK);
     node->info.data.directoryContent = NULL;
     node->info.data.fileContent = NULL;
     node->info.data.symlinkTarget = NULL;

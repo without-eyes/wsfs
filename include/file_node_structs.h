@@ -26,10 +26,11 @@ enum __attribute__ ((__packed__)) FileType {
  * @brief Defines file access permissions.
  */
 enum __attribute__ ((__packed__)) Permissions {
-    PERM_NONE = 0,  /**< No permissions */
-    PERM_EXEC = 1,  /**< Execute permission */
-    PERM_WRITE = 2, /**< Write permission */
-    PERM_READ = 4   /**< Read permission */
+    PERM_NONE = 0,      /**< No permissions */
+    PERM_EXEC = 1,      /**< Execute permission */
+    PERM_WRITE = 2,     /**< Write permission */
+    PERM_READ = 4,      /**< Read permission */
+    PERM_DEFAULT = 7    /**< All permissions */
 };
 
 struct FileNode; /**< Forward declaration of FileNode struct */

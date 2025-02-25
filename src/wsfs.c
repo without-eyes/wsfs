@@ -13,7 +13,7 @@
 #include <string.h>
 
 struct FileNode* wsfs_init(void) {
-    return create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_READ | PERM_WRITE | PERM_EXEC);
+    return create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_DEFAULT);
 }
 
 void wsfs_deinit(struct FileNode* root) {
