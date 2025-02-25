@@ -10,6 +10,8 @@
 
 #include <stdio.h>
 #include <time.h>
+
+#include "../include/wsfs_macros.h"
 #include "criterion/criterion.h"
 
 Test(create_file_node, basic_creation) {
@@ -714,4 +716,18 @@ Test(get_current_time, basic) {
     cr_assert_eq(currentTime1.day, currentTime2.day);
     cr_assert_eq(currentTime1.hour, currentTime2.hour);
     cr_assert_eq(currentTime1.minute, currentTime2.minute);
+}
+
+Test(is_enough_memory, memory_under_limit) {
+    struct FileNode* allocatedMemory = malloc(MAX_MEMORY_SIZE / 2);
+    set_root_node(allocatedMemory);
+    cr_assert_eq(is_enough_memory(MAX_MEMORY_SIZE / 4), 1);
+    free(allocatedMemory);
+}
+
+Test(is_enough_memory, memory_over_limit) {
+    struct FileNode* allocatedMemory = malloc(MAX_MEMORY_SIZE / 2);
+    set_root_node(allocatedMemory);
+    cr_assert_eq(is_enough_memory(MAX_MEMORY_SIZE), 0);
+    free(allocatedMemory);
 }

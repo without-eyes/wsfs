@@ -10,6 +10,7 @@
 
 int main(void) {
     struct FileNode* root = wsfs_init();
+    set_root_node(root);
     run_ui(root);
     wsfs_deinit(root);
     return 0;

@@ -12,10 +12,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <malloc.h>
+#include "../include/wsfs_macros.h"
 
 static struct FileNode* root = NULL;
 
 struct FileNode* create_file_node(struct FileNode* parent, const char* name, const enum FileType type, const enum Permissions permissions) {
+    if (!is_enough_memory(sizeof(struct FileNode) + strlen(name))) return NULL;
+
     struct FileNode* node = malloc(sizeof(struct FileNode));
     if (node == NULL) return NULL;
 
@@ -166,7 +170,8 @@ struct FileNode* get_symlink_target(struct FileNode* symlink) {
 
 uint8_t write_to_file(struct FileNode* node, const char* content) {
     if (node == NULL || content == NULL ||
-        !is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
+        !is_permissions_equal(node->info.properties.permissions, PERM_WRITE) ||
+        !is_enough_memory(strlen(content))) return EXIT_FAILURE;
 
     struct FileNode* current = get_symlink_target(node);
 
@@ -238,6 +243,8 @@ char* get_file_node_path(const struct FileNode* node) {
         temp = temp->parent;
     }
 
+    if (!is_enough_memory(pathLength)) return NULL;
+
     char* path = malloc(pathLength);
     path[pathLength - 1] = '\0';
     size_t pos = pathLength - 1;
@@ -283,7 +290,8 @@ uint8_t change_file_node_location(struct FileNode* restrict location, struct Fil
 uint8_t copy_file_node(struct FileNode* restrict location, const struct FileNode* restrict node) {
     if (location == NULL || node == NULL ||
         location->info.properties.type != FILE_TYPE_DIR ||
-        !is_permissions_equal(location->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
+        !is_permissions_equal(location->info.properties.permissions, PERM_WRITE) ||
+        !is_enough_memory(sizeof(struct FileNode) + strlen(node->info.metadata.name) + strlen(node->info.data.fileContent))) return EXIT_FAILURE;
 
     struct FileNode* nodeCopy = malloc(sizeof(struct FileNode));
     if (nodeCopy == NULL) return EXIT_FAILURE;
@@ -310,6 +318,8 @@ uint8_t copy_file_node(struct FileNode* restrict location, const struct FileNode
         struct FileNode* prevCopy = NULL;
 
         while (child != NULL) {
+            if (!is_enough_memory(sizeof(struct FileNode) + strlen(child->info.metadata.name) + strlen(child->info.data.fileContent))) return EXIT_FAILURE;
+
             struct FileNode* childCopy = malloc(sizeof(struct FileNode));
             if (childCopy == NULL) return EXIT_FAILURE;
             memcpy(childCopy, child, sizeof(struct FileNode));
@@ -344,7 +354,8 @@ uint8_t copy_file_node(struct FileNode* restrict location, const struct FileNode
 }
 
 uint8_t change_file_node_name(struct FileNode* node, const char* name) {
-    if (!is_permissions_equal(node->info.properties.permissions, PERM_WRITE)) return EXIT_FAILURE;
+    if (!is_permissions_equal(node->info.properties.permissions, PERM_WRITE) ||
+        !is_enough_memory(strlen(name))) return EXIT_FAILURE;
 
     free(node->info.metadata.name);
     node->info.metadata.name = strdup(name);
@@ -416,4 +427,8 @@ struct Timestamp get_current_time(void) {
     currentTime.minute = timeInfo->tm_min;
 
     return currentTime;
+}
+
+uint8_t is_enough_memory(const unsigned long long newMemory) {
+    return get_file_node_size(root) + newMemory < MAX_MEMORY_SIZE;
 }

@@ -312,6 +312,6 @@ struct Timestamp get_current_time(void);
     * @return Returns 1 if there is memory available, else
     * returns 0.
 */
-uint8_t is_memory_available();
+uint8_t is_enough_memory(unsigned long long newMemory);
 
 #endif //FILE_H
