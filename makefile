@@ -1,27 +1,27 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -I$(IDIR)
+CFLAGS = -Wall -I$(LIBIDIR)
 LFLAGS = -fPIC -shared
 VFLAGS = -s --leak-check=full --show-leak-kinds=all
 TFLAGS = -lcriterion --coverage -g -O3
 
 # Directories
-IDIR = ./include/
-SRCDIR = ./src/
-TESTDIR = ./test/
-LIBDIR = ./lib/
+LIBIDIR = ./library/include/
+LIBSRCDIR = ./library/src/
+LIBTESTDIR = ./library/test/
+CLIIDIR = ./cli/include/
+CLISRCDIR = ./cli/src/
+LIBDIR = .
 
 PROJECT_NAME = wsfs
 TESTS_NAME = tests_bin
 LIB_NAME = libwsfs.so
 
-LIB_SOURCES = ${SRCDIR}file_node_funcs.c ${SRCDIR}wsfs.c
-PROG_SOURCES = ${SRCDIR}main.c ${SRCDIR}ui.c
+LIB_SOURCES = ${LIBSRCDIR}file_node_funcs.c ${LIBSRCDIR}wsfs.c
+PROG_SOURCES = ${CLISRCDIR}main.c ${CLISRCDIR}ui.c
 
-TESTS = $(filter-out ${SRCDIR}main.c, \
-		$(LIB_SOURCES) \
-		$(PROG_SOURCES) \
-		$(wildcard ${TESTDIR}*.c))
+TESTS = $(LIB_SOURCES) \
+		$(wildcard ${LIBTESTDIR}*.c)
 
 # Main targets
 all: clean  $(LIB_NAME)
@@ -31,11 +31,11 @@ test: clean criterion run_test
 # Rules
 # Build shared library
 $(LIB_NAME): $(LIB_SOURCES)
-	$(CC) $(LFLAGS) $^ -o $(LIBDIR)$@
+	$(CC) $(LFLAGS) $^ -o $@
 
 # Build main executable linked with shared library
 $(PROJECT_NAME): $(LIB_NAME)
-	$(CC) $(PROG_SOURCES) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) -o $@
+	$(CC) $(PROG_SOURCES) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) -I$(CLIIDIR) -o $@
 
 # Run tests
 run_test:

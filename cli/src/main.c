@@ -5,7 +5,7 @@
     * This file contains main function which runs WSFS.
 */
 
-#include "../include/wsfs.h"
+#include "../../library/include/wsfs.h"
 #include "../include/ui.h"
 
 int main(void) {

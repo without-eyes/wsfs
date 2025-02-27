@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/file_node_funcs.h"
-#include "../include/wsfs_macros.h"
+#include "../../library/include/file_node_funcs.h"
+#include "../../library/include/wsfs_macros.h"
 
 void run_ui(struct FileNode* currentDir) {
     while (1) {

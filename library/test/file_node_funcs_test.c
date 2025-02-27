@@ -716,7 +716,8 @@ Test(is_enough_memory, memory_under_limit) {
     free(allocatedMemory);
 }
 
-Test(is_enough_memory, memory_over_limit) {
+Test(is_enough_memory, memory_over_limit)
+{
     struct FileNode* allocatedMemory = malloc(MAX_MEMORY_SIZE / 2);
     set_root_node(allocatedMemory);
 
