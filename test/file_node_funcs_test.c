@@ -14,7 +14,7 @@
 #include "../include/wsfs_macros.h"
 #include "criterion/criterion.h"
 
-Test(create_file_node, basic_creation) {
+Test(create_file_node, standart_creation) {
     struct FileNode* parent = create_file_node(NULL, "\\", FILE_TYPE_DIR);
     char name[5] = "node";
     enum FileType type = FILE_TYPE_FILE;
@@ -33,10 +33,7 @@ Test(create_file_node, basic_creation) {
     cr_assert_null(child->info.data.symlinkTarget);
     cr_assert_null(child->next);
 
-    free(child->info.metadata.name);
-    free(child);
-    free(parent->info.metadata.name);
-    free(parent);
+    free_file_node_recursive(parent);
 }
 
 Test(create_file_node, root_creation) {
@@ -57,8 +54,7 @@ Test(create_file_node, root_creation) {
     cr_assert_null(root->info.data.symlinkTarget);
     cr_assert_null(root->next);
 
-    free(root->info.metadata.name);
-    free(root);
+    free_file_node_recursive(root);
 }
 
 Test(change_permissions, change_valid_node_permissions) {
@@ -99,6 +95,8 @@ Test(root_node, set_and_get) {
 
     cr_assert_eq(retrievedNode, testNode);
     cr_assert_str_eq(retrievedNode->info.metadata.name, "\\");
+
+    free_file_node_recursive(testNode);
 }
 
 Test(root_node, set_null_does_not_change_root) {
@@ -110,6 +108,8 @@ Test(root_node, set_null_does_not_change_root) {
     const struct FileNode* retrieved_node = get_root_node();
 
     cr_assert_eq(retrieved_node, testNode);
+
+    free_file_node_recursive(testNode);
 }
 
 Test(get_file_node_size, null_node) {
@@ -119,8 +119,10 @@ Test(get_file_node_size, null_node) {
 Test(get_file_node_size, empty_file_node) {
     struct FileNode* node = create_file_node(NULL, "", FILE_TYPE_FILE);
     const size_t expected_size = sizeof(struct FileNode) + strlen(node->info.metadata.name) + 1;
+
     cr_assert_eq(get_file_node_size(node), expected_size);
-    free(node);
+
+    free_file_node_recursive(node);
 }
 
 Test(get_file_node_size, file_with_content) {
@@ -130,16 +132,16 @@ Test(get_file_node_size, file_with_content) {
 
     cr_assert_eq(get_file_node_size(node), expected_size);
 
-    free(node->info.metadata.name);
-    free(node->info.data.fileContent);
-    free(node);
+    free_file_node_recursive(node);
 }
 
 Test(get_file_node_size, file_without_permissions) {
     struct FileNode* node = create_file_node(NULL, "", FILE_TYPE_FILE);
     change_permissions(node, PERM_NONE);
+
     cr_assert_eq(get_file_node_size(node), 0);
-    free(node);
+
+    free_file_node_recursive(node);
 }
 
 Test(get_file_node_size, directory_with_files) {
@@ -155,14 +157,7 @@ Test(get_file_node_size, directory_with_files) {
 
     cr_assert_eq(get_file_node_size(dir), expected_size);
 
-    free(file1->info.metadata.name);
-    free(file1->info.data.fileContent);
-    free(file1);
-    free(file2->info.metadata.name);
-    free(file2->info.data.fileContent);
-    free(file2);
-    free(dir->info.metadata.name);
-    free(dir);
+    free_file_node_recursive(dir);
 }
 
 Test(change_current_dir, dir_exists) {
@@ -183,10 +178,7 @@ Test(change_current_dir, dir_exists) {
     cr_assert_eq(currentDir->next, newCurrentDir->next);
     cr_assert_eq(currentDir->parent, newCurrentDir->parent);
 
-    free(currentDir->parent->info.metadata.name);
-    free(currentDir->parent);
-    free(currentDir->info.metadata.name);
-    free(currentDir);
+    free_file_node_recursive(currentDir);
 }
 
 Test(change_current_dir, dir_not_exists) {
@@ -204,8 +196,7 @@ Test(change_current_dir, dir_not_exists) {
     cr_assert_eq(currentDir->next, currentDir->next);
     cr_assert_eq(currentDir->parent, currentDir->parent);
 
-    free(currentDir->info.metadata.name);
-    free(currentDir);
+    free_file_node_recursive(currentDir);
 }
 
 Test(change_current_dir, symlink) {
@@ -228,10 +219,7 @@ Test(change_current_dir, symlink) {
     cr_assert_eq(currentDir->next, newCurrentDir->next);
     cr_assert_eq(currentDir->parent, newCurrentDir->parent);
 
-    free(currentDir->parent->info.metadata.name);
-    free(currentDir->parent);
-    free(currentDir->info.metadata.name);
-    free(currentDir);
+    free_file_node_recursive(currentDir);
 }
 
 Test(change_current_dir, dir_without_permissions) {
@@ -244,10 +232,7 @@ Test(change_current_dir, dir_without_permissions) {
 
     cr_assert_neq(currentDir, newCurrentDir);
 
-    free(temp->parent->info.metadata.name);
-    free(temp->parent);
-    free(newCurrentDir->info.metadata.name);
-    free(newCurrentDir);
+    free_file_node_recursive(currentDir);
 }
 
 Test(add_to_dir, add_first_child_to_empty_directory) {
@@ -259,10 +244,7 @@ Test(add_to_dir, add_first_child_to_empty_directory) {
     cr_assert_eq(parent->info.data.directoryContent, child);
     cr_assert_null(child->next);
 
-    free(parent->info.metadata.name);
-    free(parent);
-    free(child->info.metadata.name);
-    free(child);
+    free_file_node_recursive(parent);
 }
 
 Test(add_to_dir, add_multiple_children) {
@@ -277,12 +259,7 @@ Test(add_to_dir, add_multiple_children) {
     cr_assert_eq(child1->next, child2);
     cr_assert_null(child2->next);
 
-    free(parent->info.metadata.name);
-    free(parent);
-    free(child1->info.metadata.name);
-    free(child1);
-    free(child2->info.metadata.name);
-    free(child2);
+    free_file_node_recursive(parent);
 }
 
 Test(add_to_dir, add_null_child_does_nothing) {
@@ -292,8 +269,7 @@ Test(add_to_dir, add_null_child_does_nothing) {
 
     cr_assert_null(parent->info.data.directoryContent);
 
-    free(parent->info.metadata.name);
-    free(parent);
+    free_file_node_recursive(parent);
 }
 
 Test(add_to_dir, add_child_to_null_parent_does_nothing) {
@@ -303,8 +279,7 @@ Test(add_to_dir, add_child_to_null_parent_does_nothing) {
 
     cr_assert_null(child->next);
 
-    free(child->info.metadata.name);
-    free(child);
+    free_file_node_recursive(child);
 }
 
 Test(add_to_dir, add_to_directory_without_permissions) {
@@ -316,10 +291,7 @@ Test(add_to_dir, add_to_directory_without_permissions) {
 
     cr_assert_null(parent->info.data.directoryContent);
 
-    free(parent->info.metadata.name);
-    free(parent);
-    free(child->info.metadata.name);
-    free(child);
+    free_file_node_recursive(parent);
 }
 
 Test(get_file_type_letter, all_types) {
@@ -345,6 +317,9 @@ Test(set_symlink_target, valid_symlink_target) {
     set_symlink_target(symlink, target);
 
     cr_assert_eq(symlink->info.data.symlinkTarget, target);
+
+    free_file_node_recursive(symlink);
+    free_file_node_recursive(target);
 }
 
 Test(set_symlink_target, set_symlink_target_to_null) {
@@ -353,6 +328,8 @@ Test(set_symlink_target, set_symlink_target_to_null) {
     set_symlink_target(symlink, NULL);
 
     cr_assert_null(symlink->info.data.symlinkTarget);
+
+    free_file_node_recursive(symlink);
 }
 
 Test(set_symlink_target, null_symlink_does_nothing) {
@@ -361,9 +338,11 @@ Test(set_symlink_target, null_symlink_does_nothing) {
     set_symlink_target(NULL, target);
 
     // No assertion needed; just ensuring it does not crash
+
+    free_file_node_recursive(target);
 }
 
-Test(get_symlink_target, basic) {
+Test(get_symlink_target, valid_symlink) {
     struct FileNode* symlink = create_file_node(NULL, "symlink", FILE_TYPE_SYMLINK);
     struct FileNode* target = create_file_node(NULL, "file", FILE_TYPE_FILE);
     set_symlink_target(symlink, target);
@@ -372,10 +351,8 @@ Test(get_symlink_target, basic) {
 
     cr_assert_eq(result, target);
 
-    free(target->info.metadata.name);
-    free(target);
-    free(symlink->info.metadata.name);
-    free(symlink);
+    free_file_node_recursive(target);
+    free_file_node_recursive(symlink);
 }
 
 Test(get_symlink_target, symlink_is_null) {
@@ -391,8 +368,7 @@ Test(get_symlink_target, target_is_null) {
 
     cr_assert_null(result);
 
-    free(symlink->info.metadata.name);
-    free(symlink);
+    free_file_node_recursive(symlink);
 }
 
 Test(get_symlink_target, symlink_on_symlink) {
@@ -406,12 +382,9 @@ Test(get_symlink_target, symlink_on_symlink) {
 
     cr_assert_eq(result, target);
 
-    free(target->info.metadata.name);
-    free(target);
-    free(secondSymlink->info.metadata.name);
-    free(secondSymlink);
-    free(firstSymlink->info.metadata.name);
-    free(firstSymlink);
+    free_file_node_recursive(target);
+    free_file_node_recursive(firstSymlink);
+    free_file_node_recursive(secondSymlink);
 }
 
 Test(get_symlink_target, symlink_without_permissions) {
@@ -424,13 +397,11 @@ Test(get_symlink_target, symlink_without_permissions) {
 
     cr_assert_null(result);
 
-    free(target->info.metadata.name);
-    free(target);
-    free(symlink->info.metadata.name);
-    free(symlink);
+    free_file_node_recursive(target);
+    free_file_node_recursive(symlink);
 }
 
-Test(write_to_file, basic) {
+Test(write_to_file, valid_write_to_file) {
     struct FileNode* node = create_file_node(NULL, "file", FILE_TYPE_FILE);
     const char content[] = "content";
 
@@ -438,8 +409,7 @@ Test(write_to_file, basic) {
 
     cr_assert_str_eq(node->info.data.fileContent, content);
 
-    free(node->info.metadata.name);
-    free(node);
+    free_file_node_recursive(node);
 }
 
 Test(write_to_file, node_or_content_is_null) {
@@ -450,8 +420,7 @@ Test(write_to_file, node_or_content_is_null) {
 
     write_to_file(NULL, "content");
 
-    free(node->info.metadata.name);
-    free(node);
+    free_file_node_recursive(node);
 }
 
 Test(write_to_file, symlink) {
@@ -464,10 +433,8 @@ Test(write_to_file, symlink) {
 
     cr_assert_str_eq(target->info.data.fileContent, content);
 
-    free(target->info.metadata.name);
-    free(target);
-    free(symlink->info.metadata.name);
-    free(symlink);
+    free_file_node_recursive(target);
+    free_file_node_recursive(symlink);
 }
 
 Test(write_to_file, file_without_permissions) {
@@ -479,19 +446,17 @@ Test(write_to_file, file_without_permissions) {
 
     cr_assert_null(node->info.data.fileContent);
 
-    free(node->info.metadata.name);
-    free(node);
+    free_file_node_recursive(node);
 }
 
-Test(read_file_content, basic) {
+Test(read_file_content, file_has_content) {
     struct FileNode* file = create_file_node(NULL, "file", FILE_TYPE_FILE);
     const char content[] = "content";
     write_to_file(file, content);
 
     cr_assert_str_eq(read_file_content(file), content);
 
-    free(file->info.metadata.name);
-    free(file);
+    free_file_node_recursive(file);
 }
 
 Test(read_file_content, node_is_null) {
@@ -506,21 +471,17 @@ Test(read_file_content, file_without_permissions) {
 
     cr_assert_null(read_file_content(file));
 
-    free(file->info.metadata.name);
-    free(file);
+    free_file_node_recursive(file);
 }
 
-Test(find_file_node_in_curr_dir, basic) {
+Test(find_file_node_in_curr_dir, existing_file) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR);
     change_permissions(dir, PERM_DEFAULT);
-    struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE);
+    const struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE);
 
     cr_assert_eq(find_file_node_in_curr_dir(dir, file->info.metadata.name), file);
 
-    free(file->info.metadata.name);
-    free(file);
-    free(dir->info.metadata.name);
-    free(dir);
+    free_file_node_recursive(dir);
 }
 
 Test(find_file_node_in_curr_dir, dir_or_name_is_null) {
@@ -530,23 +491,20 @@ Test(find_file_node_in_curr_dir, dir_or_name_is_null) {
 
 Test(find_file_node_in_curr_dir, find_non_existing_file) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR);
+
     cr_assert_null(find_file_node_in_curr_dir(dir, "not exist"));
 
-    free(dir->info.metadata.name);
-    free(dir);
+    free_file_node_recursive(dir);
 }
 
 Test(find_file_node_in_curr_dir, dir_without_permissions) {
     struct FileNode* dir = create_file_node(NULL, "dir", FILE_TYPE_DIR);
     change_permissions(dir, PERM_NONE);
-    struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE);
+    const struct FileNode* file = create_file_node(dir, "file", FILE_TYPE_FILE);
 
     cr_assert_null(find_file_node_in_curr_dir(dir, file->info.metadata.name));
 
-    free(file->info.metadata.name);
-    free(file);
-    free(dir->info.metadata.name);
-    free(dir);
+    free_file_node_recursive(dir);
 }
 
 Test(find_file_node_in_fs, root_or_name_is_null) {
@@ -554,18 +512,15 @@ Test(find_file_node_in_fs, root_or_name_is_null) {
     cr_assert_null(find_file_node_in_fs((struct FileNode*)1, NULL));
 }
 
-Test(get_file_node_path, basic) {
+Test(get_file_node_path, existing_file) {
     struct FileNode* root = create_file_node(NULL, "\\", FILE_TYPE_DIR);
-    struct FileNode* file = create_file_node(root, "file", FILE_TYPE_FILE);
+    const struct FileNode* file = create_file_node(root, "file", FILE_TYPE_FILE);
 
     char* path = get_file_node_path(file);
     cr_assert_str_eq(path, "\\file");
 
     free(path);
-    free(file->info.metadata.name);
-    free(file);
-    free(root->info.metadata.name);
-    free(root);
+    free_file_node_recursive(root);
 }
 
 Test(get_file_node_path, dir_or_name_is_null) {
@@ -582,6 +537,9 @@ Test(change_file_node_location, move_valid_node) {
     cr_assert_null(parent->info.data.directoryContent);
     cr_assert_eq(node->parent, location);
     cr_assert_eq(location->info.data.directoryContent, node);
+
+    free_file_node_recursive(parent);
+    free_file_node_recursive(location);
 }
 
 Test(change_file_node_location, move_null_node) {
@@ -589,6 +547,8 @@ Test(change_file_node_location, move_null_node) {
 
     change_file_node_location(location, NULL);
     // Expect no crash
+
+    free_file_node_recursive(location);
 }
 
 Test(change_file_node_location, move_node_from_empty_parent) {
@@ -598,6 +558,8 @@ Test(change_file_node_location, move_node_from_empty_parent) {
     change_file_node_location(location, node);
 
     cr_assert_eq(node->parent, location);
+
+    free_file_node_recursive(location);
 }
 
 Test(change_file_node_location, move_middle_node) {
@@ -613,6 +575,9 @@ Test(change_file_node_location, move_middle_node) {
     cr_assert_eq(node1->next, node3);
     cr_assert_eq(node2->parent, location);
     cr_assert_eq(location->info.data.directoryContent, node2);
+
+    free_file_node_recursive(parent);
+    free_file_node_recursive(location);
 }
 
 Test(change_file_node_location, new_location_without_permissions) {
@@ -625,6 +590,9 @@ Test(change_file_node_location, new_location_without_permissions) {
 
     cr_assert_eq(node->parent, parent);
     cr_assert_null(location->info.data.directoryContent);
+
+    free_file_node_recursive(parent);
+    free_file_node_recursive(location);
 }
 
 Test(change_file_node_location, node_without_permissions) {
@@ -637,6 +605,9 @@ Test(change_file_node_location, node_without_permissions) {
 
     cr_assert_eq(node->parent, parent);
     cr_assert_null(location->info.data.directoryContent);
+
+    free_file_node_recursive(parent);
+    free_file_node_recursive(location);
 }
 
 Test(copy_file_node, copy_single_file) {
@@ -650,6 +621,8 @@ Test(copy_file_node, copy_single_file) {
     cr_assert_not_null(root->info.data.directoryContent->next);
     cr_assert_str_eq(root->info.data.directoryContent->next->info.metadata.name, "file");
     cr_assert_str_eq(root->info.data.directoryContent->next->info.data.fileContent, "Hello");
+
+    free_file_node_recursive(root);
 }
 
 Test(copy_file_node, copy_directory_structure) {
@@ -665,6 +638,8 @@ Test(copy_file_node, copy_directory_structure) {
     cr_assert_not_null(root->info.data.directoryContent->next->info.data.directoryContent);
     cr_assert_str_eq(root->info.data.directoryContent->next->info.data.directoryContent->info.metadata.name, "file");
     cr_assert_str_eq(root->info.data.directoryContent->next->info.data.directoryContent->info.data.fileContent, "World");
+
+    free_file_node_recursive(root);
 }
 
 Test(copy_file_node, null_inputs) {
@@ -674,6 +649,8 @@ Test(copy_file_node, null_inputs) {
     copy_file_node(root, NULL);
 
     cr_assert_null(root->info.data.directoryContent);
+
+    free_file_node_recursive(root);
 }
 
 Test(copy_file_node, non_writable_directory) {
@@ -684,6 +661,8 @@ Test(copy_file_node, non_writable_directory) {
     copy_file_node(root, file);
 
     cr_assert_null(root->info.data.directoryContent);
+
+    free_file_node_recursive(root);
 }
 
 Test(change_file_node_name, rename) {
@@ -693,8 +672,7 @@ Test(change_file_node_name, rename) {
 
     cr_assert_str_eq(file->info.metadata.name, "new");
 
-    free(file->info.metadata.name);
-    free(file);
+    free_file_node_recursive(file);
 }
 
 Test(delete_file_node, delete_existing) {
@@ -705,8 +683,7 @@ Test(delete_file_node, delete_existing) {
 
     cr_assert_null(dir->info.data.directoryContent);
 
-    free(dir->info.metadata.name);
-    free(dir);
+    free_file_node_recursive(dir);
 }
 
 Test(get_current_time, basic) {
@@ -733,13 +710,17 @@ Test(get_current_time, basic) {
 Test(is_enough_memory, memory_under_limit) {
     struct FileNode* allocatedMemory = malloc(MAX_MEMORY_SIZE / 2);
     set_root_node(allocatedMemory);
+
     cr_assert_eq(is_enough_memory(MAX_MEMORY_SIZE / 4), 1);
+
     free(allocatedMemory);
 }
 
 Test(is_enough_memory, memory_over_limit) {
     struct FileNode* allocatedMemory = malloc(MAX_MEMORY_SIZE / 2);
     set_root_node(allocatedMemory);
+
     cr_assert_eq(is_enough_memory(MAX_MEMORY_SIZE), 0);
+
     free(allocatedMemory);
 }
