@@ -33,7 +33,19 @@ make
 
 ```sh
 # Use WSFS library
-$(CC) your_sources -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) -o $@
+gcc $(PROG_SOURCES) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) $(MACROS) -o $(PROG_NAME)
+```
+where:
+- PROG_SOURCES - your program source files
+- LIBDIR - location of libwsfs.so file
+- CFLAGS - gcc environment variables
+- MACROS - set macros(MAX_MEMORY_SIZE, MAX_FILE_COUNT, PERMISSION_MASK, MAX_NAME_SIZE,
+  BUFFER_SIZE, END_OF_FILE_LINE)
+- PROG_NAME - name of executable
+
+### Example:
+```
+gcc ./src/main.c -L ./lib/ -Wl,-rpath=./lib/ -lwsfs -Wall -I ./include/ -DMAX_FILE_COUNT=100 -DPERMISSION_MASK=4 -o test
 ```
 
 ### Commands:
