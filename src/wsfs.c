@@ -13,7 +13,9 @@
 #include <string.h>
 
 struct FileNode* wsfs_init(void) {
-    return create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_DEFAULT);
+    struct FileNode* root = create_file_node(NULL, "\\", FILE_TYPE_DIR, PERM_DEFAULT);
+    set_root_node(root);
+    return root;
 }
 
 void wsfs_deinit(struct FileNode* root) {
