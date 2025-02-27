@@ -3,6 +3,7 @@
 ## Overview
 
 WSFS is a RAM-based file system written in C. It has writing/reading files, directories, and symbolic links using a hierarchical node-based system.
+This project also has simple CLI program to test file system's functions. 
 
 ## Features
 
@@ -27,6 +28,9 @@ make doxygen
 
 # Compile shared library
 make
+
+# Or if you want to use CLI program
+make ui
 ```
 
 ## Usage
@@ -45,7 +49,7 @@ where:
 
 ### Example:
 ```
-gcc ./src/main.c -L ./lib/ -Wl,-rpath=./lib/ -lwsfs -Wall -I ./include/ -DMAX_FILE_COUNT=100 -DPERMISSION_MASK=4 -o test
+gcc ./src/main.c -L . -Wl,-rpath=. -lwsfs -Wall -I ./CLIIDIR/ -DMAX_FILE_COUNT=100 -DPERMISSION_MASK=4 -o test
 ```
 
 ### Commands:
@@ -68,20 +72,28 @@ gcc ./src/main.c -L ./lib/ -Wl,-rpath=./lib/ -lwsfs -Wall -I ./include/ -DMAX_FI
 
 ```
 wsfs/
-│── src/
-│   ├── file_node_funcs.c     # File system structs and enums
-|   ├── file_node_structs.c   # File system functions
-│   ├── main.c                # Entry point
-|   ├── ui.c                  # User interface functions
-│   ├── utils.c               # Utility functions
-|   ├── wsfs.c                # File system functions
+│── library/
+│   │── src/
+│   │   ├── file_node_funcs.c     # File system structs and enums
+│   |   ├── file_node_structs.c   # File system functions
+│   |   ├── wsfs.c                # File system functions
+|   │
+|   │── include/
+|   │   ├── file_structs.h        # File node structures and functions
+|   |   ├── wsfs.h                # File system functions
+│   |
+|   │── test/
+|   │   ├── file_structs_test.h   # Unit tests for 
+|   |   ├── wsfs_test.h           # User interface functions
 │
-│── include/
-│   ├── file_structs.h        # File node structures and functions
-|   ├── ui.h                  # User interface functions
-│   ├── utils.h               # Utility functions
-|   ├── wsfs.h                # File system functions
-│
+│── cli/
+│   │── src/
+│   │   ├── main.c                # Entry point
+│   |   ├── ui.c                  # User interface functions
+|   │
+|   │── include/
+|   |   ├── ui.h                  # User interface functions
+|
 │── docs/                     # Documentation location
 |
 │── makefile                  # Build system
@@ -91,12 +103,12 @@ wsfs/
 ## Example
 
 ```sh
-d 19:45 \
+drw-     50 2025-02-27 17:33 \
 Input command('h' for help): f
-Enter file name: test_file
+Enter file name: fi
 
-d 19:45 \
-f 19:46 test_file
+drw-    101 2025-02-27 17:33 \
+frw-     51 2025-02-27 17:33 fi
 Input command('h' for help): q
 ```
 
