@@ -21,15 +21,13 @@
     * located.
     * @param[in] name The name of new file node.
     * @param[in] type The type of new file node(use FILE_TYPE_*)
-    * @param permissions The permission of file(use PERM_*).
     *
     * @return Returns NULL if memory allocation failed, else
     * returns created file node.
     *
     * @note If pass name as NULL, the name of the node will be "?".
-    * @note From the given permissions will be subtracted PERMISSION_MASK.
 */
-struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type, enum Permissions permissions);
+struct FileNode* create_file_node(struct FileNode* parent, const char* name, enum FileType type);
 
 /**
     * Changes the permissions of file node.

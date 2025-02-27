@@ -13,6 +13,7 @@
 Test(wsfs_init, basic) {
     struct FileNode* result = wsfs_init();
 
+    cr_assert_eq(get_root_node(), result);
     cr_assert_str_eq(result->info.metadata.name, "\\");
     cr_assert_eq(result->info.metadata.creationTime.hour, get_current_time().hour);
     cr_assert_eq(result->info.metadata.creationTime.minute, get_current_time().minute);
