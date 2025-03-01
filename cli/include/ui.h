@@ -2,15 +2,15 @@
     * @file: ui.h
     * @author: without eyes
     *
-    * This file contains functions related to user
-    * interface.
+    * This file contains declaration of functions
+    * related to user interface.
 */
 
 #ifndef UI_H
 #define UI_H
 
 #include <stddef.h>
-#include "file_node_structs.h"
+#include "../../library/include/file_node_structs.h"
 
 /**
     * Starts the user interface with the specified current

@@ -2,8 +2,8 @@
     * @file: wsfs.h
     * @author: without eyes
     *
-    * This file contains functions related to Without eyeS's
-    * File System(WSFS).
+    * This file contains declaration of functions related
+    * to Without eyeS's File System(WSFS).
 */
 
 #ifndef WSFS_H

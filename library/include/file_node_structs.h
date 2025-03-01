@@ -2,7 +2,8 @@
     * @file: file_node_structs.h
     * @author: without eyes
     *
-    * This file contains structs related to files and file nodes.
+    * This file contains structs related to files
+    * and file nodes.
 */
 
 #ifndef FILE_NODE_STRUCTS_H

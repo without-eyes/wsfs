@@ -2,7 +2,7 @@
     * @file: wsfs.c
     * @author: without eyes
     *
-    * This file contains implementation of functions related
+    * This file contains definition of functions related
     * to Without eyeS's File System(WSFS).
 */
 

@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -I$(LIBIDIR)
-LFLAGS = -fPIC -shared
+CFLAGS = -Wall -I$(CLIIDIR)
+LFLAGS = -fPIC -shared -I$(LIBIDIR)
 VFLAGS = -s --leak-check=full --show-leak-kinds=all
 TFLAGS = -lcriterion --coverage -g -O3
 
@@ -35,7 +35,7 @@ $(LIB_NAME): $(LIB_SOURCES)
 
 # Build main executable linked with shared library
 $(PROJECT_NAME): $(LIB_NAME)
-	$(CC) $(PROG_SOURCES) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) -I$(CLIIDIR) -o $@
+	$(CC) $(PROG_SOURCES) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) -lwsfs $(CFLAGS) -o $@
 
 # Run tests
 run_test:

@@ -2,7 +2,7 @@
 * @file: ui.c
     * @author: without eyes
     *
-    * This file contains implementation of functions related
+    * This file contains definition of functions related
     * to user interface.
 */
 

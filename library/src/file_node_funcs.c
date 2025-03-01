@@ -2,7 +2,7 @@
     * @file: file_node_funcs.c
     * @author: without eyes
     *
-    * This file contains implementation of functions related
+    * This file contains definition of functions related
     * to files and file nodes.
 */
 

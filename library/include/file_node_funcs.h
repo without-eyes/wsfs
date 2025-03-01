@@ -2,7 +2,8 @@
     * @file: file_node_funcs.h
     * @author: without eyes
     *
-    * This file contains functions related to files and file nodes.
+    * This file contains declaration of functions
+    * related to files and file nodes.
 */
 
 #ifndef FILE_H
