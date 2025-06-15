@@ -15,7 +15,7 @@
  * @enum FileType
  * @brief Represents different types of files.
  */
-enum __attribute__ ((__packed__)) FileType {
+enum FileType {
     FILE_TYPE_UNKNOWN = 0, /**< Unknown file type */
     FILE_TYPE_FILE = 1,    /**< Regular file */
     FILE_TYPE_DIR = 2,     /**< Directory */
@@ -26,7 +26,7 @@ enum __attribute__ ((__packed__)) FileType {
  * @enum Permissions
  * @brief Defines file access permissions.
  */
-enum __attribute__ ((__packed__)) Permissions {
+enum Permissions {
     PERM_NONE = 0,      /**< No permissions */
     PERM_EXEC = 1,      /**< Execute permission */
     PERM_WRITE = 2,     /**< Write permission */
